@@ -1,0 +1,19 @@
+name: ATCS
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9.7
+  - pip=21.2.4
+  - cudatoolkit=11.3.1
+  - pytorch=1.10.0
+  - pip:
+    - setuptools==59.5.0
+    - pytorch-lightning==1.5.0
+    - tensorboard==2.7.0
+    - tabulate==0.8.9
+    - tqdm==4.62.3
+    - pillow==8.0.1
+    - datasets==2.0.0
+    - adapter-transformers
