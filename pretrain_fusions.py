@@ -23,10 +23,8 @@ def setup_ada_fusion(model, id2label, target_task):
     model.set_active_adapters(adapter_setup)
 
     # Add a classification head for our target task
-    model.add_classification_head(target_task, num_labels=len(id2label))
+    model.add_classification_head(f'{target_task}_classifier', num_labels=len(id2label))
     model.train_adapter_fusion(adapter_setup)
-
-    print(model)
 
     return model
 
@@ -48,11 +46,17 @@ def train(model, training_args, dataset):
 
 
 if __name__ == '__main__':
-    dataset, id2label = dataloader.load_boolq()
+    target_task = "boolq"
+
+    if target_task == 'boolq':
+        dataset, id2label = dataloader.load_boolq()
+    elif target_task == 'sst':
+        dataset, id2label = dataloader.load_sst2()
+
 
     model = load_bert_model(id2label)
 
-    target_task = "multinli"
+
     model = setup_ada_fusion(model, id2label, target_task)
 
     # specify training args
