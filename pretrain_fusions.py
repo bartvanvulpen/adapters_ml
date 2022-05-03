@@ -7,6 +7,7 @@ from transformers import BertConfig, BertModelWithHeads
 from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 from transformers.adapters.composition import Fuse
 import numpy as np
+import pytorch_lightning as pl
 
 
 def setup_ada_fusion(model, id2label, target_task):
@@ -58,7 +59,6 @@ if __name__ == '__main__':
 
 
     model = setup_ada_fusion(model, id2label, target_task)
-
     # specify training args
     training_args = TrainingArguments(
         learning_rate=5e-5,
@@ -69,8 +69,8 @@ if __name__ == '__main__':
         evaluation_strategy="epoch",
         save_strategy="epoch",
         lr_scheduler_type="constant",
-        output_dir="training_output",
-        logging_dir=f"training_output/runs/{target_task}",
+        output_dir=f"training_output/{target_task}/checkpoints",
+        logging_dir=f"training_output/{target_task}/logs",
         overwrite_output_dir=True,
         do_predict=True,
         # load_best_model_at_end=True, <- this does not work currently, probably a bug from AdapterHub
