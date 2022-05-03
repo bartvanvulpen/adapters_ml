@@ -7,7 +7,6 @@ from transformers import BertConfig, BertModelWithHeads
 from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 from transformers.adapters.composition import Fuse
 import numpy as np
-import pytorch_lightning as pl
 
 
 def setup_ada_fusion(model, id2label, target_task):
@@ -56,9 +55,8 @@ if __name__ == '__main__':
 
 
     model = load_bert_model(id2label)
-
-
     model = setup_ada_fusion(model, id2label, target_task)
+
     # specify training args
     training_args = TrainingArguments(
         learning_rate=5e-5,
