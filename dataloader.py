@@ -44,3 +44,19 @@ def load_sst2():
             padding="max_length"
         )
     return load_and_process_dataset(dataset, encode_batch)
+
+def load_boolq():
+    """Load glue dataset"""
+    dataset = load_dataset("super_glue", "boolq")
+
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    def encode_batch(batch):
+        """Encodes a batch of input data using the model tokenizer."""
+        return tokenizer(
+            batch["question"],
+            batch["passage"],
+            max_length=180,
+            truncation=True,
+            padding="max_length"
+        )
+    return load_and_process_dataset(dataset, encode_batch)

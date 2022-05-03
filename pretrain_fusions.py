@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoAdapterModel
 from transformers import list_adapters
-from dataloader import load_sst2
+import dataloader
 from adapter_fusion import load_bert_model
 from transformers import BertTokenizer, EarlyStoppingCallback
 from transformers import BertConfig, BertModelWithHeads
@@ -26,6 +26,8 @@ def setup_ada_fusion(model, id2label, target_task):
     model.add_classification_head(target_task, num_labels=len(id2label))
     model.train_adapter_fusion(adapter_setup)
 
+    print(model)
+
     return model
 
 
@@ -46,11 +48,11 @@ def train(model, training_args, dataset):
 
 
 if __name__ == '__main__':
-    dataset, id2label = load_sst2()
+    dataset, id2label = dataloader.load_boolq()
 
     model = load_bert_model(id2label)
 
-    target_task = "boolq"
+    target_task = "multinli"
     model = setup_ada_fusion(model, id2label, target_task)
 
     # specify training args
@@ -72,8 +74,8 @@ if __name__ == '__main__':
     )
 
     train(model, training_args, dataset)
-    model.save_adapter_fusion("./saved/fusion/sst2_run", "multinli,qqp,sst,wgrande,boolq")
-    model.save_all_adapters("./saved/sep_adapters/sst2_run")
+    model.save_adapter_fusion("./saved/fusion/boolq_run", "multinli,qqp,sst,wgrande,boolq")
+    model.save_all_adapters("./saved/sep_adapters/boolq_run")
 
 
 
