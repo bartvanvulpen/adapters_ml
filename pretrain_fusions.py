@@ -70,6 +70,7 @@ if __name__ == '__main__':
         save_strategy="epoch",
         lr_scheduler_type="constant",
         output_dir="training_output",
+        logging_dir=f"runs/{target_task}",
         overwrite_output_dir=True,
         do_predict=True,
         # load_best_model_at_end=True, <- this does not work currently, probably a bug from AdapterHub
