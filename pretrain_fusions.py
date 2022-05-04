@@ -47,8 +47,6 @@ def train(model, training_args, dataset):
 
 
 if __name__ == '__main__':
-
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--task', type=str, choices=['sst', 'boolq'],
@@ -86,14 +84,13 @@ if __name__ == '__main__':
         remove_unused_columns=False,
     )
 
-    train(model, training_args, dataset)
-
     if not os.path.exists(f'saved/fusion/{target_task}'):
         os.mkdir(f'saved/fusion/{target_task}')
 
     if not os.path.exists(f'saved/sep_adapters/{target_task}'):
         os.mkdir(f'saved/sep_adapters/{target_task}')
 
+    train(model, training_args, dataset)
     model.save_adapter_fusion(f"saved/fusion/{target_task}", "multinli,qqp,sst,wgrande,boolq")
     model.save_all_adapters(f"saved/sep_adapters/{target_task}")
 
