@@ -8,7 +8,7 @@ from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 from transformers.adapters.composition import Fuse
 import numpy as np
 import os
-
+import argparse
 
 def setup_ada_fusion(model, id2label, target_task):
     # Load the pre-trained adapters we want to fuse
@@ -47,7 +47,16 @@ def train(model, training_args, dataset):
 
 
 if __name__ == '__main__':
-    target_task = "boolq"
+
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--task', type=str, choices=['sst', 'boolq'],
+                        help='task to train the ST-A fusion for')
+
+    args = parser.parse_args()
+
+    target_task = args.task
 
     if target_task == 'boolq':
         dataset, id2label = dataloader.load_boolq()
