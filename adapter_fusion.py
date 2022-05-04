@@ -10,6 +10,7 @@ from transformers.adapters.composition import Fuse
 transformers.logging.set_verbosity_error()
 
 import numpy as np
+import torch
 import argparse
 
 import dataloader as dataloader
@@ -60,7 +61,7 @@ def compute_accuracy(p: EvalPrediction):
     preds = np.argmax(p.predictions, axis=1)
     return {"acc": (preds == p.label_ids).mean()}
 
-def train_model(model, training_args, dataset):
+def train_model(model, training_args, dataset, args):
     trainer = AdapterTrainer(
         model=model,
         args=training_args,
@@ -71,9 +72,32 @@ def train_model(model, training_args, dataset):
     trainer.train()
     trainer.evaluate()
 
+    print('=================DONE TRAINING============')
+    total = 0
+    total_correct = 0
+    for batch in dataset["test"]:
+        print(batch)
+        labels = batch["labels"]
+        input_ids = batch["input_ids"].to("cuda")
+        attention_mask = batch["attention_mask"].to("cuda")
+        output = model(input_ids=input_ids, attention_mask=attention_mask)
+        print(output.logits.cpu())
+        print(torch.argmax(output.logits.cpu()), labels)
+        print(torch.argmax(output.logits.cpu()) == labels, torch.sum(torch.argmax(output.logits.cpu()) == labels))
+        total_correct += torch.sum(torch.argmax(output.logits.cpu()) == labels)
+        total += 1
+        print(total, total_correct, total_correct / total)
+
+    #predictions = trainer.predict(test_dataset=dataset["test"]).predictions
+    #test_results = compute_accuracy(predictions)
+    #output_test_file = os.path.join(training_args.output_dir, f"test_results.txt")
+
+    #with open(output_test_file, "w") as writer:
+    #    writer.write(f"accuracy for {args.task} task: {test_results['acc']}")
+
 training_args = TrainingArguments(
     learning_rate=5e-5,
-    num_train_epochs=10,
+    num_train_epochs=1,
     per_device_train_batch_size=8, #higher has memory problems on lisa
     per_device_eval_batch_size=8,
     logging_steps=50,
@@ -96,13 +120,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.task == 'cb':
-        dataset, id2label = dataloader.load_cb()
-    elif args.task == 'sst2':
-        dataset, id2label = dataloader.load_sst2()
-    else:
-        raise NotImplementedError()
+    dataset, id2label = dataloader.load_dataset_by_name(args.task)
 
     model = load_bert_model(id2label)
     model = setup_adapter_fusion(model, id2label)
-    train_model(model, training_args, dataset)
+    train_model(model, training_args, dataset, args)
