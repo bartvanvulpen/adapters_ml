@@ -7,6 +7,7 @@ from transformers import BertConfig, BertModelWithHeads
 from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
 from transformers.adapters.composition import Fuse
 import numpy as np
+import os
 
 
 def setup_ada_fusion(model, id2label, target_task):
@@ -77,8 +78,15 @@ if __name__ == '__main__':
     )
 
     train(model, training_args, dataset)
-    model.save_adapter_fusion("./saved/fusion/boolq_run", "multinli,qqp,sst,wgrande,boolq")
-    model.save_all_adapters("./saved/sep_adapters/boolq_run")
+
+    if not os.path.exists(f'saved/fusion/{target_task}'):
+        os.mkdir(f'saved/fusion/{target_task}')
+
+    if not os.path.exists(f'saved/sep_adapters/{target_task}'):
+        os.mkdir(f'saved/sep_adapters/{target_task}')
+
+    model.save_adapter_fusion(f"saved/fusion/{target_task}", "multinli,qqp,sst,wgrande,boolq")
+    model.save_all_adapters(f"saved/sep_adapters/{target_task}")
 
 
 
