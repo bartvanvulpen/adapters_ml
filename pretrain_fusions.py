@@ -34,12 +34,12 @@ def compute_accuracy(p: EvalPrediction):
     preds = np.argmax(p.predictions, axis=1)
     return {"acc": (preds == p.label_ids).mean()}
 
-def train(model, training_args, dataset):
+def train(model, training_args, dataset, validation_key):
     trainer = AdapterTrainer(
         model=model,
         args=training_args,
         train_dataset=dataset["train"],
-        eval_dataset=dataset["validation"],
+        eval_dataset=dataset[validation_key],
         compute_metrics=compute_accuracy,
     )
     trainer.train()
@@ -49,17 +49,25 @@ def train(model, training_args, dataset):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--task', type=str, choices=['sst', 'boolq'],
+    parser.add_argument('--task', type=str, choices=['sst', 'boolq', 'qqp', 'mnli', 'wgrande'],
                         help='task to train the ST-A fusion for')
 
     args = parser.parse_args()
 
     target_task = args.task
-
+    val_key = "validation"
     if target_task == 'boolq':
         dataset, id2label = dataloader.load_boolq()
+        val_key = "validation"
     elif target_task == 'sst':
         dataset, id2label = dataloader.load_sst2()
+        val_key = "validation"
+    elif target_task == 'qqp':
+        dataset, id2label = dataloader.load_qqp()
+        val_key = "validation"
+    elif target_task == 'mnli':
+        dataset, id2label = dataloader.load_mnli()
+        val_key = "validation_matched"
 
 
     model = load_bert_model(id2label)
@@ -85,12 +93,12 @@ if __name__ == '__main__':
     )
 
     if not os.path.exists(f'saved/fusion/{target_task}'):
-        os.mkdir(f'saved/fusion/{target_task}')
+        os.makedirs(f'saved/fusion/{target_task}')
 
     if not os.path.exists(f'saved/sep_adapters/{target_task}'):
-        os.mkdir(f'saved/sep_adapters/{target_task}')
+        os.makedirs(f'saved/sep_adapters/{target_task}')
 
-    train(model, training_args, dataset)
+    train(model, training_args, dataset, validation_key=val_key)
     model.save_adapter_fusion(f"saved/fusion/{target_task}", "multinli,qqp,sst,wgrande,boolq")
     model.save_all_adapters(f"saved/sep_adapters/{target_task}")
 
