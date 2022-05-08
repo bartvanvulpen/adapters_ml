@@ -9,7 +9,7 @@ def load_and_process_dataset(dataset, encode_batch):
     # The transformers model expects the target class column to be named "labels"
     dataset = dataset.rename_column("label", "labels")
     # Transform to pytorch tensors and only output the required columns
-    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    dataset.set_format(type="torch", columns=["input_ids", "token_type_ids", "attention_mask", "labels"])
 
     id2label = {id: label for (id, label) in enumerate(dataset["train"].features["labels"].names)}
     return dataset, id2label
