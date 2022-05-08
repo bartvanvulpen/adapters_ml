@@ -28,7 +28,7 @@ def load_cb():
             truncation=True,
             padding="max_length"
         )
-    return load_and_process_dataset(dataset, encode_batch)
+    return load_and_process_dataset(dataset, encode_batch), "validation"
 
 def load_sst2():
     """Load glue dataset"""
@@ -43,7 +43,7 @@ def load_sst2():
             truncation=True,
             padding="max_length"
         )
-    return load_and_process_dataset(dataset, encode_batch)
+    return load_and_process_dataset(dataset, encode_batch), "validation"
 
 def load_boolq():
     """Load glue dataset"""
@@ -59,7 +59,7 @@ def load_boolq():
             truncation=True,
             padding="max_length"
         )
-    return load_and_process_dataset(dataset, encode_batch)
+    return load_and_process_dataset(dataset, encode_batch), "validation"
 
 def load_mnli():
     """Load glue dataset"""
@@ -77,7 +77,7 @@ def load_mnli():
             padding="max_length"
         )
 
-    return load_and_process_dataset(dataset, encode_batch)
+    return load_and_process_dataset(dataset, encode_batch), "validation_matched"
 
 def load_qqp():
     """Load glue dataset"""
@@ -95,7 +95,7 @@ def load_qqp():
             padding="max_length"
         )
 
-    return load_and_process_dataset(dataset, encode_batch)
+    return load_and_process_dataset(dataset, encode_batch), "validation"
 
 def load_wgrande():
     """Load glue dataset"""
