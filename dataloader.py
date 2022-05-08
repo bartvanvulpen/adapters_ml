@@ -28,7 +28,7 @@ def load_cb():
             truncation=True,
             padding="max_length"
         )
-    return load_and_process_dataset(dataset, encode_batch)
+    return load_and_process_dataset(dataset, encode_batch), "validation"
 
 def load_sst2():
     """Load glue dataset"""
@@ -43,4 +43,76 @@ def load_sst2():
             truncation=True,
             padding="max_length"
         )
+    return load_and_process_dataset(dataset, encode_batch), "validation"
+
+def load_boolq():
+    """Load glue dataset"""
+    dataset = load_dataset("super_glue", "boolq")
+
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    def encode_batch(batch):
+        """Encodes a batch of input data using the model tokenizer."""
+        return tokenizer(
+            batch["question"],
+            batch["passage"],
+            max_length=180,
+            truncation=True,
+            padding="max_length"
+        )
+    return load_and_process_dataset(dataset, encode_batch), "validation"
+
+def load_mnli():
+    """Load glue dataset"""
+    dataset = load_dataset("glue", "mnli")
+
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
+    def encode_batch(batch):
+        """Encodes a batch of input data using the model tokenizer."""
+        return tokenizer(
+            batch["premise"],
+            batch["hypothesis"],
+            max_length=180,
+            truncation=True,
+            padding="max_length"
+        )
+
+    return load_and_process_dataset(dataset, encode_batch), "validation_matched"
+
+def load_qqp():
+    """Load glue dataset"""
+    dataset = load_dataset("glue", "qqp")
+
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
+    def encode_batch(batch):
+        """Encodes a batch of input data using the model tokenizer."""
+        return tokenizer(
+            batch["question1"],
+            batch["question2"],
+            max_length=180,
+            truncation=True,
+            padding="max_length"
+        )
+
+    return load_and_process_dataset(dataset, encode_batch), "validation"
+
+def load_wgrande():
+    """Load glue dataset"""
+    dataset = load_dataset("winogrande", "winogrande_xl")
+
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
+    # def encode_batch(batch):
+    #     """Encodes a batch of input data using the model tokenizer."""
+    #     return tokenizer(
+    #         batch["question1"],
+    #         batch["question2"],
+    #         max_length=180,
+    #         truncation=True,
+    #         padding="max_length"
+    #     )
+
     return load_and_process_dataset(dataset, encode_batch)
+
+
