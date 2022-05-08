@@ -229,6 +229,41 @@ class FewShotBatchSampler(object):
 
     def __len__(self):
         return self.iterations
+
+class TaskBatchSampler(object):
+
+    def __init__(self, dataset_tasks, dataset_targets, batch_size, N_way, K_shot, include_query=False, shuffle=True):
+        """
+        Inputs:
+            dataset_tasks - PyTorch tensor of the id's of the tasks in the dataset.
+            dataset_classes - PyTorch tensor of the classes in the dataset
+            batch_size - Number of tasks to aggregate in a batch
+            N_way - Number of classes to sample per batch.
+            K_shot - Number of examples to sample per class in the batch.
+            include_query - If True, returns batch of size N_way*K_shot*2, which
+                            can be split into support and query set. Simplifies
+                            the implementation of sampling the same classes but
+                            distinct examples for support and query set.
+            shuffle - If True, examples and classes are newly shuffled in each
+                      iteration (for training)
+        """
+        super().__init__()
+        self.batch_sampler = FewShotBatchSampler(dataset_tasks, dataset_targets, N_way, K_shot, include_query, shuffle)
+        self.task_batch_size = batch_size
+        self.local_batch_size = self.batch_sampler.batch_size
+
+    def __iter__(self):
+        # Aggregate multiple batches before returning the indices
+        batch_list = []
+        for batch_idx, batch in enumerate(self.batch_sampler):
+            batch_list.extend(batch)
+            if (batch_idx+1) % self.task_batch_size == 0:
+                yield batch_list
+                batch_list = []
+
+    def __len__(self):
+        return len(self.batch_sampler)//self.task_batch_size
+
     
     def get_collate_fn(self):
         # Returns a collate function that converts a list of items into format for transformer model

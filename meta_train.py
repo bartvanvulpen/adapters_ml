@@ -15,7 +15,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 
 ## Dataset and sampler
-from sampler import FewShotBatchSampler, dataset_from_tasks, DATASETS, TASK_IDS
+from sampler import TaskBatchSampler, dataset_from_tasks, DATASETS, TASK_IDS
 
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "../saved_models/tutorial16"
@@ -299,8 +299,9 @@ test_set = dataset_from_tasks(combined_dataset, torch.tensor([TASK_IDS[ds] for d
 
 
 # Training set
-train_protomaml_sampler = FewShotBatchSampler(
-    train_set.targets, 
+train_protomaml_sampler = TaskBatchSampler(
+    train_set.tasks,
+    train_set.labels, 
     include_query=True,
     N_way=N_WAY,
     K_shot=K_SHOT,
@@ -315,8 +316,9 @@ train_protomaml_loader = data.DataLoader(
 )
 
 # Validation set
-val_protomaml_sampler = FewShotBatchSampler(
-    val_set.targets, 
+val_protomaml_sampler = TaskBatchSampler(
+    val_set.tasks,
+    val_set.labels,
     include_query=True,
     N_way=N_WAY,
     K_shot=K_SHOT,
