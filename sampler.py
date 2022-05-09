@@ -77,7 +77,7 @@ class NLPDataset(data.Dataset):
         return task, x, label
 
     def __len__(self):
-        return self.inputs.shape[0]
+        return self.labels.shape[0]
 
 
 def dataset_from_tasks(dataset, tasks, **kwargs):
@@ -86,6 +86,8 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
     """
     
     task_mask = (dataset["tasks"][:,None] == tasks[None,:]).any(dim=-1)
+
+
     dataset = NLPDataset(
         tasks = dataset["tasks"][task_mask], 
         input_ids = dataset["input_ids"][task_mask], 
@@ -153,24 +155,26 @@ class FewShotBatchSampler(object):
                     (self.dataset_tasks == t) *
                     (self.dataset_targets == c)
                 )[0]
-                print("Indices per class ({}, {}): {}".format(t, c, self.indices_per_class[t][c]))
+
+
                 self.batches_per_class[t][c] = self.indices_per_class[t][c].shape[0] // self.K_shot
 #                print("Batches per class ({}, {}): {}".format(t, c, self.batches_per_class[t][c]))
             self.batches_per_task[t] = sum(self.batches_per_class[t].values())
+        # print(self.indices_per_class)
 #            print("Batches for task {}: {}".format(t, self.batches_per_task[t]))
         self.unique_task_classes = [(t,c) for t in self.tasks for c in self.classes[t]]
+        # print(self.unique_task_classes)
 
         # Create a list of task-class tuples from which we select the N classes per batch
         self.iterations_per_task = [sum(self.batches_per_class[t].values()) // self.N_way for t in self.tasks]
-        self.task_list = [t for t in self.tasks for _ in range(self.iterations_per_task[t])]
-        print("Task_list  (init): ", self.task_list)
+        self.task_list = [t for i, t in enumerate(self.tasks) for _ in range(self.iterations_per_task[i])]
         self.iterations = sum(self.iterations_per_task)
-#        print("Iterations: ", self.iterations_per_task)
+
         self.class_list = {
             t: [c for c in self.classes[t] for _ in range(self.batches_per_class[t][c])]
             for t in self.task_list
         }
-        print("Class_list (init): ", self.class_list)
+        # print("Class_list (init): ", self.class_list)
         if shuffle_once or self.shuffle:
             self.shuffle_data()
         else:
@@ -182,8 +186,9 @@ class FewShotBatchSampler(object):
                     for p in range(self.batches_per_class[t][c])
                 ]
                 self.class_list[t] = np.array(self.class_list[t])[np.argsort(sort_idxs)].tolist()
-        print("Class_list (final): ", self.class_list)
-        print("Task_list  (final): ", self.task_list)
+
+        # print("Class_list (final): ", self.class_list)
+        # print("Task_list  (final): ", self.task_list)
             
     def shuffle_data(self):
         # Shuffle the examples per task and class.       
@@ -207,24 +212,30 @@ class FewShotBatchSampler(object):
 
         # Sample few-shot batches
         start_index = defaultdict(int)
-        task_iter = [0] * len(self.tasks)
+        # task_iter = {t : 0 for t in self.tasks}
+
         for it in range(self.iterations):
-            
             # Select N classes for task t for the batch
-            t = self.task_list[it]
-            idx = task_iter[t] * self.N_way
-            task_iter[t] += 1
-            class_batch = self.class_list[t][idx:idx+self.N_way]
+            # t = self.task_list[it]
+            #
+            # idx = task_iter[t] * self.N_way
+            # task_iter[t] += 1
+            #
+            # class_batch = self.class_list[t][idx:idx+self.N_way]
 
             # For each task-class tuple, select the next K examples and add them to the batch
             index_batch = []
-            for c in class_batch:  
+            for t, c in self.unique_task_classes:
+                # print(t,c)
+                # print(self.indices_per_class[t][c][start_index[t,c]:start_index[t,c]+self.K_shot])
                 index_batch.extend(self.indices_per_class[t][c][start_index[t,c]:start_index[t,c]+self.K_shot])
+
                 start_index[t,c] += self.K_shot
                 
             # If we return support+query set, sort them so that they are easy to split
             if self.include_query:
                 index_batch = index_batch[::2] + index_batch[1::2]
+
             yield [i.item() for i in index_batch]
 
     def __len__(self):
@@ -298,7 +309,8 @@ def split_batch(inputs, targets):
         "input_ids": query_input_ids,
         "token_type_ids": query_token_type_ids,
         "attention_mask": query_attention_mask
-    } 
+    }
+
     support_targets, query_targets = targets.chunk(2, dim=0)
     return support_inputs, query_inputs, support_targets, query_targets
 

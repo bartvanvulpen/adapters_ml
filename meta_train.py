@@ -15,7 +15,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 
 ## Dataset and sampler
-from sampler import TaskBatchSampler, dataset_from_tasks, DATASETS, TASK_IDS
+from sampler import TaskBatchSampler, dataset_from_tasks, DATASETS, TASK_IDS, FewShotBatchSampler, split_batch, DATALOADERS
 
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "../saved_models/tutorial16"
@@ -27,8 +27,8 @@ Mock model for testing purposes --> Replace with adaptor fusion model
 from transformers import BertForSequenceClassification
 
 def get_transformer_model(output_size):
-    model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=output_dim)
-    for param in model.bert.bert.parameters():
+    model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=output_size)
+    for param in model.bert.parameters():
         param.requires_grad = False
     return model
 
@@ -64,8 +64,13 @@ class ProtoMAML(pl.LightningModule):
             num_inner_steps - Number of inner loop updates to perform
         """
         super().__init__()
+
         self.save_hyperparameters()
         self.model = get_transformer_model(output_size=self.hparams.proto_dim)
+        # (ds, id2label), key = DATALOADERS['sst']
+        #
+        # model = load_bert_model(id2label)
+        # self.model = setup_ada_fusion(model)
         
         
     def configure_optimizers(self):
@@ -73,7 +78,8 @@ class ProtoMAML(pl.LightningModule):
         scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[140,180], gamma=0.1)
         return [optimizer], [scheduler]
         
-        
+
+
     def run_model(self, local_model, output_weight, output_bias, inputs, labels):
         
         # Execute a model with given output layer weights and inputs
@@ -137,28 +143,28 @@ class ProtoMAML(pl.LightningModule):
         self.model.zero_grad()
         
         # Determine gradients for batch of tasks
-        for task_batch in batch:
-            inputs, targets = task_batch
-            support_inputs, query_inputs, support_targets, query_targets = split_batch(inputs, targets)
-            
-            # Perform inner loop adaptation
-            local_model, output_weight, output_bias, classes = self.adapt_few_shot(support_inputs, support_targets)
-            
-            # Determine loss of query set
-            query_labels = (classes[None,:] == query_targets[:,None]).long().argmax(dim=-1)
-            loss, preds, acc = self.run_model(local_model, output_weight, output_bias, query_inputs, query_labels)
-            
-            # Calculate gradients for query set loss
-            if mode == "train":
-                loss.backward()
 
-                for p_global, p_local in zip(self.model.parameters(), local_model.parameters()):
-                    
-                    # First-order approx. -> add gradients of finetuned and base model
-                    p_global.grad += p_local.grad  
-            
-            accuracies.append(acc.mean().detach())
-            losses.append(loss.detach())
+        inputs, targets = batch
+        support_inputs, query_inputs, support_targets, query_targets = split_batch(inputs, targets)
+
+        # Perform inner loop adaptation
+        local_model, output_weight, output_bias, classes = self.adapt_few_shot(support_inputs, support_targets)
+
+        # Determine loss of query set
+        query_labels = (classes[None,:] == query_targets[:,None]).long().argmax(dim=-1)
+        loss, preds, acc = self.run_model(local_model, output_weight, output_bias, query_inputs, query_labels)
+
+        # Calculate gradients for query set loss
+        if mode == "train":
+            loss.backward()
+
+            for p_global, p_local in zip(self.model.parameters(), local_model.parameters()):
+
+                # First-order approx. -> add gradients of finetuned and base model
+                p_global.grad += p_local.grad
+
+        accuracies.append(acc.mean().detach())
+        losses.append(loss.detach())
         
         # Perform update of base model
         if mode == "train":
@@ -289,8 +295,8 @@ combined_dataset = {
     "labels": torch.hstack([ds["labels"] for ds in DATASETS.values()])
 }
 
-train_datasets = ["mnli", "qqp"]
-val_datasets = ["sst", "boolq"]
+train_datasets = ["mnli", "sst"]
+val_datasets = ["mnli", "qqp"]
 test_datasets = ["cb"]
 
 train_set = dataset_from_tasks(combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets]))
@@ -304,16 +310,24 @@ train_protomaml_sampler = TaskBatchSampler(
     train_set.labels, 
     include_query=True,
     N_way=N_WAY,
+    batch_size=1,
     K_shot=K_SHOT,
-    batch_size=16,
-    shuffle=False   # Set to False, otherwise you risk getting same class twice in dataset
+    shuffle=True   # Set to False, otherwise you risk getting same class twice in dataset
 )
 train_protomaml_loader = data.DataLoader(
     train_set, 
     batch_sampler=train_protomaml_sampler,
     collate_fn=train_protomaml_sampler.get_collate_fn(),
-    num_workers=2
+    num_workers=0
 )
+# x = next(iter(train_protomaml_loader))
+# x, y = x
+# s, q, st, qt = split_batch(x, y)
+# print(s)
+# print(q)
+# print(st)
+# print(qt)
+
 
 # Validation set
 val_protomaml_sampler = TaskBatchSampler(
@@ -329,17 +343,37 @@ val_protomaml_loader = data.DataLoader(
     val_set, 
     batch_sampler=val_protomaml_sampler,
     collate_fn=val_protomaml_sampler.get_collate_fn(),
-    num_workers=2
+    num_workers=0
 )
 
 """
 TRAIN THE MODEL !
 """
+from adapter_fusion import load_bert_model
+from transformers.adapters.composition import Fuse
+def setup_ada_fusion(model):
+    # Load the pre-trained adapters we want to fuse
+    model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False, config='pfeiffer')
+    model.load_adapter("sts/qqp@ukp", load_as="qqp", with_head=False, config='pfeiffer')
+    model.load_adapter("sentiment/sst-2@ukp", load_as="sst", with_head=False, config='pfeiffer')
+    model.load_adapter("comsense/winogrande@ukp", load_as="wgrande", with_head=False, config='pfeiffer')
+    model.load_adapter("qa/boolq@ukp", load_as="boolq", with_head=False, config='pfeiffer')
 
+    # Add a fusion layer for all loaded adapters
+    adapter_setup = Fuse("multinli", "qqp", "sst", "wgrande", "boolq")
+    model.add_adapter_fusion(adapter_setup)
+    model.set_active_adapters(adapter_setup)
+
+    # Add a classification head for our target task
+    # model.add_classification_head(f'{target_task}_classifier', num_labels=len(id2label))
+    model.train_adapter_fusion(adapter_setup)
+
+    return model
+print('Starting training...')
 protomaml_model = train_model(
     ProtoMAML, 
     proto_dim=64, 
-    lr=1e-3, 
+    lr=1e-3,
     lr_inner=0.1,
     lr_output=0.1,
     num_inner_steps=1,  # Often values between 1 and 10
