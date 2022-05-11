@@ -3,7 +3,7 @@
 from datasets import load_dataset
 from transformers import BertTokenizer
 
-def load_and_process_dataset(dataset, encode_batch, label_name, labels=None):
+def load_and_process_dataset(dataset, encode_batch, label_name, label2id=None, labels=None):
     # The transformers model expects the target class column to be named "labels"
     dataset = dataset.rename_column(label_name, "labels")
     # Encode the input data
@@ -57,11 +57,11 @@ def load_dataset_by_name(name):
         return load_specific_dataset("glue", "sst2", ["sentence"], "label")
     elif name == "wgrande":
         dataset = load_dataset("winogrande", "winogrande_xl")
-        label2id = {label: id for (id, label) in enumerate(["1", "2"])}
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        label2id = {"1": 0, "2": 1, "": 0}
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
-            all_encoded = {"input_ids": [], "attention_mask": [], "labels": []}
+            all_encoded = {"input_ids": [], "attention_mask": []}
             # Iterate through all examples in this batch
             for sentence, option1, option2 in zip(examples["sentence"], examples["option1"], examples["option2"]):
                 sentence_a = sentence.replace('_', option1)
@@ -72,11 +72,11 @@ def load_dataset_by_name(name):
                     max_length=180,
                     truncation=True,
                     padding="max_length",
+                    add_special_tokens=True
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
-                print(examples["labels"])
-                all_encoded["labels"].append(label2id[examples["labels"]])
+            all_encoded["labels"] = [label2id[label] if label in label2id else 0 for label in examples["labels"]]
             return all_encoded
         return load_and_process_dataset(dataset, encode_batch, "answer", labels=["1", "2"])
     elif name == "imdb":
@@ -85,9 +85,29 @@ def load_dataset_by_name(name):
         raise NotImplementedError()
         #return load_specific_dataset("hellaswag", "default", ["activity_label", "ctx", "endings"], "label")
     elif name == "siqa":
-        #TODO: test
-        raise NotImplementedError()
-        #return load_specific_multi_choice_dataset("social_i_qa", "default", ["context", "question"], ["answerA", "answerB", "answerC"], "label", labels=["1", "2", "3"])
+        dataset = load_dataset("social_i_qa", "default")
+        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        label2id = {"1": 0, "2": 1, "3": 2, "": 0}
+        def encode_batch(examples):
+            """Encodes a batch of input data using the model tokenizer."""
+            all_encoded = {"input_ids": [], "attention_mask": []}
+            # Iterate through all examples in this batch
+            for context, question, answerA, answerB, answerC in zip(examples["context"], examples["question"], examples["answerA"], examples["answerB"], examples["answerC"]):
+                sentences_a = [context + " " + question for _ in range(3)]
+                sentences_b = [answerA, answerB, answerC]
+                encoded = tokenizer(
+                    sentences_a,
+                    sentences_b,
+                    max_length=180,
+                    truncation=True,
+                    padding="max_length",
+                    add_special_tokens=True
+                )
+                all_encoded["input_ids"].append(encoded["input_ids"])
+                all_encoded["attention_mask"].append(encoded["attention_mask"])
+            all_encoded["labels"] = [label2id[label] if label in label2id else 0 for label in examples["labels"]]
+            return all_encoded
+        return load_and_process_dataset(dataset, encode_batch, "label", labels=["1", "2", "3"])
     elif name == "cqa":
         #TODO: test
         raise NotImplementedError()
