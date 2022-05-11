@@ -26,7 +26,7 @@ from sampler import (
 )
 
 ## Path to the folder where the pretrained models are saved
-CHECKPOINT_PATH = "../saved_models/tutorial16"
+CHECKPOINT_PATH = "checkpoints_meta_learning/"
 
 
 """
@@ -220,13 +220,12 @@ class ProtoMAML(pl.LightningModule):
             # Calculate gradients for query set loss
             if mode == "train":
                 loss.backward()
+                # only update adapter fusion weights
+                for (name_glob, p_glob), (name_local, p_local) in zip(self.model.named_parameters(), local_model.named_parameters()):
+                    if p_glob.requires_grad and p_local.requires_grad:
 
-                for p_global, p_local in zip(
-                    self.model.parameters(), local_model.parameters()
-                ):
-
-                    # First-order approx. -> add gradients of finetuned and base model
-                    p_global.grad += p_local.grad
+                        # First-order approx. -> add gradients of finetuned and base model
+                        p_glob.grad += p_local.grad
 
             accuracies.append(acc.mean().detach())
             losses.append(loss.detach())
@@ -258,7 +257,8 @@ TRAINING AND TESTING FUNCTIONS
 
 def train_model(model_class, train_loader, val_loader, **kwargs):
 
-    trainer = pl.Trainer(fast_dev_run=True,
+    debug = False
+    trainer = pl.Trainer(fast_dev_run=debug,
         default_root_dir=os.path.join(CHECKPOINT_PATH, model_class.__name__),
         gpus=1 if torch.cuda.is_available() else 0,
         max_epochs=200,
@@ -280,10 +280,12 @@ def train_model(model_class, train_loader, val_loader, **kwargs):
         pl.seed_everything(42)  # To be reproducable
         model = model_class(**kwargs)
         trainer.fit(model, train_loader, val_loader)
-        # Load best checkpoint after training
-        model = model_class.load_from_checkpoint(
-            trainer.checkpoint_callback.best_model_path
-        )
+
+        if debug == False:
+            # Load best checkpoint after training
+            model = model_class.load_from_checkpoint(
+                trainer.checkpoint_callback.best_model_path
+            )
 
     return model
 
@@ -373,7 +375,7 @@ combined_dataset = {
 
 train_datasets = ["boolq"]
 val_datasets = ["boolq"]
-# test_datasets = ["cb"]
+test_datasets = ["cb"]
 
 print('Creating datasets...')
 train_set = dataset_from_tasks(
@@ -454,23 +456,23 @@ protomaml_model = train_model(
 """
 TEST THE MODEL
 """
-protomaml_result_file = os.path.join(CHECKPOINT_PATH, "protomaml_fewshot.json")
-
-if os.path.isfile(protomaml_result_file):
-    # Load pre-computed results
-    with open(protomaml_result_file, "r") as f:
-        protomaml_accuracies = json.load(f)
-    protomaml_accuracies = {int(k): v for k, v in protomaml_accuracies.items()}
-else:
-    # Perform experiments
-    protomaml_accuracies = dict()
-    for k in [2, 4, 8, 16, 32]:
-        protomaml_accuracies[k] = test_protomaml(protomaml_model, test_set, k_shot=k)
-    # Export results
-    with open(protomaml_result_file, "w") as f:
-        json.dump(protomaml_accuracies, f, indent=4)
-
-for k in protomaml_accuracies:
-    print(
-        f"Accuracy for k={k}: {100.0*protomaml_accuracies[k][0]:4.2f}% (+-{100.0*protomaml_accuracies[k][1]:4.2f}%)"
-    )
+# protomaml_result_file = os.path.join(CHECKPOINT_PATH, "protomaml_fewshot.json")
+#
+# if os.path.isfile(protomaml_result_file):
+#     # Load pre-computed results
+#     with open(protomaml_result_file, "r") as f:
+#         protomaml_accuracies = json.load(f)
+#     protomaml_accuracies = {int(k): v for k, v in protomaml_accuracies.items()}
+# else:
+#     # Perform experiments
+#     protomaml_accuracies = dict()
+#     for k in [2, 4, 8, 16, 32]:
+#         protomaml_accuracies[k] = test_protomaml(protomaml_model, test_set, k_shot=k)
+#     # Export results
+#     with open(protomaml_result_file, "w") as f:
+#         json.dump(protomaml_accuracies, f, indent=4)
+#
+# for k in protomaml_accuracies:
+#     print(
+#         f"Accuracy for k={k}: {100.0*protomaml_accuracies[k][0]:4.2f}% (+-{100.0*protomaml_accuracies[k][1]:4.2f}%)"
+#     )

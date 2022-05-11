@@ -1,0 +1,1094 @@
+Reusing dataset glue (/home/lcur1216/.cache/huggingface/datasets/glue/sst2/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad)
+  0%|          | 0/3 [00:00<?, ?it/s]100%|##########| 3/3 [00:00<00:00, 191.73it/s]
+Loading cached processed dataset at /home/lcur1216/.cache/huggingface/datasets/glue/sst2/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad/cache-033eaeed120ed8e9.arrow
+Loading cached processed dataset at /home/lcur1216/.cache/huggingface/datasets/glue/sst2/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad/cache-544031b72e33515b.arrow
+Loading cached processed dataset at /home/lcur1216/.cache/huggingface/datasets/glue/sst2/1.0.0/dacbe3125aa31d7f70367a07a8a9e72a5a0bfeb5fc42e75c9db75b96da6053ad/cache-bf8be3d37fbd59ab.arrow
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/transformers/adapters/models/bert.py:245: FutureWarning: This class has been renamed to `BertAdapterModel` in v3. Please use the new class instead as this class might be removed in a future version.
+  warnings.warn(
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/transformers/adapters/models/bert.py:223: FutureWarning: This class has been renamed to `BertAdapterModel` in v3. Please use the new class instead as this class might be removed in a future version.
+  warnings.warn(
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/transformers/optimization.py:306: FutureWarning: This implementation of AdamW is deprecated and will be removed in a future version. Use the PyTorch implementation torch.optim.AdamW instead, or set `no_deprecation_warning=True` to disable this warning
+  warnings.warn(
+***** Running training *****
+  Num examples = 67349
+  Num Epochs = 10
+  Instantaneous batch size per device = 8
+  Total train batch size (w. parallel, distributed & accumulation) = 16
+  Gradient Accumulation steps = 1
+  Total optimization steps = 42100
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-4210
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-4210/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-4210/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-8420
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-8420/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-8420/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-12630
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-12630/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-12630/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-16840
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-16840/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-16840/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-21050
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-21050/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-21050/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-25260
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-25260/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-25260/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-29470
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-29470/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-29470/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-33680
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-33680/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-33680/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-37890
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-37890/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-37890/sst_classifier/pytorch_model_head.bin
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+Saving model checkpoint to training_output/sst/checkpoints/checkpoint-42100
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/multinli/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/multinli/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/qqp/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/qqp/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/sst/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/sst/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/wgrande/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/wgrande/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/boolq/adapter_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/boolq/pytorch_adapter.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/multinli,qqp,sst,wgrande,boolq/adapter_fusion_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/multinli,qqp,sst,wgrande,boolq/pytorch_model_adapter_fusion.bin
+Configuration saved in training_output/sst/checkpoints/checkpoint-42100/sst_classifier/head_config.json
+Module weights saved in training_output/sst/checkpoints/checkpoint-42100/sst_classifier/pytorch_model_head.bin
+
+
+Training completed. Do not forget to share your model on huggingface.co/models =)
+
+
+***** Running Evaluation *****
+  Num examples = 872
+  Batch size = 16
+/home/lcur1216/.conda/envs/ada_gpu/lib/python3.8/site-packages/torch/nn/parallel/_functions.py:68: UserWarning: Was asked to gather along dimension 0, but all input tensors were scalars; will instead unsqueeze and return a vector.
+  warnings.warn('Was asked to gather along dimension 0, but all '
+Configuration saved in saved/fusion/sst/adapter_fusion_config.json
+Module weights saved in saved/fusion/sst/pytorch_model_adapter_fusion.bin
+Configuration saved in saved/sep_adapters/sst/multinli/adapter_config.json
+Module weights saved in saved/sep_adapters/sst/multinli/pytorch_adapter.bin
+Configuration saved in saved/sep_adapters/sst/qqp/adapter_config.json
+Module weights saved in saved/sep_adapters/sst/qqp/pytorch_adapter.bin
+Configuration saved in saved/sep_adapters/sst/sst/adapter_config.json
+Module weights saved in saved/sep_adapters/sst/sst/pytorch_adapter.bin
+Configuration saved in saved/sep_adapters/sst/wgrande/adapter_config.json
+Module weights saved in saved/sep_adapters/sst/wgrande/pytorch_adapter.bin
+Configuration saved in saved/sep_adapters/sst/boolq/adapter_config.json
+Module weights saved in saved/sep_adapters/sst/boolq/pytorch_adapter.bin
+{'loss': 0.2655, 'learning_rate': 5e-05, 'epoch': 0.01}
+{'loss': 0.1365, 'learning_rate': 5e-05, 'epoch': 0.02}
+{'loss': 0.0778, 'learning_rate': 5e-05, 'epoch': 0.04}
+{'loss': 0.0985, 'learning_rate': 5e-05, 'epoch': 0.05}
+{'loss': 0.0826, 'learning_rate': 5e-05, 'epoch': 0.06}
+{'loss': 0.0949, 'learning_rate': 5e-05, 'epoch': 0.07}
+{'loss': 0.089, 'learning_rate': 5e-05, 'epoch': 0.08}
+{'loss': 0.0877, 'learning_rate': 5e-05, 'epoch': 0.1}
+{'loss': 0.06, 'learning_rate': 5e-05, 'epoch': 0.11}
+{'loss': 0.0774, 'learning_rate': 5e-05, 'epoch': 0.12}
+{'loss': 0.107, 'learning_rate': 5e-05, 'epoch': 0.13}
+{'loss': 0.0696, 'learning_rate': 5e-05, 'epoch': 0.14}
+{'loss': 0.0754, 'learning_rate': 5e-05, 'epoch': 0.15}
+{'loss': 0.0617, 'learning_rate': 5e-05, 'epoch': 0.17}
+{'loss': 0.1094, 'learning_rate': 5e-05, 'epoch': 0.18}
+{'loss': 0.0712, 'learning_rate': 5e-05, 'epoch': 0.19}
+{'loss': 0.1044, 'learning_rate': 5e-05, 'epoch': 0.2}
+{'loss': 0.0726, 'learning_rate': 5e-05, 'epoch': 0.21}
+{'loss': 0.0938, 'learning_rate': 5e-05, 'epoch': 0.23}
+{'loss': 0.0593, 'learning_rate': 5e-05, 'epoch': 0.24}
+{'loss': 0.0594, 'learning_rate': 5e-05, 'epoch': 0.25}
+{'loss': 0.0922, 'learning_rate': 5e-05, 'epoch': 0.26}
+{'loss': 0.065, 'learning_rate': 5e-05, 'epoch': 0.27}
+{'loss': 0.0974, 'learning_rate': 5e-05, 'epoch': 0.29}
+{'loss': 0.0784, 'learning_rate': 5e-05, 'epoch': 0.3}
+{'loss': 0.0444, 'learning_rate': 5e-05, 'epoch': 0.31}
+{'loss': 0.0611, 'learning_rate': 5e-05, 'epoch': 0.32}
+{'loss': 0.0775, 'learning_rate': 5e-05, 'epoch': 0.33}
+{'loss': 0.1018, 'learning_rate': 5e-05, 'epoch': 0.34}
+{'loss': 0.0768, 'learning_rate': 5e-05, 'epoch': 0.36}
+{'loss': 0.0939, 'learning_rate': 5e-05, 'epoch': 0.37}
+{'loss': 0.0673, 'learning_rate': 5e-05, 'epoch': 0.38}
+{'loss': 0.0939, 'learning_rate': 5e-05, 'epoch': 0.39}
+{'loss': 0.0798, 'learning_rate': 5e-05, 'epoch': 0.4}
+{'loss': 0.0909, 'learning_rate': 5e-05, 'epoch': 0.42}
+{'loss': 0.0759, 'learning_rate': 5e-05, 'epoch': 0.43}
+{'loss': 0.0756, 'learning_rate': 5e-05, 'epoch': 0.44}
+{'loss': 0.1068, 'learning_rate': 5e-05, 'epoch': 0.45}
+{'loss': 0.0536, 'learning_rate': 5e-05, 'epoch': 0.46}
+{'loss': 0.1091, 'learning_rate': 5e-05, 'epoch': 0.48}
+{'loss': 0.0785, 'learning_rate': 5e-05, 'epoch': 0.49}
+{'loss': 0.058, 'learning_rate': 5e-05, 'epoch': 0.5}
+{'loss': 0.0664, 'learning_rate': 5e-05, 'epoch': 0.51}
+{'loss': 0.0693, 'learning_rate': 5e-05, 'epoch': 0.52}
+{'loss': 0.0548, 'learning_rate': 5e-05, 'epoch': 0.53}
+{'loss': 0.0546, 'learning_rate': 5e-05, 'epoch': 0.55}
+{'loss': 0.0975, 'learning_rate': 5e-05, 'epoch': 0.56}
+{'loss': 0.0622, 'learning_rate': 5e-05, 'epoch': 0.57}
+{'loss': 0.0896, 'learning_rate': 5e-05, 'epoch': 0.58}
+{'loss': 0.0781, 'learning_rate': 5e-05, 'epoch': 0.59}
+{'loss': 0.0647, 'learning_rate': 5e-05, 'epoch': 0.61}
+{'loss': 0.0709, 'learning_rate': 5e-05, 'epoch': 0.62}
+{'loss': 0.0784, 'learning_rate': 5e-05, 'epoch': 0.63}
+{'loss': 0.0893, 'learning_rate': 5e-05, 'epoch': 0.64}
+{'loss': 0.099, 'learning_rate': 5e-05, 'epoch': 0.65}
+{'loss': 0.0533, 'learning_rate': 5e-05, 'epoch': 0.67}
+{'loss': 0.069, 'learning_rate': 5e-05, 'epoch': 0.68}
+{'loss': 0.0689, 'learning_rate': 5e-05, 'epoch': 0.69}
+{'loss': 0.1082, 'learning_rate': 5e-05, 'epoch': 0.7}
+{'loss': 0.067, 'learning_rate': 5e-05, 'epoch': 0.71}
+{'loss': 0.0756, 'learning_rate': 5e-05, 'epoch': 0.72}
+{'loss': 0.0646, 'learning_rate': 5e-05, 'epoch': 0.74}
+{'loss': 0.0842, 'learning_rate': 5e-05, 'epoch': 0.75}
+{'loss': 0.0731, 'learning_rate': 5e-05, 'epoch': 0.76}
+{'loss': 0.0592, 'learning_rate': 5e-05, 'epoch': 0.77}
+{'loss': 0.097, 'learning_rate': 5e-05, 'epoch': 0.78}
+{'loss': 0.0404, 'learning_rate': 5e-05, 'epoch': 0.8}
+{'loss': 0.0869, 'learning_rate': 5e-05, 'epoch': 0.81}
+{'loss': 0.0695, 'learning_rate': 5e-05, 'epoch': 0.82}
+{'loss': 0.0907, 'learning_rate': 5e-05, 'epoch': 0.83}
+{'loss': 0.0413, 'learning_rate': 5e-05, 'epoch': 0.84}
+{'loss': 0.0869, 'learning_rate': 5e-05, 'epoch': 0.86}
+{'loss': 0.1008, 'learning_rate': 5e-05, 'epoch': 0.87}
+{'loss': 0.0629, 'learning_rate': 5e-05, 'epoch': 0.88}
+{'loss': 0.1004, 'learning_rate': 5e-05, 'epoch': 0.89}
+{'loss': 0.0785, 'learning_rate': 5e-05, 'epoch': 0.9}
+{'loss': 0.0754, 'learning_rate': 5e-05, 'epoch': 0.91}
+{'loss': 0.0739, 'learning_rate': 5e-05, 'epoch': 0.93}
+{'loss': 0.092, 'learning_rate': 5e-05, 'epoch': 0.94}
+{'loss': 0.0846, 'learning_rate': 5e-05, 'epoch': 0.95}
+{'loss': 0.1072, 'learning_rate': 5e-05, 'epoch': 0.96}
+{'loss': 0.0915, 'learning_rate': 5e-05, 'epoch': 0.97}
+{'loss': 0.0852, 'learning_rate': 5e-05, 'epoch': 0.99}
+{'loss': 0.0822, 'learning_rate': 5e-05, 'epoch': 1.0}
+{'eval_loss': 0.3780609667301178, 'eval_acc': 0.9185779816513762, 'eval_runtime': 9.6707, 'eval_samples_per_second': 90.169, 'eval_steps_per_second': 5.687, 'epoch': 1.0}
+{'loss': 0.0862, 'learning_rate': 5e-05, 'epoch': 1.01}
+{'loss': 0.0585, 'learning_rate': 5e-05, 'epoch': 1.02}
+{'loss': 0.0766, 'learning_rate': 5e-05, 'epoch': 1.03}
+{'loss': 0.0864, 'learning_rate': 5e-05, 'epoch': 1.05}
+{'loss': 0.0554, 'learning_rate': 5e-05, 'epoch': 1.06}
+{'loss': 0.0862, 'learning_rate': 5e-05, 'epoch': 1.07}
+{'loss': 0.0711, 'learning_rate': 5e-05, 'epoch': 1.08}
+{'loss': 0.0696, 'learning_rate': 5e-05, 'epoch': 1.09}
+{'loss': 0.0725, 'learning_rate': 5e-05, 'epoch': 1.1}
+{'loss': 0.0912, 'learning_rate': 5e-05, 'epoch': 1.12}
+{'loss': 0.0959, 'learning_rate': 5e-05, 'epoch': 1.13}
+{'loss': 0.0609, 'learning_rate': 5e-05, 'epoch': 1.14}
+{'loss': 0.0898, 'learning_rate': 5e-05, 'epoch': 1.15}
+{'loss': 0.0866, 'learning_rate': 5e-05, 'epoch': 1.16}
+{'loss': 0.0977, 'learning_rate': 5e-05, 'epoch': 1.18}
+{'loss': 0.0793, 'learning_rate': 5e-05, 'epoch': 1.19}
+{'loss': 0.1033, 'learning_rate': 5e-05, 'epoch': 1.2}
+{'loss': 0.0815, 'learning_rate': 5e-05, 'epoch': 1.21}
+{'loss': 0.0916, 'learning_rate': 5e-05, 'epoch': 1.22}
+{'loss': 0.0592, 'learning_rate': 5e-05, 'epoch': 1.24}
+{'loss': 0.073, 'learning_rate': 5e-05, 'epoch': 1.25}
+{'loss': 0.0826, 'learning_rate': 5e-05, 'epoch': 1.26}
+{'loss': 0.0577, 'learning_rate': 5e-05, 'epoch': 1.27}
+{'loss': 0.092, 'learning_rate': 5e-05, 'epoch': 1.28}
+{'loss': 0.0718, 'learning_rate': 5e-05, 'epoch': 1.29}
+{'loss': 0.0924, 'learning_rate': 5e-05, 'epoch': 1.31}
+{'loss': 0.071, 'learning_rate': 5e-05, 'epoch': 1.32}
+{'loss': 0.1208, 'learning_rate': 5e-05, 'epoch': 1.33}
+{'loss': 0.0576, 'learning_rate': 5e-05, 'epoch': 1.34}
+{'loss': 0.0603, 'learning_rate': 5e-05, 'epoch': 1.35}
+{'loss': 0.0814, 'learning_rate': 5e-05, 'epoch': 1.37}
+{'loss': 0.0765, 'learning_rate': 5e-05, 'epoch': 1.38}
+{'loss': 0.0508, 'learning_rate': 5e-05, 'epoch': 1.39}
+{'loss': 0.0784, 'learning_rate': 5e-05, 'epoch': 1.4}
+{'loss': 0.0711, 'learning_rate': 5e-05, 'epoch': 1.41}
+{'loss': 0.1147, 'learning_rate': 5e-05, 'epoch': 1.43}
+{'loss': 0.0936, 'learning_rate': 5e-05, 'epoch': 1.44}
+{'loss': 0.0868, 'learning_rate': 5e-05, 'epoch': 1.45}
+{'loss': 0.0764, 'learning_rate': 5e-05, 'epoch': 1.46}
+{'loss': 0.0611, 'learning_rate': 5e-05, 'epoch': 1.47}
+{'loss': 0.0662, 'learning_rate': 5e-05, 'epoch': 1.48}
+{'loss': 0.0888, 'learning_rate': 5e-05, 'epoch': 1.5}
+{'loss': 0.0432, 'learning_rate': 5e-05, 'epoch': 1.51}
+{'loss': 0.0872, 'learning_rate': 5e-05, 'epoch': 1.52}
+{'loss': 0.0527, 'learning_rate': 5e-05, 'epoch': 1.53}
+{'loss': 0.0692, 'learning_rate': 5e-05, 'epoch': 1.54}
+{'loss': 0.0946, 'learning_rate': 5e-05, 'epoch': 1.56}
+{'loss': 0.1109, 'learning_rate': 5e-05, 'epoch': 1.57}
+{'loss': 0.057, 'learning_rate': 5e-05, 'epoch': 1.58}
+{'loss': 0.0563, 'learning_rate': 5e-05, 'epoch': 1.59}
+{'loss': 0.083, 'learning_rate': 5e-05, 'epoch': 1.6}
+{'loss': 0.0693, 'learning_rate': 5e-05, 'epoch': 1.62}
+{'loss': 0.0668, 'learning_rate': 5e-05, 'epoch': 1.63}
+{'loss': 0.0918, 'learning_rate': 5e-05, 'epoch': 1.64}
+{'loss': 0.0764, 'learning_rate': 5e-05, 'epoch': 1.65}
+{'loss': 0.0906, 'learning_rate': 5e-05, 'epoch': 1.66}
+{'loss': 0.054, 'learning_rate': 5e-05, 'epoch': 1.67}
+{'loss': 0.0855, 'learning_rate': 5e-05, 'epoch': 1.69}
+{'loss': 0.0711, 'learning_rate': 5e-05, 'epoch': 1.7}
+{'loss': 0.0562, 'learning_rate': 5e-05, 'epoch': 1.71}
+{'loss': 0.0991, 'learning_rate': 5e-05, 'epoch': 1.72}
+{'loss': 0.0647, 'learning_rate': 5e-05, 'epoch': 1.73}
+{'loss': 0.0927, 'learning_rate': 5e-05, 'epoch': 1.75}
+{'loss': 0.0784, 'learning_rate': 5e-05, 'epoch': 1.76}
+{'loss': 0.0671, 'learning_rate': 5e-05, 'epoch': 1.77}
+{'loss': 0.1197, 'learning_rate': 5e-05, 'epoch': 1.78}
+{'loss': 0.0737, 'learning_rate': 5e-05, 'epoch': 1.79}
+{'loss': 0.0805, 'learning_rate': 5e-05, 'epoch': 1.81}
+{'loss': 0.0819, 'learning_rate': 5e-05, 'epoch': 1.82}
+{'loss': 0.0688, 'learning_rate': 5e-05, 'epoch': 1.83}
+{'loss': 0.1076, 'learning_rate': 5e-05, 'epoch': 1.84}
+{'loss': 0.0941, 'learning_rate': 5e-05, 'epoch': 1.85}
+{'loss': 0.0524, 'learning_rate': 5e-05, 'epoch': 1.86}
+{'loss': 0.0991, 'learning_rate': 5e-05, 'epoch': 1.88}
+{'loss': 0.0583, 'learning_rate': 5e-05, 'epoch': 1.89}
+{'loss': 0.0501, 'learning_rate': 5e-05, 'epoch': 1.9}
+{'loss': 0.0937, 'learning_rate': 5e-05, 'epoch': 1.91}
+{'loss': 0.0734, 'learning_rate': 5e-05, 'epoch': 1.92}
+{'loss': 0.0684, 'learning_rate': 5e-05, 'epoch': 1.94}
+{'loss': 0.0757, 'learning_rate': 5e-05, 'epoch': 1.95}
+{'loss': 0.0568, 'learning_rate': 5e-05, 'epoch': 1.96}
+{'loss': 0.0604, 'learning_rate': 5e-05, 'epoch': 1.97}
+{'loss': 0.0754, 'learning_rate': 5e-05, 'epoch': 1.98}
+{'loss': 0.0684, 'learning_rate': 5e-05, 'epoch': 2.0}
+{'eval_loss': 0.3378092348575592, 'eval_acc': 0.9174311926605505, 'eval_runtime': 9.8105, 'eval_samples_per_second': 88.885, 'eval_steps_per_second': 5.606, 'epoch': 2.0}
+{'loss': 0.0542, 'learning_rate': 5e-05, 'epoch': 2.01}
+{'loss': 0.0831, 'learning_rate': 5e-05, 'epoch': 2.02}
+{'loss': 0.0755, 'learning_rate': 5e-05, 'epoch': 2.03}
+{'loss': 0.0452, 'learning_rate': 5e-05, 'epoch': 2.04}
+{'loss': 0.055, 'learning_rate': 5e-05, 'epoch': 2.05}
+{'loss': 0.0828, 'learning_rate': 5e-05, 'epoch': 2.07}
+{'loss': 0.0648, 'learning_rate': 5e-05, 'epoch': 2.08}
+{'loss': 0.0688, 'learning_rate': 5e-05, 'epoch': 2.09}
+{'loss': 0.0835, 'learning_rate': 5e-05, 'epoch': 2.1}
+{'loss': 0.0281, 'learning_rate': 5e-05, 'epoch': 2.11}
+{'loss': 0.0918, 'learning_rate': 5e-05, 'epoch': 2.13}
+{'loss': 0.1122, 'learning_rate': 5e-05, 'epoch': 2.14}
+{'loss': 0.0621, 'learning_rate': 5e-05, 'epoch': 2.15}
+{'loss': 0.0841, 'learning_rate': 5e-05, 'epoch': 2.16}
+{'loss': 0.083, 'learning_rate': 5e-05, 'epoch': 2.17}
+{'loss': 0.0501, 'learning_rate': 5e-05, 'epoch': 2.19}
+{'loss': 0.0575, 'learning_rate': 5e-05, 'epoch': 2.2}
+{'loss': 0.0882, 'learning_rate': 5e-05, 'epoch': 2.21}
+{'loss': 0.1092, 'learning_rate': 5e-05, 'epoch': 2.22}
+{'loss': 0.0785, 'learning_rate': 5e-05, 'epoch': 2.23}
+{'loss': 0.0521, 'learning_rate': 5e-05, 'epoch': 2.24}
+{'loss': 0.0543, 'learning_rate': 5e-05, 'epoch': 2.26}
+{'loss': 0.0944, 'learning_rate': 5e-05, 'epoch': 2.27}
+{'loss': 0.0739, 'learning_rate': 5e-05, 'epoch': 2.28}
+{'loss': 0.082, 'learning_rate': 5e-05, 'epoch': 2.29}
+{'loss': 0.0983, 'learning_rate': 5e-05, 'epoch': 2.3}
+{'loss': 0.0684, 'learning_rate': 5e-05, 'epoch': 2.32}
+{'loss': 0.0564, 'learning_rate': 5e-05, 'epoch': 2.33}
+{'loss': 0.0764, 'learning_rate': 5e-05, 'epoch': 2.34}
+{'loss': 0.0494, 'learning_rate': 5e-05, 'epoch': 2.35}
+{'loss': 0.0498, 'learning_rate': 5e-05, 'epoch': 2.36}
+{'loss': 0.068, 'learning_rate': 5e-05, 'epoch': 2.38}
+{'loss': 0.0828, 'learning_rate': 5e-05, 'epoch': 2.39}
+{'loss': 0.0859, 'learning_rate': 5e-05, 'epoch': 2.4}
+{'loss': 0.0572, 'learning_rate': 5e-05, 'epoch': 2.41}
+{'loss': 0.0855, 'learning_rate': 5e-05, 'epoch': 2.42}
+{'loss': 0.0815, 'learning_rate': 5e-05, 'epoch': 2.43}
+{'loss': 0.0616, 'learning_rate': 5e-05, 'epoch': 2.45}
+{'loss': 0.1003, 'learning_rate': 5e-05, 'epoch': 2.46}
+{'loss': 0.0621, 'learning_rate': 5e-05, 'epoch': 2.47}
+{'loss': 0.0867, 'learning_rate': 5e-05, 'epoch': 2.48}
+{'loss': 0.0599, 'learning_rate': 5e-05, 'epoch': 2.49}
+{'loss': 0.0635, 'learning_rate': 5e-05, 'epoch': 2.51}
+{'loss': 0.1019, 'learning_rate': 5e-05, 'epoch': 2.52}
+{'loss': 0.094, 'learning_rate': 5e-05, 'epoch': 2.53}
+{'loss': 0.0809, 'learning_rate': 5e-05, 'epoch': 2.54}
+{'loss': 0.0606, 'learning_rate': 5e-05, 'epoch': 2.55}
+{'loss': 0.0694, 'learning_rate': 5e-05, 'epoch': 2.57}
+{'loss': 0.0825, 'learning_rate': 5e-05, 'epoch': 2.58}
+{'loss': 0.067, 'learning_rate': 5e-05, 'epoch': 2.59}
+{'loss': 0.0656, 'learning_rate': 5e-05, 'epoch': 2.6}
+{'loss': 0.0693, 'learning_rate': 5e-05, 'epoch': 2.61}
+{'loss': 0.059, 'learning_rate': 5e-05, 'epoch': 2.62}
+{'loss': 0.0639, 'learning_rate': 5e-05, 'epoch': 2.64}
+{'loss': 0.0875, 'learning_rate': 5e-05, 'epoch': 2.65}
+{'loss': 0.1079, 'learning_rate': 5e-05, 'epoch': 2.66}
+{'loss': 0.086, 'learning_rate': 5e-05, 'epoch': 2.67}
+{'loss': 0.0728, 'learning_rate': 5e-05, 'epoch': 2.68}
+{'loss': 0.0652, 'learning_rate': 5e-05, 'epoch': 2.7}
+{'loss': 0.0875, 'learning_rate': 5e-05, 'epoch': 2.71}
+{'loss': 0.0751, 'learning_rate': 5e-05, 'epoch': 2.72}
+{'loss': 0.0988, 'learning_rate': 5e-05, 'epoch': 2.73}
+{'loss': 0.1005, 'learning_rate': 5e-05, 'epoch': 2.74}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 2.76}
+{'loss': 0.0796, 'learning_rate': 5e-05, 'epoch': 2.77}
+{'loss': 0.0879, 'learning_rate': 5e-05, 'epoch': 2.78}
+{'loss': 0.0656, 'learning_rate': 5e-05, 'epoch': 2.79}
+{'loss': 0.0662, 'learning_rate': 5e-05, 'epoch': 2.8}
+{'loss': 0.0543, 'learning_rate': 5e-05, 'epoch': 2.81}
+{'loss': 0.0736, 'learning_rate': 5e-05, 'epoch': 2.83}
+{'loss': 0.0799, 'learning_rate': 5e-05, 'epoch': 2.84}
+{'loss': 0.0738, 'learning_rate': 5e-05, 'epoch': 2.85}
+{'loss': 0.0595, 'learning_rate': 5e-05, 'epoch': 2.86}
+{'loss': 0.095, 'learning_rate': 5e-05, 'epoch': 2.87}
+{'loss': 0.1245, 'learning_rate': 5e-05, 'epoch': 2.89}
+{'loss': 0.0817, 'learning_rate': 5e-05, 'epoch': 2.9}
+{'loss': 0.1037, 'learning_rate': 5e-05, 'epoch': 2.91}
+{'loss': 0.0623, 'learning_rate': 5e-05, 'epoch': 2.92}
+{'loss': 0.0931, 'learning_rate': 5e-05, 'epoch': 2.93}
+{'loss': 0.0889, 'learning_rate': 5e-05, 'epoch': 2.95}
+{'loss': 0.0868, 'learning_rate': 5e-05, 'epoch': 2.96}
+{'loss': 0.0689, 'learning_rate': 5e-05, 'epoch': 2.97}
+{'loss': 0.0527, 'learning_rate': 5e-05, 'epoch': 2.98}
+{'loss': 0.0961, 'learning_rate': 5e-05, 'epoch': 2.99}
+{'eval_loss': 0.3721417188644409, 'eval_acc': 0.9231651376146789, 'eval_runtime': 9.8169, 'eval_samples_per_second': 88.827, 'eval_steps_per_second': 5.603, 'epoch': 3.0}
+{'loss': 0.0494, 'learning_rate': 5e-05, 'epoch': 3.0}
+{'loss': 0.082, 'learning_rate': 5e-05, 'epoch': 3.02}
+{'loss': 0.0536, 'learning_rate': 5e-05, 'epoch': 3.03}
+{'loss': 0.0773, 'learning_rate': 5e-05, 'epoch': 3.04}
+{'loss': 0.0818, 'learning_rate': 5e-05, 'epoch': 3.05}
+{'loss': 0.0552, 'learning_rate': 5e-05, 'epoch': 3.06}
+{'loss': 0.0747, 'learning_rate': 5e-05, 'epoch': 3.08}
+{'loss': 0.0752, 'learning_rate': 5e-05, 'epoch': 3.09}
+{'loss': 0.0769, 'learning_rate': 5e-05, 'epoch': 3.1}
+{'loss': 0.0925, 'learning_rate': 5e-05, 'epoch': 3.11}
+{'loss': 0.0908, 'learning_rate': 5e-05, 'epoch': 3.12}
+{'loss': 0.0635, 'learning_rate': 5e-05, 'epoch': 3.14}
+{'loss': 0.0858, 'learning_rate': 5e-05, 'epoch': 3.15}
+{'loss': 0.0858, 'learning_rate': 5e-05, 'epoch': 3.16}
+{'loss': 0.0752, 'learning_rate': 5e-05, 'epoch': 3.17}
+{'loss': 0.0934, 'learning_rate': 5e-05, 'epoch': 3.18}
+{'loss': 0.0879, 'learning_rate': 5e-05, 'epoch': 3.19}
+{'loss': 0.0895, 'learning_rate': 5e-05, 'epoch': 3.21}
+{'loss': 0.0875, 'learning_rate': 5e-05, 'epoch': 3.22}
+{'loss': 0.0627, 'learning_rate': 5e-05, 'epoch': 3.23}
+{'loss': 0.0745, 'learning_rate': 5e-05, 'epoch': 3.24}
+{'loss': 0.0696, 'learning_rate': 5e-05, 'epoch': 3.25}
+{'loss': 0.0927, 'learning_rate': 5e-05, 'epoch': 3.27}
+{'loss': 0.0779, 'learning_rate': 5e-05, 'epoch': 3.28}
+{'loss': 0.0827, 'learning_rate': 5e-05, 'epoch': 3.29}
+{'loss': 0.0813, 'learning_rate': 5e-05, 'epoch': 3.3}
+{'loss': 0.083, 'learning_rate': 5e-05, 'epoch': 3.31}
+{'loss': 0.0611, 'learning_rate': 5e-05, 'epoch': 3.33}
+{'loss': 0.0869, 'learning_rate': 5e-05, 'epoch': 3.34}
+{'loss': 0.0604, 'learning_rate': 5e-05, 'epoch': 3.35}
+{'loss': 0.091, 'learning_rate': 5e-05, 'epoch': 3.36}
+{'loss': 0.0903, 'learning_rate': 5e-05, 'epoch': 3.37}
+{'loss': 0.0747, 'learning_rate': 5e-05, 'epoch': 3.38}
+{'loss': 0.0792, 'learning_rate': 5e-05, 'epoch': 3.4}
+{'loss': 0.0866, 'learning_rate': 5e-05, 'epoch': 3.41}
+{'loss': 0.0905, 'learning_rate': 5e-05, 'epoch': 3.42}
+{'loss': 0.0958, 'learning_rate': 5e-05, 'epoch': 3.43}
+{'loss': 0.0614, 'learning_rate': 5e-05, 'epoch': 3.44}
+{'loss': 0.1012, 'learning_rate': 5e-05, 'epoch': 3.46}
+{'loss': 0.0368, 'learning_rate': 5e-05, 'epoch': 3.47}
+{'loss': 0.067, 'learning_rate': 5e-05, 'epoch': 3.48}
+{'loss': 0.0653, 'learning_rate': 5e-05, 'epoch': 3.49}
+{'loss': 0.0621, 'learning_rate': 5e-05, 'epoch': 3.5}
+{'loss': 0.0869, 'learning_rate': 5e-05, 'epoch': 3.52}
+{'loss': 0.0756, 'learning_rate': 5e-05, 'epoch': 3.53}
+{'loss': 0.076, 'learning_rate': 5e-05, 'epoch': 3.54}
+{'loss': 0.0775, 'learning_rate': 5e-05, 'epoch': 3.55}
+{'loss': 0.0681, 'learning_rate': 5e-05, 'epoch': 3.56}
+{'loss': 0.0577, 'learning_rate': 5e-05, 'epoch': 3.57}
+{'loss': 0.115, 'learning_rate': 5e-05, 'epoch': 3.59}
+{'loss': 0.0732, 'learning_rate': 5e-05, 'epoch': 3.6}
+{'loss': 0.0588, 'learning_rate': 5e-05, 'epoch': 3.61}
+{'loss': 0.0859, 'learning_rate': 5e-05, 'epoch': 3.62}
+{'loss': 0.0545, 'learning_rate': 5e-05, 'epoch': 3.63}
+{'loss': 0.0694, 'learning_rate': 5e-05, 'epoch': 3.65}
+{'loss': 0.0799, 'learning_rate': 5e-05, 'epoch': 3.66}
+{'loss': 0.0572, 'learning_rate': 5e-05, 'epoch': 3.67}
+{'loss': 0.0833, 'learning_rate': 5e-05, 'epoch': 3.68}
+{'loss': 0.082, 'learning_rate': 5e-05, 'epoch': 3.69}
+{'loss': 0.0996, 'learning_rate': 5e-05, 'epoch': 3.71}
+{'loss': 0.0852, 'learning_rate': 5e-05, 'epoch': 3.72}
+{'loss': 0.1166, 'learning_rate': 5e-05, 'epoch': 3.73}
+{'loss': 0.0593, 'learning_rate': 5e-05, 'epoch': 3.74}
+{'loss': 0.053, 'learning_rate': 5e-05, 'epoch': 3.75}
+{'loss': 0.0734, 'learning_rate': 5e-05, 'epoch': 3.76}
+{'loss': 0.0935, 'learning_rate': 5e-05, 'epoch': 3.78}
+{'loss': 0.0694, 'learning_rate': 5e-05, 'epoch': 3.79}
+{'loss': 0.095, 'learning_rate': 5e-05, 'epoch': 3.8}
+{'loss': 0.0771, 'learning_rate': 5e-05, 'epoch': 3.81}
+{'loss': 0.0634, 'learning_rate': 5e-05, 'epoch': 3.82}
+{'loss': 0.0645, 'learning_rate': 5e-05, 'epoch': 3.84}
+{'loss': 0.0664, 'learning_rate': 5e-05, 'epoch': 3.85}
+{'loss': 0.0712, 'learning_rate': 5e-05, 'epoch': 3.86}
+{'loss': 0.0637, 'learning_rate': 5e-05, 'epoch': 3.87}
+{'loss': 0.1118, 'learning_rate': 5e-05, 'epoch': 3.88}
+{'loss': 0.0843, 'learning_rate': 5e-05, 'epoch': 3.9}
+{'loss': 0.0657, 'learning_rate': 5e-05, 'epoch': 3.91}
+{'loss': 0.1094, 'learning_rate': 5e-05, 'epoch': 3.92}
+{'loss': 0.0709, 'learning_rate': 5e-05, 'epoch': 3.93}
+{'loss': 0.0871, 'learning_rate': 5e-05, 'epoch': 3.94}
+{'loss': 0.0708, 'learning_rate': 5e-05, 'epoch': 3.95}
+{'loss': 0.0908, 'learning_rate': 5e-05, 'epoch': 3.97}
+{'loss': 0.0809, 'learning_rate': 5e-05, 'epoch': 3.98}
+{'loss': 0.0543, 'learning_rate': 5e-05, 'epoch': 3.99}
+{'eval_loss': 0.34658676385879517, 'eval_acc': 0.9174311926605505, 'eval_runtime': 9.691, 'eval_samples_per_second': 89.98, 'eval_steps_per_second': 5.675, 'epoch': 4.0}
+{'loss': 0.1114, 'learning_rate': 5e-05, 'epoch': 4.0}
+{'loss': 0.087, 'learning_rate': 5e-05, 'epoch': 4.01}
+{'loss': 0.0863, 'learning_rate': 5e-05, 'epoch': 4.03}
+{'loss': 0.1082, 'learning_rate': 5e-05, 'epoch': 4.04}
+{'loss': 0.1026, 'learning_rate': 5e-05, 'epoch': 4.05}
+{'loss': 0.0577, 'learning_rate': 5e-05, 'epoch': 4.06}
+{'loss': 0.0561, 'learning_rate': 5e-05, 'epoch': 4.07}
+{'loss': 0.0694, 'learning_rate': 5e-05, 'epoch': 4.09}
+{'loss': 0.0939, 'learning_rate': 5e-05, 'epoch': 4.1}
+{'loss': 0.0704, 'learning_rate': 5e-05, 'epoch': 4.11}
+{'loss': 0.0563, 'learning_rate': 5e-05, 'epoch': 4.12}
+{'loss': 0.0634, 'learning_rate': 5e-05, 'epoch': 4.13}
+{'loss': 0.0603, 'learning_rate': 5e-05, 'epoch': 4.14}
+{'loss': 0.0855, 'learning_rate': 5e-05, 'epoch': 4.16}
+{'loss': 0.0976, 'learning_rate': 5e-05, 'epoch': 4.17}
+{'loss': 0.0677, 'learning_rate': 5e-05, 'epoch': 4.18}
+{'loss': 0.0837, 'learning_rate': 5e-05, 'epoch': 4.19}
+{'loss': 0.1016, 'learning_rate': 5e-05, 'epoch': 4.2}
+{'loss': 0.0789, 'learning_rate': 5e-05, 'epoch': 4.22}
+{'loss': 0.0972, 'learning_rate': 5e-05, 'epoch': 4.23}
+{'loss': 0.0865, 'learning_rate': 5e-05, 'epoch': 4.24}
+{'loss': 0.0921, 'learning_rate': 5e-05, 'epoch': 4.25}
+{'loss': 0.0485, 'learning_rate': 5e-05, 'epoch': 4.26}
+{'loss': 0.1016, 'learning_rate': 5e-05, 'epoch': 4.28}
+{'loss': 0.0867, 'learning_rate': 5e-05, 'epoch': 4.29}
+{'loss': 0.0788, 'learning_rate': 5e-05, 'epoch': 4.3}
+{'loss': 0.0732, 'learning_rate': 5e-05, 'epoch': 4.31}
+{'loss': 0.1463, 'learning_rate': 5e-05, 'epoch': 4.32}
+{'loss': 0.0952, 'learning_rate': 5e-05, 'epoch': 4.33}
+{'loss': 0.0428, 'learning_rate': 5e-05, 'epoch': 4.35}
+{'loss': 0.0747, 'learning_rate': 5e-05, 'epoch': 4.36}
+{'loss': 0.1041, 'learning_rate': 5e-05, 'epoch': 4.37}
+{'loss': 0.088, 'learning_rate': 5e-05, 'epoch': 4.38}
+{'loss': 0.0596, 'learning_rate': 5e-05, 'epoch': 4.39}
+{'loss': 0.0699, 'learning_rate': 5e-05, 'epoch': 4.41}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 4.42}
+{'loss': 0.0546, 'learning_rate': 5e-05, 'epoch': 4.43}
+{'loss': 0.0607, 'learning_rate': 5e-05, 'epoch': 4.44}
+{'loss': 0.1259, 'learning_rate': 5e-05, 'epoch': 4.45}
+{'loss': 0.0641, 'learning_rate': 5e-05, 'epoch': 4.47}
+{'loss': 0.1236, 'learning_rate': 5e-05, 'epoch': 4.48}
+{'loss': 0.102, 'learning_rate': 5e-05, 'epoch': 4.49}
+{'loss': 0.0606, 'learning_rate': 5e-05, 'epoch': 4.5}
+{'loss': 0.0572, 'learning_rate': 5e-05, 'epoch': 4.51}
+{'loss': 0.0692, 'learning_rate': 5e-05, 'epoch': 4.52}
+{'loss': 0.065, 'learning_rate': 5e-05, 'epoch': 4.54}
+{'loss': 0.081, 'learning_rate': 5e-05, 'epoch': 4.55}
+{'loss': 0.0622, 'learning_rate': 5e-05, 'epoch': 4.56}
+{'loss': 0.0862, 'learning_rate': 5e-05, 'epoch': 4.57}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 4.58}
+{'loss': 0.0617, 'learning_rate': 5e-05, 'epoch': 4.6}
+{'loss': 0.0993, 'learning_rate': 5e-05, 'epoch': 4.61}
+{'loss': 0.0589, 'learning_rate': 5e-05, 'epoch': 4.62}
+{'loss': 0.0626, 'learning_rate': 5e-05, 'epoch': 4.63}
+{'loss': 0.0956, 'learning_rate': 5e-05, 'epoch': 4.64}
+{'loss': 0.0783, 'learning_rate': 5e-05, 'epoch': 4.66}
+{'loss': 0.0675, 'learning_rate': 5e-05, 'epoch': 4.67}
+{'loss': 0.0995, 'learning_rate': 5e-05, 'epoch': 4.68}
+{'loss': 0.0596, 'learning_rate': 5e-05, 'epoch': 4.69}
+{'loss': 0.0881, 'learning_rate': 5e-05, 'epoch': 4.7}
+{'loss': 0.0662, 'learning_rate': 5e-05, 'epoch': 4.71}
+{'loss': 0.1018, 'learning_rate': 5e-05, 'epoch': 4.73}
+{'loss': 0.0695, 'learning_rate': 5e-05, 'epoch': 4.74}
+{'loss': 0.0831, 'learning_rate': 5e-05, 'epoch': 4.75}
+{'loss': 0.0764, 'learning_rate': 5e-05, 'epoch': 4.76}
+{'loss': 0.0665, 'learning_rate': 5e-05, 'epoch': 4.77}
+{'loss': 0.0794, 'learning_rate': 5e-05, 'epoch': 4.79}
+{'loss': 0.0537, 'learning_rate': 5e-05, 'epoch': 4.8}
+{'loss': 0.0773, 'learning_rate': 5e-05, 'epoch': 4.81}
+{'loss': 0.0849, 'learning_rate': 5e-05, 'epoch': 4.82}
+{'loss': 0.056, 'learning_rate': 5e-05, 'epoch': 4.83}
+{'loss': 0.0778, 'learning_rate': 5e-05, 'epoch': 4.85}
+{'loss': 0.0908, 'learning_rate': 5e-05, 'epoch': 4.86}
+{'loss': 0.0586, 'learning_rate': 5e-05, 'epoch': 4.87}
+{'loss': 0.0505, 'learning_rate': 5e-05, 'epoch': 4.88}
+{'loss': 0.0766, 'learning_rate': 5e-05, 'epoch': 4.89}
+{'loss': 0.0741, 'learning_rate': 5e-05, 'epoch': 4.9}
+{'loss': 0.058, 'learning_rate': 5e-05, 'epoch': 4.92}
+{'loss': 0.058, 'learning_rate': 5e-05, 'epoch': 4.93}
+{'loss': 0.0907, 'learning_rate': 5e-05, 'epoch': 4.94}
+{'loss': 0.0912, 'learning_rate': 5e-05, 'epoch': 4.95}
+{'loss': 0.0858, 'learning_rate': 5e-05, 'epoch': 4.96}
+{'loss': 0.0492, 'learning_rate': 5e-05, 'epoch': 4.98}
+{'loss': 0.0746, 'learning_rate': 5e-05, 'epoch': 4.99}
+{'loss': 0.0739, 'learning_rate': 5e-05, 'epoch': 5.0}
+{'eval_loss': 0.37802672386169434, 'eval_acc': 0.9128440366972477, 'eval_runtime': 9.7224, 'eval_samples_per_second': 89.689, 'eval_steps_per_second': 5.657, 'epoch': 5.0}
+{'loss': 0.0793, 'learning_rate': 5e-05, 'epoch': 5.01}
+{'loss': 0.0816, 'learning_rate': 5e-05, 'epoch': 5.02}
+{'loss': 0.0783, 'learning_rate': 5e-05, 'epoch': 5.04}
+{'loss': 0.0785, 'learning_rate': 5e-05, 'epoch': 5.05}
+{'loss': 0.0765, 'learning_rate': 5e-05, 'epoch': 5.06}
+{'loss': 0.0967, 'learning_rate': 5e-05, 'epoch': 5.07}
+{'loss': 0.0508, 'learning_rate': 5e-05, 'epoch': 5.08}
+{'loss': 0.0729, 'learning_rate': 5e-05, 'epoch': 5.1}
+{'loss': 0.0672, 'learning_rate': 5e-05, 'epoch': 5.11}
+{'loss': 0.0747, 'learning_rate': 5e-05, 'epoch': 5.12}
+{'loss': 0.0682, 'learning_rate': 5e-05, 'epoch': 5.13}
+{'loss': 0.0687, 'learning_rate': 5e-05, 'epoch': 5.14}
+{'loss': 0.0893, 'learning_rate': 5e-05, 'epoch': 5.15}
+{'loss': 0.0758, 'learning_rate': 5e-05, 'epoch': 5.17}
+{'loss': 0.0695, 'learning_rate': 5e-05, 'epoch': 5.18}
+{'loss': 0.0802, 'learning_rate': 5e-05, 'epoch': 5.19}
+{'loss': 0.0635, 'learning_rate': 5e-05, 'epoch': 5.2}
+{'loss': 0.0914, 'learning_rate': 5e-05, 'epoch': 5.21}
+{'loss': 0.0654, 'learning_rate': 5e-05, 'epoch': 5.23}
+{'loss': 0.0724, 'learning_rate': 5e-05, 'epoch': 5.24}
+{'loss': 0.0731, 'learning_rate': 5e-05, 'epoch': 5.25}
+{'loss': 0.0776, 'learning_rate': 5e-05, 'epoch': 5.26}
+{'loss': 0.068, 'learning_rate': 5e-05, 'epoch': 5.27}
+{'loss': 0.0509, 'learning_rate': 5e-05, 'epoch': 5.29}
+{'loss': 0.0722, 'learning_rate': 5e-05, 'epoch': 5.3}
+{'loss': 0.0875, 'learning_rate': 5e-05, 'epoch': 5.31}
+{'loss': 0.059, 'learning_rate': 5e-05, 'epoch': 5.32}
+{'loss': 0.0408, 'learning_rate': 5e-05, 'epoch': 5.33}
+{'loss': 0.0692, 'learning_rate': 5e-05, 'epoch': 5.34}
+{'loss': 0.0488, 'learning_rate': 5e-05, 'epoch': 5.36}
+{'loss': 0.0831, 'learning_rate': 5e-05, 'epoch': 5.37}
+{'loss': 0.0816, 'learning_rate': 5e-05, 'epoch': 5.38}
+{'loss': 0.0673, 'learning_rate': 5e-05, 'epoch': 5.39}
+{'loss': 0.0857, 'learning_rate': 5e-05, 'epoch': 5.4}
+{'loss': 0.0613, 'learning_rate': 5e-05, 'epoch': 5.42}
+{'loss': 0.1148, 'learning_rate': 5e-05, 'epoch': 5.43}
+{'loss': 0.0575, 'learning_rate': 5e-05, 'epoch': 5.44}
+{'loss': 0.0649, 'learning_rate': 5e-05, 'epoch': 5.45}
+{'loss': 0.0636, 'learning_rate': 5e-05, 'epoch': 5.46}
+{'loss': 0.0861, 'learning_rate': 5e-05, 'epoch': 5.48}
+{'loss': 0.0865, 'learning_rate': 5e-05, 'epoch': 5.49}
+{'loss': 0.0626, 'learning_rate': 5e-05, 'epoch': 5.5}
+{'loss': 0.0924, 'learning_rate': 5e-05, 'epoch': 5.51}
+{'loss': 0.0563, 'learning_rate': 5e-05, 'epoch': 5.52}
+{'loss': 0.0805, 'learning_rate': 5e-05, 'epoch': 5.53}
+{'loss': 0.078, 'learning_rate': 5e-05, 'epoch': 5.55}
+{'loss': 0.0887, 'learning_rate': 5e-05, 'epoch': 5.56}
+{'loss': 0.0999, 'learning_rate': 5e-05, 'epoch': 5.57}
+{'loss': 0.0866, 'learning_rate': 5e-05, 'epoch': 5.58}
+{'loss': 0.0677, 'learning_rate': 5e-05, 'epoch': 5.59}
+{'loss': 0.0821, 'learning_rate': 5e-05, 'epoch': 5.61}
+{'loss': 0.0502, 'learning_rate': 5e-05, 'epoch': 5.62}
+{'loss': 0.0775, 'learning_rate': 5e-05, 'epoch': 5.63}
+{'loss': 0.0746, 'learning_rate': 5e-05, 'epoch': 5.64}
+{'loss': 0.0687, 'learning_rate': 5e-05, 'epoch': 5.65}
+{'loss': 0.0572, 'learning_rate': 5e-05, 'epoch': 5.67}
+{'loss': 0.065, 'learning_rate': 5e-05, 'epoch': 5.68}
+{'loss': 0.0684, 'learning_rate': 5e-05, 'epoch': 5.69}
+{'loss': 0.0887, 'learning_rate': 5e-05, 'epoch': 5.7}
+{'loss': 0.0583, 'learning_rate': 5e-05, 'epoch': 5.71}
+{'loss': 0.1116, 'learning_rate': 5e-05, 'epoch': 5.72}
+{'loss': 0.0659, 'learning_rate': 5e-05, 'epoch': 5.74}
+{'loss': 0.0842, 'learning_rate': 5e-05, 'epoch': 5.75}
+{'loss': 0.0754, 'learning_rate': 5e-05, 'epoch': 5.76}
+{'loss': 0.0731, 'learning_rate': 5e-05, 'epoch': 5.77}
+{'loss': 0.0792, 'learning_rate': 5e-05, 'epoch': 5.78}
+{'loss': 0.0581, 'learning_rate': 5e-05, 'epoch': 5.8}
+{'loss': 0.0896, 'learning_rate': 5e-05, 'epoch': 5.81}
+{'loss': 0.0444, 'learning_rate': 5e-05, 'epoch': 5.82}
+{'loss': 0.0726, 'learning_rate': 5e-05, 'epoch': 5.83}
+{'loss': 0.0931, 'learning_rate': 5e-05, 'epoch': 5.84}
+{'loss': 0.0718, 'learning_rate': 5e-05, 'epoch': 5.86}
+{'loss': 0.0729, 'learning_rate': 5e-05, 'epoch': 5.87}
+{'loss': 0.077, 'learning_rate': 5e-05, 'epoch': 5.88}
+{'loss': 0.0743, 'learning_rate': 5e-05, 'epoch': 5.89}
+{'loss': 0.0868, 'learning_rate': 5e-05, 'epoch': 5.9}
+{'loss': 0.077, 'learning_rate': 5e-05, 'epoch': 5.91}
+{'loss': 0.0461, 'learning_rate': 5e-05, 'epoch': 5.93}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 5.94}
+{'loss': 0.0719, 'learning_rate': 5e-05, 'epoch': 5.95}
+{'loss': 0.0705, 'learning_rate': 5e-05, 'epoch': 5.96}
+{'loss': 0.0816, 'learning_rate': 5e-05, 'epoch': 5.97}
+{'loss': 0.0688, 'learning_rate': 5e-05, 'epoch': 5.99}
+{'loss': 0.1077, 'learning_rate': 5e-05, 'epoch': 6.0}
+{'eval_loss': 0.36449095606803894, 'eval_acc': 0.9013761467889908, 'eval_runtime': 9.6927, 'eval_samples_per_second': 89.964, 'eval_steps_per_second': 5.674, 'epoch': 6.0}
+{'loss': 0.0755, 'learning_rate': 5e-05, 'epoch': 6.01}
+{'loss': 0.0806, 'learning_rate': 5e-05, 'epoch': 6.02}
+{'loss': 0.0807, 'learning_rate': 5e-05, 'epoch': 6.03}
+{'loss': 0.0614, 'learning_rate': 5e-05, 'epoch': 6.05}
+{'loss': 0.0774, 'learning_rate': 5e-05, 'epoch': 6.06}
+{'loss': 0.0567, 'learning_rate': 5e-05, 'epoch': 6.07}
+{'loss': 0.0603, 'learning_rate': 5e-05, 'epoch': 6.08}
+{'loss': 0.0845, 'learning_rate': 5e-05, 'epoch': 6.09}
+{'loss': 0.0795, 'learning_rate': 5e-05, 'epoch': 6.1}
+{'loss': 0.1293, 'learning_rate': 5e-05, 'epoch': 6.12}
+{'loss': 0.0523, 'learning_rate': 5e-05, 'epoch': 6.13}
+{'loss': 0.0593, 'learning_rate': 5e-05, 'epoch': 6.14}
+{'loss': 0.0624, 'learning_rate': 5e-05, 'epoch': 6.15}
+{'loss': 0.0539, 'learning_rate': 5e-05, 'epoch': 6.16}
+{'loss': 0.073, 'learning_rate': 5e-05, 'epoch': 6.18}
+{'loss': 0.0837, 'learning_rate': 5e-05, 'epoch': 6.19}
+{'loss': 0.0522, 'learning_rate': 5e-05, 'epoch': 6.2}
+{'loss': 0.0536, 'learning_rate': 5e-05, 'epoch': 6.21}
+{'loss': 0.0708, 'learning_rate': 5e-05, 'epoch': 6.22}
+{'loss': 0.0706, 'learning_rate': 5e-05, 'epoch': 6.24}
+{'loss': 0.0841, 'learning_rate': 5e-05, 'epoch': 6.25}
+{'loss': 0.0889, 'learning_rate': 5e-05, 'epoch': 6.26}
+{'loss': 0.0831, 'learning_rate': 5e-05, 'epoch': 6.27}
+{'loss': 0.0633, 'learning_rate': 5e-05, 'epoch': 6.28}
+{'loss': 0.0873, 'learning_rate': 5e-05, 'epoch': 6.29}
+{'loss': 0.0937, 'learning_rate': 5e-05, 'epoch': 6.31}
+{'loss': 0.0743, 'learning_rate': 5e-05, 'epoch': 6.32}
+{'loss': 0.0598, 'learning_rate': 5e-05, 'epoch': 6.33}
+{'loss': 0.0711, 'learning_rate': 5e-05, 'epoch': 6.34}
+{'loss': 0.0813, 'learning_rate': 5e-05, 'epoch': 6.35}
+{'loss': 0.1227, 'learning_rate': 5e-05, 'epoch': 6.37}
+{'loss': 0.08, 'learning_rate': 5e-05, 'epoch': 6.38}
+{'loss': 0.0871, 'learning_rate': 5e-05, 'epoch': 6.39}
+{'loss': 0.0708, 'learning_rate': 5e-05, 'epoch': 6.4}
+{'loss': 0.071, 'learning_rate': 5e-05, 'epoch': 6.41}
+{'loss': 0.0923, 'learning_rate': 5e-05, 'epoch': 6.43}
+{'loss': 0.0638, 'learning_rate': 5e-05, 'epoch': 6.44}
+{'loss': 0.0527, 'learning_rate': 5e-05, 'epoch': 6.45}
+{'loss': 0.0492, 'learning_rate': 5e-05, 'epoch': 6.46}
+{'loss': 0.0746, 'learning_rate': 5e-05, 'epoch': 6.47}
+{'loss': 0.0696, 'learning_rate': 5e-05, 'epoch': 6.48}
+{'loss': 0.0466, 'learning_rate': 5e-05, 'epoch': 6.5}
+{'loss': 0.0697, 'learning_rate': 5e-05, 'epoch': 6.51}
+{'loss': 0.089, 'learning_rate': 5e-05, 'epoch': 6.52}
+{'loss': 0.0781, 'learning_rate': 5e-05, 'epoch': 6.53}
+{'loss': 0.0523, 'learning_rate': 5e-05, 'epoch': 6.54}
+{'loss': 0.0917, 'learning_rate': 5e-05, 'epoch': 6.56}
+{'loss': 0.0824, 'learning_rate': 5e-05, 'epoch': 6.57}
+{'loss': 0.0822, 'learning_rate': 5e-05, 'epoch': 6.58}
+{'loss': 0.0391, 'learning_rate': 5e-05, 'epoch': 6.59}
+{'loss': 0.0663, 'learning_rate': 5e-05, 'epoch': 6.6}
+{'loss': 0.0621, 'learning_rate': 5e-05, 'epoch': 6.62}
+{'loss': 0.0532, 'learning_rate': 5e-05, 'epoch': 6.63}
+{'loss': 0.0851, 'learning_rate': 5e-05, 'epoch': 6.64}
+{'loss': 0.0715, 'learning_rate': 5e-05, 'epoch': 6.65}
+{'loss': 0.0735, 'learning_rate': 5e-05, 'epoch': 6.66}
+{'loss': 0.0723, 'learning_rate': 5e-05, 'epoch': 6.67}
+{'loss': 0.0641, 'learning_rate': 5e-05, 'epoch': 6.69}
+{'loss': 0.0499, 'learning_rate': 5e-05, 'epoch': 6.7}
+{'loss': 0.0864, 'learning_rate': 5e-05, 'epoch': 6.71}
+{'loss': 0.1036, 'learning_rate': 5e-05, 'epoch': 6.72}
+{'loss': 0.1173, 'learning_rate': 5e-05, 'epoch': 6.73}
+{'loss': 0.0608, 'learning_rate': 5e-05, 'epoch': 6.75}
+{'loss': 0.0694, 'learning_rate': 5e-05, 'epoch': 6.76}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 6.77}
+{'loss': 0.0841, 'learning_rate': 5e-05, 'epoch': 6.78}
+{'loss': 0.0812, 'learning_rate': 5e-05, 'epoch': 6.79}
+{'loss': 0.0751, 'learning_rate': 5e-05, 'epoch': 6.81}
+{'loss': 0.0536, 'learning_rate': 5e-05, 'epoch': 6.82}
+{'loss': 0.0763, 'learning_rate': 5e-05, 'epoch': 6.83}
+{'loss': 0.0642, 'learning_rate': 5e-05, 'epoch': 6.84}
+{'loss': 0.0873, 'learning_rate': 5e-05, 'epoch': 6.85}
+{'loss': 0.0682, 'learning_rate': 5e-05, 'epoch': 6.86}
+{'loss': 0.0926, 'learning_rate': 5e-05, 'epoch': 6.88}
+{'loss': 0.0546, 'learning_rate': 5e-05, 'epoch': 6.89}
+{'loss': 0.0727, 'learning_rate': 5e-05, 'epoch': 6.9}
+{'loss': 0.0563, 'learning_rate': 5e-05, 'epoch': 6.91}
+{'loss': 0.0812, 'learning_rate': 5e-05, 'epoch': 6.92}
+{'loss': 0.0623, 'learning_rate': 5e-05, 'epoch': 6.94}
+{'loss': 0.0883, 'learning_rate': 5e-05, 'epoch': 6.95}
+{'loss': 0.075, 'learning_rate': 5e-05, 'epoch': 6.96}
+{'loss': 0.064, 'learning_rate': 5e-05, 'epoch': 6.97}
+{'loss': 0.0857, 'learning_rate': 5e-05, 'epoch': 6.98}
+{'loss': 0.0618, 'learning_rate': 5e-05, 'epoch': 7.0}
+{'eval_loss': 0.3444218635559082, 'eval_acc': 0.9139908256880734, 'eval_runtime': 9.6976, 'eval_samples_per_second': 89.919, 'eval_steps_per_second': 5.672, 'epoch': 7.0}
+{'loss': 0.0782, 'learning_rate': 5e-05, 'epoch': 7.01}
+{'loss': 0.0956, 'learning_rate': 5e-05, 'epoch': 7.02}
+{'loss': 0.0801, 'learning_rate': 5e-05, 'epoch': 7.03}
+{'loss': 0.0711, 'learning_rate': 5e-05, 'epoch': 7.04}
+{'loss': 0.0397, 'learning_rate': 5e-05, 'epoch': 7.05}
+{'loss': 0.0788, 'learning_rate': 5e-05, 'epoch': 7.07}
+{'loss': 0.0457, 'learning_rate': 5e-05, 'epoch': 7.08}
+{'loss': 0.0667, 'learning_rate': 5e-05, 'epoch': 7.09}
+{'loss': 0.097, 'learning_rate': 5e-05, 'epoch': 7.1}
+{'loss': 0.0819, 'learning_rate': 5e-05, 'epoch': 7.11}
+{'loss': 0.075, 'learning_rate': 5e-05, 'epoch': 7.13}
+{'loss': 0.0486, 'learning_rate': 5e-05, 'epoch': 7.14}
+{'loss': 0.1082, 'learning_rate': 5e-05, 'epoch': 7.15}
+{'loss': 0.0682, 'learning_rate': 5e-05, 'epoch': 7.16}
+{'loss': 0.0803, 'learning_rate': 5e-05, 'epoch': 7.17}
+{'loss': 0.0426, 'learning_rate': 5e-05, 'epoch': 7.19}
+{'loss': 0.1242, 'learning_rate': 5e-05, 'epoch': 7.2}
+{'loss': 0.079, 'learning_rate': 5e-05, 'epoch': 7.21}
+{'loss': 0.0656, 'learning_rate': 5e-05, 'epoch': 7.22}
+{'loss': 0.1035, 'learning_rate': 5e-05, 'epoch': 7.23}
+{'loss': 0.0729, 'learning_rate': 5e-05, 'epoch': 7.24}
+{'loss': 0.0802, 'learning_rate': 5e-05, 'epoch': 7.26}
+{'loss': 0.098, 'learning_rate': 5e-05, 'epoch': 7.27}
+{'loss': 0.0671, 'learning_rate': 5e-05, 'epoch': 7.28}
+{'loss': 0.0697, 'learning_rate': 5e-05, 'epoch': 7.29}
+{'loss': 0.0806, 'learning_rate': 5e-05, 'epoch': 7.3}
+{'loss': 0.034, 'learning_rate': 5e-05, 'epoch': 7.32}
+{'loss': 0.091, 'learning_rate': 5e-05, 'epoch': 7.33}
+{'loss': 0.0721, 'learning_rate': 5e-05, 'epoch': 7.34}
+{'loss': 0.0943, 'learning_rate': 5e-05, 'epoch': 7.35}
+{'loss': 0.0789, 'learning_rate': 5e-05, 'epoch': 7.36}
+{'loss': 0.0535, 'learning_rate': 5e-05, 'epoch': 7.38}
+{'loss': 0.0803, 'learning_rate': 5e-05, 'epoch': 7.39}
+{'loss': 0.1067, 'learning_rate': 5e-05, 'epoch': 7.4}
+{'loss': 0.0631, 'learning_rate': 5e-05, 'epoch': 7.41}
+{'loss': 0.0664, 'learning_rate': 5e-05, 'epoch': 7.42}
+{'loss': 0.0577, 'learning_rate': 5e-05, 'epoch': 7.43}
+{'loss': 0.0785, 'learning_rate': 5e-05, 'epoch': 7.45}
+{'loss': 0.1052, 'learning_rate': 5e-05, 'epoch': 7.46}
+{'loss': 0.0919, 'learning_rate': 5e-05, 'epoch': 7.47}
+{'loss': 0.0412, 'learning_rate': 5e-05, 'epoch': 7.48}
+{'loss': 0.0738, 'learning_rate': 5e-05, 'epoch': 7.49}
+{'loss': 0.0829, 'learning_rate': 5e-05, 'epoch': 7.51}
+{'loss': 0.0719, 'learning_rate': 5e-05, 'epoch': 7.52}
+{'loss': 0.0685, 'learning_rate': 5e-05, 'epoch': 7.53}
+{'loss': 0.081, 'learning_rate': 5e-05, 'epoch': 7.54}
+{'loss': 0.0694, 'learning_rate': 5e-05, 'epoch': 7.55}
+{'loss': 0.0757, 'learning_rate': 5e-05, 'epoch': 7.57}
+{'loss': 0.0633, 'learning_rate': 5e-05, 'epoch': 7.58}
+{'loss': 0.0866, 'learning_rate': 5e-05, 'epoch': 7.59}
+{'loss': 0.0761, 'learning_rate': 5e-05, 'epoch': 7.6}
+{'loss': 0.0873, 'learning_rate': 5e-05, 'epoch': 7.61}
+{'loss': 0.0829, 'learning_rate': 5e-05, 'epoch': 7.62}
+{'loss': 0.0915, 'learning_rate': 5e-05, 'epoch': 7.64}
+{'loss': 0.0685, 'learning_rate': 5e-05, 'epoch': 7.65}
+{'loss': 0.0661, 'learning_rate': 5e-05, 'epoch': 7.66}
+{'loss': 0.0916, 'learning_rate': 5e-05, 'epoch': 7.67}
+{'loss': 0.1091, 'learning_rate': 5e-05, 'epoch': 7.68}
+{'loss': 0.081, 'learning_rate': 5e-05, 'epoch': 7.7}
+{'loss': 0.0707, 'learning_rate': 5e-05, 'epoch': 7.71}
+{'loss': 0.0757, 'learning_rate': 5e-05, 'epoch': 7.72}
+{'loss': 0.0813, 'learning_rate': 5e-05, 'epoch': 7.73}
+{'loss': 0.0621, 'learning_rate': 5e-05, 'epoch': 7.74}
+{'loss': 0.0622, 'learning_rate': 5e-05, 'epoch': 7.76}
+{'loss': 0.106, 'learning_rate': 5e-05, 'epoch': 7.77}
+{'loss': 0.0415, 'learning_rate': 5e-05, 'epoch': 7.78}
+{'loss': 0.1098, 'learning_rate': 5e-05, 'epoch': 7.79}
+{'loss': 0.0895, 'learning_rate': 5e-05, 'epoch': 7.8}
+{'loss': 0.073, 'learning_rate': 5e-05, 'epoch': 7.81}
+{'loss': 0.0816, 'learning_rate': 5e-05, 'epoch': 7.83}
+{'loss': 0.0698, 'learning_rate': 5e-05, 'epoch': 7.84}
+{'loss': 0.0764, 'learning_rate': 5e-05, 'epoch': 7.85}
+{'loss': 0.0867, 'learning_rate': 5e-05, 'epoch': 7.86}
+{'loss': 0.066, 'learning_rate': 5e-05, 'epoch': 7.87}
+{'loss': 0.0706, 'learning_rate': 5e-05, 'epoch': 7.89}
+{'loss': 0.0859, 'learning_rate': 5e-05, 'epoch': 7.9}
+{'loss': 0.0613, 'learning_rate': 5e-05, 'epoch': 7.91}
+{'loss': 0.1067, 'learning_rate': 5e-05, 'epoch': 7.92}
+{'loss': 0.0833, 'learning_rate': 5e-05, 'epoch': 7.93}
+{'loss': 0.0602, 'learning_rate': 5e-05, 'epoch': 7.95}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 7.96}
+{'loss': 0.0848, 'learning_rate': 5e-05, 'epoch': 7.97}
+{'loss': 0.0729, 'learning_rate': 5e-05, 'epoch': 7.98}
+{'loss': 0.0565, 'learning_rate': 5e-05, 'epoch': 7.99}
+{'eval_loss': 0.32797759771347046, 'eval_acc': 0.9151376146788991, 'eval_runtime': 9.6903, 'eval_samples_per_second': 89.986, 'eval_steps_per_second': 5.676, 'epoch': 8.0}
+{'loss': 0.0802, 'learning_rate': 5e-05, 'epoch': 8.0}
+{'loss': 0.0873, 'learning_rate': 5e-05, 'epoch': 8.02}
+{'loss': 0.064, 'learning_rate': 5e-05, 'epoch': 8.03}
+{'loss': 0.0761, 'learning_rate': 5e-05, 'epoch': 8.04}
+{'loss': 0.0935, 'learning_rate': 5e-05, 'epoch': 8.05}
+{'loss': 0.0849, 'learning_rate': 5e-05, 'epoch': 8.06}
+{'loss': 0.0613, 'learning_rate': 5e-05, 'epoch': 8.08}
+{'loss': 0.0471, 'learning_rate': 5e-05, 'epoch': 8.09}
+{'loss': 0.0868, 'learning_rate': 5e-05, 'epoch': 8.1}
+{'loss': 0.0662, 'learning_rate': 5e-05, 'epoch': 8.11}
+{'loss': 0.0689, 'learning_rate': 5e-05, 'epoch': 8.12}
+{'loss': 0.0748, 'learning_rate': 5e-05, 'epoch': 8.14}
+{'loss': 0.0825, 'learning_rate': 5e-05, 'epoch': 8.15}
+{'loss': 0.0945, 'learning_rate': 5e-05, 'epoch': 8.16}
+{'loss': 0.0851, 'learning_rate': 5e-05, 'epoch': 8.17}
+{'loss': 0.0444, 'learning_rate': 5e-05, 'epoch': 8.18}
+{'loss': 0.0641, 'learning_rate': 5e-05, 'epoch': 8.19}
+{'loss': 0.0865, 'learning_rate': 5e-05, 'epoch': 8.21}
+{'loss': 0.0846, 'learning_rate': 5e-05, 'epoch': 8.22}
+{'loss': 0.0582, 'learning_rate': 5e-05, 'epoch': 8.23}
+{'loss': 0.0681, 'learning_rate': 5e-05, 'epoch': 8.24}
+{'loss': 0.1097, 'learning_rate': 5e-05, 'epoch': 8.25}
+{'loss': 0.052, 'learning_rate': 5e-05, 'epoch': 8.27}
+{'loss': 0.0712, 'learning_rate': 5e-05, 'epoch': 8.28}
+{'loss': 0.0723, 'learning_rate': 5e-05, 'epoch': 8.29}
+{'loss': 0.1012, 'learning_rate': 5e-05, 'epoch': 8.3}
+{'loss': 0.1098, 'learning_rate': 5e-05, 'epoch': 8.31}
+{'loss': 0.0733, 'learning_rate': 5e-05, 'epoch': 8.33}
+{'loss': 0.0844, 'learning_rate': 5e-05, 'epoch': 8.34}
+{'loss': 0.0842, 'learning_rate': 5e-05, 'epoch': 8.35}
+{'loss': 0.0732, 'learning_rate': 5e-05, 'epoch': 8.36}
+{'loss': 0.082, 'learning_rate': 5e-05, 'epoch': 8.37}
+{'loss': 0.086, 'learning_rate': 5e-05, 'epoch': 8.38}
+{'loss': 0.0817, 'learning_rate': 5e-05, 'epoch': 8.4}
+{'loss': 0.0875, 'learning_rate': 5e-05, 'epoch': 8.41}
+{'loss': 0.0704, 'learning_rate': 5e-05, 'epoch': 8.42}
+{'loss': 0.084, 'learning_rate': 5e-05, 'epoch': 8.43}
+{'loss': 0.0491, 'learning_rate': 5e-05, 'epoch': 8.44}
+{'loss': 0.0961, 'learning_rate': 5e-05, 'epoch': 8.46}
+{'loss': 0.0619, 'learning_rate': 5e-05, 'epoch': 8.47}
+{'loss': 0.0787, 'learning_rate': 5e-05, 'epoch': 8.48}
+{'loss': 0.0757, 'learning_rate': 5e-05, 'epoch': 8.49}
+{'loss': 0.082, 'learning_rate': 5e-05, 'epoch': 8.5}
+{'loss': 0.0606, 'learning_rate': 5e-05, 'epoch': 8.52}
+{'loss': 0.0522, 'learning_rate': 5e-05, 'epoch': 8.53}
+{'loss': 0.0888, 'learning_rate': 5e-05, 'epoch': 8.54}
+{'loss': 0.1002, 'learning_rate': 5e-05, 'epoch': 8.55}
+{'loss': 0.0654, 'learning_rate': 5e-05, 'epoch': 8.56}
+{'loss': 0.0695, 'learning_rate': 5e-05, 'epoch': 8.57}
+{'loss': 0.1203, 'learning_rate': 5e-05, 'epoch': 8.59}
+{'loss': 0.1004, 'learning_rate': 5e-05, 'epoch': 8.6}
+{'loss': 0.0713, 'learning_rate': 5e-05, 'epoch': 8.61}
+{'loss': 0.0785, 'learning_rate': 5e-05, 'epoch': 8.62}
+{'loss': 0.0647, 'learning_rate': 5e-05, 'epoch': 8.63}
+{'loss': 0.0684, 'learning_rate': 5e-05, 'epoch': 8.65}
+{'loss': 0.0786, 'learning_rate': 5e-05, 'epoch': 8.66}
+{'loss': 0.1081, 'learning_rate': 5e-05, 'epoch': 8.67}
+{'loss': 0.0888, 'learning_rate': 5e-05, 'epoch': 8.68}
+{'loss': 0.0613, 'learning_rate': 5e-05, 'epoch': 8.69}
+{'loss': 0.0656, 'learning_rate': 5e-05, 'epoch': 8.71}
+{'loss': 0.077, 'learning_rate': 5e-05, 'epoch': 8.72}
+{'loss': 0.0745, 'learning_rate': 5e-05, 'epoch': 8.73}
+{'loss': 0.0918, 'learning_rate': 5e-05, 'epoch': 8.74}
+{'loss': 0.0551, 'learning_rate': 5e-05, 'epoch': 8.75}
+{'loss': 0.088, 'learning_rate': 5e-05, 'epoch': 8.76}
+{'loss': 0.0847, 'learning_rate': 5e-05, 'epoch': 8.78}
+{'loss': 0.0878, 'learning_rate': 5e-05, 'epoch': 8.79}
+{'loss': 0.0673, 'learning_rate': 5e-05, 'epoch': 8.8}
+{'loss': 0.0602, 'learning_rate': 5e-05, 'epoch': 8.81}
+{'loss': 0.0859, 'learning_rate': 5e-05, 'epoch': 8.82}
+{'loss': 0.0486, 'learning_rate': 5e-05, 'epoch': 8.84}
+{'loss': 0.0782, 'learning_rate': 5e-05, 'epoch': 8.85}
+{'loss': 0.0895, 'learning_rate': 5e-05, 'epoch': 8.86}
+{'loss': 0.0983, 'learning_rate': 5e-05, 'epoch': 8.87}
+{'loss': 0.0727, 'learning_rate': 5e-05, 'epoch': 8.88}
+{'loss': 0.1067, 'learning_rate': 5e-05, 'epoch': 8.9}
+{'loss': 0.0841, 'learning_rate': 5e-05, 'epoch': 8.91}
+{'loss': 0.0863, 'learning_rate': 5e-05, 'epoch': 8.92}
+{'loss': 0.0638, 'learning_rate': 5e-05, 'epoch': 8.93}
+{'loss': 0.0688, 'learning_rate': 5e-05, 'epoch': 8.94}
+{'loss': 0.0967, 'learning_rate': 5e-05, 'epoch': 8.95}
+{'loss': 0.0633, 'learning_rate': 5e-05, 'epoch': 8.97}
+{'loss': 0.0655, 'learning_rate': 5e-05, 'epoch': 8.98}
+{'loss': 0.0816, 'learning_rate': 5e-05, 'epoch': 8.99}
+{'eval_loss': 0.33208200335502625, 'eval_acc': 0.908256880733945, 'eval_runtime': 9.6716, 'eval_samples_per_second': 90.161, 'eval_steps_per_second': 5.687, 'epoch': 9.0}
+{'loss': 0.0651, 'learning_rate': 5e-05, 'epoch': 9.0}
+{'loss': 0.054, 'learning_rate': 5e-05, 'epoch': 9.01}
+{'loss': 0.103, 'learning_rate': 5e-05, 'epoch': 9.03}
+{'loss': 0.0917, 'learning_rate': 5e-05, 'epoch': 9.04}
+{'loss': 0.0834, 'learning_rate': 5e-05, 'epoch': 9.05}
+{'loss': 0.069, 'learning_rate': 5e-05, 'epoch': 9.06}
+{'loss': 0.0635, 'learning_rate': 5e-05, 'epoch': 9.07}
+{'loss': 0.0805, 'learning_rate': 5e-05, 'epoch': 9.09}
+{'loss': 0.0765, 'learning_rate': 5e-05, 'epoch': 9.1}
+{'loss': 0.0949, 'learning_rate': 5e-05, 'epoch': 9.11}
+{'loss': 0.0798, 'learning_rate': 5e-05, 'epoch': 9.12}
+{'loss': 0.1065, 'learning_rate': 5e-05, 'epoch': 9.13}
+{'loss': 0.0572, 'learning_rate': 5e-05, 'epoch': 9.14}
+{'loss': 0.1014, 'learning_rate': 5e-05, 'epoch': 9.16}
+{'loss': 0.0758, 'learning_rate': 5e-05, 'epoch': 9.17}
+{'loss': 0.0613, 'learning_rate': 5e-05, 'epoch': 9.18}
+{'loss': 0.0611, 'learning_rate': 5e-05, 'epoch': 9.19}
+{'loss': 0.0668, 'learning_rate': 5e-05, 'epoch': 9.2}
+{'loss': 0.0641, 'learning_rate': 5e-05, 'epoch': 9.22}
+{'loss': 0.0681, 'learning_rate': 5e-05, 'epoch': 9.23}
+{'loss': 0.0983, 'learning_rate': 5e-05, 'epoch': 9.24}
+{'loss': 0.0682, 'learning_rate': 5e-05, 'epoch': 9.25}
+{'loss': 0.1048, 'learning_rate': 5e-05, 'epoch': 9.26}
+{'loss': 0.0749, 'learning_rate': 5e-05, 'epoch': 9.28}
+{'loss': 0.0612, 'learning_rate': 5e-05, 'epoch': 9.29}
+{'loss': 0.0717, 'learning_rate': 5e-05, 'epoch': 9.3}
+{'loss': 0.0881, 'learning_rate': 5e-05, 'epoch': 9.31}
+{'loss': 0.0828, 'learning_rate': 5e-05, 'epoch': 9.32}
+{'loss': 0.0765, 'learning_rate': 5e-05, 'epoch': 9.33}
+{'loss': 0.0619, 'learning_rate': 5e-05, 'epoch': 9.35}
+{'loss': 0.0777, 'learning_rate': 5e-05, 'epoch': 9.36}
+{'loss': 0.0828, 'learning_rate': 5e-05, 'epoch': 9.37}
+{'loss': 0.0553, 'learning_rate': 5e-05, 'epoch': 9.38}
+{'loss': 0.0792, 'learning_rate': 5e-05, 'epoch': 9.39}
+{'loss': 0.068, 'learning_rate': 5e-05, 'epoch': 9.41}
+{'loss': 0.0807, 'learning_rate': 5e-05, 'epoch': 9.42}
+{'loss': 0.051, 'learning_rate': 5e-05, 'epoch': 9.43}
+{'loss': 0.0873, 'learning_rate': 5e-05, 'epoch': 9.44}
+{'loss': 0.0863, 'learning_rate': 5e-05, 'epoch': 9.45}
+{'loss': 0.0394, 'learning_rate': 5e-05, 'epoch': 9.47}
+{'loss': 0.0443, 'learning_rate': 5e-05, 'epoch': 9.48}
+{'loss': 0.0541, 'learning_rate': 5e-05, 'epoch': 9.49}
+{'loss': 0.0746, 'learning_rate': 5e-05, 'epoch': 9.5}
+{'loss': 0.0928, 'learning_rate': 5e-05, 'epoch': 9.51}
+{'loss': 0.0923, 'learning_rate': 5e-05, 'epoch': 9.52}
+{'loss': 0.0706, 'learning_rate': 5e-05, 'epoch': 9.54}
+{'loss': 0.0881, 'learning_rate': 5e-05, 'epoch': 9.55}
+{'loss': 0.0654, 'learning_rate': 5e-05, 'epoch': 9.56}
+{'loss': 0.0412, 'learning_rate': 5e-05, 'epoch': 9.57}
+{'loss': 0.0866, 'learning_rate': 5e-05, 'epoch': 9.58}
+{'loss': 0.0748, 'learning_rate': 5e-05, 'epoch': 9.6}
+{'loss': 0.0795, 'learning_rate': 5e-05, 'epoch': 9.61}
+{'loss': 0.0773, 'learning_rate': 5e-05, 'epoch': 9.62}
+{'loss': 0.0771, 'learning_rate': 5e-05, 'epoch': 9.63}
+{'loss': 0.0704, 'learning_rate': 5e-05, 'epoch': 9.64}
+{'loss': 0.0334, 'learning_rate': 5e-05, 'epoch': 9.66}
+{'loss': 0.0675, 'learning_rate': 5e-05, 'epoch': 9.67}
+{'loss': 0.0627, 'learning_rate': 5e-05, 'epoch': 9.68}
+{'loss': 0.0794, 'learning_rate': 5e-05, 'epoch': 9.69}
+{'loss': 0.0862, 'learning_rate': 5e-05, 'epoch': 9.7}
+{'loss': 0.086, 'learning_rate': 5e-05, 'epoch': 9.71}
+{'loss': 0.0856, 'learning_rate': 5e-05, 'epoch': 9.73}
+{'loss': 0.0634, 'learning_rate': 5e-05, 'epoch': 9.74}
+{'loss': 0.0754, 'learning_rate': 5e-05, 'epoch': 9.75}
+{'loss': 0.0854, 'learning_rate': 5e-05, 'epoch': 9.76}
+{'loss': 0.0791, 'learning_rate': 5e-05, 'epoch': 9.77}
+{'loss': 0.1138, 'learning_rate': 5e-05, 'epoch': 9.79}
+{'loss': 0.0778, 'learning_rate': 5e-05, 'epoch': 9.8}
+{'loss': 0.0616, 'learning_rate': 5e-05, 'epoch': 9.81}
+{'loss': 0.0637, 'learning_rate': 5e-05, 'epoch': 9.82}
+{'loss': 0.1043, 'learning_rate': 5e-05, 'epoch': 9.83}
+{'loss': 0.0665, 'learning_rate': 5e-05, 'epoch': 9.85}
+{'loss': 0.0881, 'learning_rate': 5e-05, 'epoch': 9.86}
+{'loss': 0.0787, 'learning_rate': 5e-05, 'epoch': 9.87}
+{'loss': 0.0977, 'learning_rate': 5e-05, 'epoch': 9.88}
+{'loss': 0.0634, 'learning_rate': 5e-05, 'epoch': 9.89}
+{'loss': 0.0632, 'learning_rate': 5e-05, 'epoch': 9.9}
+{'loss': 0.0958, 'learning_rate': 5e-05, 'epoch': 9.92}
+{'loss': 0.0617, 'learning_rate': 5e-05, 'epoch': 9.93}
+{'loss': 0.0712, 'learning_rate': 5e-05, 'epoch': 9.94}
+{'loss': 0.0851, 'learning_rate': 5e-05, 'epoch': 9.95}
+{'loss': 0.0476, 'learning_rate': 5e-05, 'epoch': 9.96}
+{'loss': 0.0697, 'learning_rate': 5e-05, 'epoch': 9.98}
+{'loss': 0.0609, 'learning_rate': 5e-05, 'epoch': 9.99}
+{'loss': 0.0982, 'learning_rate': 5e-05, 'epoch': 10.0}
+{'eval_loss': 0.30287328362464905, 'eval_acc': 0.911697247706422, 'eval_runtime': 9.6748, 'eval_samples_per_second': 90.131, 'eval_steps_per_second': 5.685, 'epoch': 10.0}
+{'train_runtime': 16673.4408, 'train_samples_per_second': 40.393, 'train_steps_per_second': 2.525, 'train_loss': 0.0767647125007421, 'epoch': 10.0}
+{'eval_loss': 0.30287328362464905, 'eval_acc': 0.911697247706422, 'eval_runtime': 9.6902, 'eval_samples_per_second': 89.988, 'eval_steps_per_second': 5.676, 'epoch': 10.0}

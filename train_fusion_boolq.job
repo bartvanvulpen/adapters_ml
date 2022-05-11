@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#SBATCH --partition=gpu_shared_course
+#SBATCH --gres=gpu:2
+#SBATCH --job-name=train_boolq
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=3
+#SBATCH --time=06:00:00
+#SBATCH --mem=32000M
+#SBATCH --output=job_outputs/boolq/%A.out
+
+
+module load 2021
+module load Anaconda3/2021.05
+
+cd $HOME/adapters_ml
+
+source activate ada_gpu
+python3 pretrain_fusions.py --task boolq

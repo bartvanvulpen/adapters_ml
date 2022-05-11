@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
+saved/
+training_output/
+checkpoints_meta_learning/
 
 # C extensions
 *.so
