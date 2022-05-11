@@ -2,6 +2,13 @@
 
 from datasets import load_dataset
 from transformers import BertTokenizer
+from torch.utils.data import Dataset
+import csv
+import os
+import transformers
+transformers.logging.set_verbosity_error()
+import torch
+
 
 def load_and_process_dataset(dataset, encode_batch, label_name, label2id=None, labels=None):
     # The transformers model expects the target class column to be named "labels"
@@ -105,7 +112,7 @@ def load_dataset_by_name(name):
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
-                all_encoded["labels"].append(0 if label is "" else int(label))
+                all_encoded["labels"].append(0 if label == "" else int(label))
 
             return all_encoded
 
@@ -141,7 +148,69 @@ def load_dataset_by_name(name):
     elif name == "scitail":
         return load_specific_dataset("scitail", "tsv_format", ["premise", "hypothesis"], "label", labels=["neutral", "entails"])
     elif name == "argument":
-        raise NotImplementedError() #I can't find this dataset
+        
+        class ArgumentDatasetSplit(Dataset):
+            def __init__(self):
+                super().__init__()
+
+                self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+                self.label2id = {'NoArgument': 0, 'Argument_against': 1, 'Argument_for': 2}
+                self.data = []
+
+            def add_item(self, topic, sentence, annotation):
+                """
+                adds an entry to the dataset
+                """
+
+                tokenized = self.tokenizer(
+                    topic,
+                    sentence,
+                    truncation=True,
+                    padding='max_length'
+                )
+
+                encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
+                encoded_item['input_ids'] = torch.tensor(tokenized['input_ids'])
+                encoded_item['attention_mask'] = torch.tensor(tokenized['attention_mask'])
+
+                self.data.append(encoded_item)
+
+
+            def __getitem__(self, index):
+                return self.data[index]
+
+            def __len__(self):
+                return len(self.data)
+
+
+        dataset_dict = {
+            'train': ArgumentDatasetSplit(),
+            'validation': ArgumentDatasetSplit(),
+            'test': ArgumentDatasetSplit()
+        }
+
+        # loop over all files in the directory 'argument_dataset', containing the dataset files
+        for filename in os.listdir('argument_dataset'):
+            # get all .tsv files
+            if filename.endswith('.tsv'):
+                with open('argument_dataset/' + filename, newline='') as f:
+                    # read each line from the tab-separated file
+                    reader = csv.DictReader(f, delimiter='\t', quotechar='|')
+                    for entry in reader:
+                        # add each entry to the dataset
+                        split = entry['set'] if entry['set'] != 'val' else 'validation'
+                        
+                        dataset_dict[split].add_item(
+                            entry['topic'],
+                            entry['sentence'],
+                            entry['annotation']
+                        )
+
+        id2label = {0: 'NoArgument', 1: 'Argument_against', 2: 'Argument_for'}
+
+        return dataset_dict, id2label
+
+
     elif name == "csqa":
         #TODO: test
         raise NotImplementedError()
