@@ -371,9 +371,9 @@ combined_dataset = {
     "labels": torch.hstack([ds["labels"] for ds in DATASETS.values()]),
 }
 
-train_datasets = ["boolq", "qqp"]
-val_datasets = ["boolq", "qqp"]
-test_datasets = ["cb"]
+train_datasets = ["boolq"]
+val_datasets = ["boolq"]
+# test_datasets = ["cb"]
 
 print('Creating datasets...')
 train_set = dataset_from_tasks(
@@ -382,9 +382,9 @@ train_set = dataset_from_tasks(
 val_set = dataset_from_tasks(
     combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets])
 )
-test_set = dataset_from_tasks(
-    combined_dataset, torch.tensor([TASK_IDS[ds] for ds in test_datasets])
-)
+# test_set = dataset_from_tasks(
+#     combined_dataset, torch.tensor([TASK_IDS[ds] for ds in test_datasets])
+# )
 # Training set
 train_protomaml_sampler = TaskBatchSampler(
     train_set.tasks,
@@ -401,7 +401,7 @@ train_protomaml_loader = data.DataLoader(
     train_set,
     batch_sampler=train_protomaml_sampler,
     collate_fn=train_protomaml_sampler.get_collate_fn(),
-    num_workers=0,
+    num_workers=4,
 )
 # print('train example')
 # x = next(iter(train_protomaml_loader))
