@@ -17,6 +17,9 @@ def load_and_process_dataset(dataset, encode_batch, label_name, labels=None):
     else:
         id2label = {id: label for (id, label) in enumerate(labels)}
 
+    print('num batches and size of batch of input_ids:', len(dataset["train"]["input_ids"]), len(dataset["train"]["input_ids"][0]))
+    print('num batches and size of batch of attention_mask:', len(dataset["train"]["attention_mask"]), len(dataset["train"]["attention_mask"][0]))
+    print('num batches and size of batch of labels:', len(dataset["train"]["labels"]))
     return dataset, id2label
 
 def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=None):
@@ -38,45 +41,12 @@ def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=No
             add_special_tokens=True
         )
         if not labels is None:
-            tokens["labels"] = [label2id[label] if label in label2id else -1 for label in batch["labels"]]
+            tokens["labels"] = [label2id[label] if label in label2id else 0 for label in batch["labels"]]
         return tokens
     return load_and_process_dataset(dataset, encode_batch, label_name, labels=labels)
 
-def load_specific_multi_choice_dataset(dataset_name, task_name, sentence_a_inputs, sentence_b_inputs, label_name, labels=None):
+def load_specific_dataset_with_encoder(dataset_name, task_name, encode_batch, label_name, labels=None):
     """Load datasets with multiple options as inputs, e.g. quess the correct ending"""
-    dataset = load_dataset(dataset_name, task_name)
-    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
-
-    if not labels is None:
-        label2id = {label: id for (id, label) in enumerate(labels)}
-    def encode_batch(batch):
-        """Encodes a batch of input data using the model tokenizer.
-        If the labels are not given as ints, change them to ints"""
-        len_batch = len(batch[sentence_a_inputs[0]])
-        num_choice = len(sentence_b_inputs)
-
-        all_encoded = {"input_ids": [], "attention_mask": []}
-        batch_inputs_a = [batch[name] for name in sentence_a_inputs]
-        batch_inputs_b = [batch[name] for name in sentence_b_inputs]
-        for i in range(len_batch):
-            sentences_a = [' '.join([column[i] for column in batch_inputs_a]) for _ in range(num_choice)]
-            sentences_b = [column[i] for column in batch_inputs_b]
-            encoded = tokenizer(
-                sentences_a,
-                sentences_b,
-                max_length=180,
-                truncation=True,
-                padding="max_length",
-            )
-            all_encoded["input_ids"].append(encoded["input_ids"])
-            all_encoded["attention_mask"].append(encoded["attention_mask"])
-        if not labels is None:
-            all_encoded["labels"] = [label2id[label] if label in label2id else -1 for label in batch["labels"]]
-        else:
-            all_encoded["labels"] = batch["labels"]
-        return all_encoded
-    return load_and_process_dataset(dataset, encode_batch, label_name, labels=labels)
-
 
 def load_dataset_by_name(name):
     if name == "mnli":
@@ -86,7 +56,29 @@ def load_dataset_by_name(name):
     elif name == "sst":
         return load_specific_dataset("glue", "sst2", ["sentence"], "label")
     elif name == "wgrande":
-        return load_specific_multi_choice_dataset("winogrande", "winogrande_xl", ["sentence"], ["option1", "option2"], "answer", labels=["1", "2"])
+        dataset = load_dataset("winogrande", "winogrande_xl")
+        label2id = {label: id for (id, label) in enumerate(["1", "2"])}
+        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        def encode_batch(examples):
+            """Encodes a batch of input data using the model tokenizer."""
+            all_encoded = {"input_ids": [], "attention_mask": [], "labels": []}
+            # Iterate through all examples in this batch
+            for sentence, option1, option2 in zip(examples["sentence"], examples["option1"], examples["option2"]):
+                sentence_a = sentence.replace('_', option1)
+                sentence_b = sentence.replace('_', option2)
+                encoded = tokenizer(
+                    sentence_a,
+                    sentence_b,
+                    max_length=180,
+                    truncation=True,
+                    padding="max_length",
+                )
+                all_encoded["input_ids"].append(encoded["input_ids"])
+                all_encoded["attention_mask"].append(encoded["attention_mask"])
+                print(examples["labels"])
+                all_encoded["labels"].append(label2id[examples["labels"]])
+            return all_encoded
+        return load_and_process_dataset(dataset, encode_batch, "answer", labels=["1", "2"])
     elif name == "imdb":
         return load_specific_dataset("imdb", "plain_text", ["text"], "label")
     elif name == "hswag":
@@ -94,17 +86,20 @@ def load_dataset_by_name(name):
         #return load_specific_dataset("hellaswag", "default", ["activity_label", "ctx", "endings"], "label")
     elif name == "siqa":
         #TODO: test
-        return load_specific_multi_choice_dataset("social_i_qa", "default", ["context", "question"], ["answerA", "answerB", "answerC"], "label")
+        raise NotImplementedError()
+        #return load_specific_multi_choice_dataset("social_i_qa", "default", ["context", "question"], ["answerA", "answerB", "answerC"], "label", labels=["1", "2", "3"])
     elif name == "cqa":
         #TODO: test
-        return load_specific_multi_choice_dataset("cosmos_qa", "default", ["context", "question"], ["answer0", "answer1", "answer2", "answer3"], "label")
+        raise NotImplementedError()
+        #return load_specific_multi_choice_dataset("cosmos_qa", "default", ["context", "question"], ["answer0", "answer1", "answer2", "answer3"], "label", labels=[0,1,2,3])
     elif name == "scitail":
         return load_specific_dataset("scitail", "tsv_format", ["premise", "hypothesis"], "label", labels=["neutral", "entails"])
     elif name == "argument":
         raise NotImplementedError() #I can't find this dataset
     elif name == "csqa":
         #TODO: test
-        return load_specific_multi_choice_dataset("cosmos_qa", "default", ["context", "question"], ["answer0", "answer1", "answer2", "answer3"], "label")
+        raise NotImplementedError()
+        #return load_specific_multi_choice_dataset("commonsense_qa", "train", ["context", "question"], ["answer0", "answer1", "answer2", "answer3"], "label")
     elif name == "boolq":
         return load_specific_dataset("boolq", "default", ["question", "passage"], "answer", labels=["true", "false"])
     elif name == "mrpc":
