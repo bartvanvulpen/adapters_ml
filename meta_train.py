@@ -371,8 +371,8 @@ combined_dataset = {
     "labels": torch.hstack([ds["labels"] for ds in DATASETS.values()]),
 }
 
-train_datasets = ["mnli", "sst"]
-val_datasets = ["mnli", "qqp"]
+train_datasets = ["boolq", "qqp"]
+val_datasets = ["boolq", "qqp"]
 test_datasets = ["cb"]
 
 print('Creating datasets...')
