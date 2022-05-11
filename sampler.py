@@ -163,12 +163,17 @@ class FewShotBatchSampler(object):
         # print(self.indices_per_class)
 #            print("Batches for task {}: {}".format(t, self.batches_per_task[t]))
         self.unique_task_classes = [(t,c) for t in self.tasks for c in self.classes[t]]
-        # print(self.unique_task_classes)
+        print('test!')
+        print(self.classes)
+
+    # print(self.unique_task_classes)
 
         # Create a list of task-class tuples from which we select the N classes per batch
         self.iterations_per_task = [sum(self.batches_per_class[t].values()) // self.N_way for t in self.tasks]
         self.task_list = [t for i, t in enumerate(self.tasks) for _ in range(self.iterations_per_task[i])]
         self.iterations = sum(self.iterations_per_task)
+
+
 
         self.class_list = {
             t: [c for c in self.classes[t] for _ in range(self.batches_per_class[t][c])]
@@ -220,12 +225,16 @@ class FewShotBatchSampler(object):
             #
             # idx = task_iter[t] * self.N_way
             # task_iter[t] += 1
-            #
+
+            t = random.choice(self.tasks)
+            print('SAMPLED TASK:', t)
+
+
             # class_batch = self.class_list[t][idx:idx+self.N_way]
 
             # For each task-class tuple, select the next K examples and add them to the batch
             index_batch = []
-            for t, c in self.unique_task_classes:
+            for c in self.classes[t]:
                 # print(t,c)
                 # print(self.indices_per_class[t][c][start_index[t,c]:start_index[t,c]+self.K_shot])
                 index_batch.extend(self.indices_per_class[t][c][start_index[t,c]:start_index[t,c]+self.K_shot])
@@ -267,6 +276,7 @@ class TaskBatchSampler(object):
         # Aggregate multiple batches before returning the indices
         batch_list = []
         for batch_idx, batch in enumerate(self.batch_sampler):
+            print(batch)
             batch_list.extend(batch)
             if (batch_idx+1) % self.task_batch_size == 0:
                 yield batch_list
@@ -275,18 +285,22 @@ class TaskBatchSampler(object):
     def __len__(self):
         return len(self.batch_sampler)//self.task_batch_size
 
-    
+   
     def get_collate_fn(self):
         # Returns a collate function that converts a list of items into format for transformer model
         
         def collate_fn(item_list):
-            input_batch = {
-                "input_ids": torch.stack([x[0] for task, x, label in item_list], dim=0),
-                "token_type_ids": torch.stack([x[1] for task, x, label in item_list], dim=0),
-                "attention_mask": torch.stack([x[2] for task, x, label in item_list], dim=0)
-            } 
-            label_batch = torch.stack([label for task, x, label in item_list], dim=0)
-            return input_batch, label_batch
+
+            task_batch_list = []
+            for task, x, label in item_list:
+                input_batch = {
+                    "input_ids": x[0],
+                    "token_type_ids": x[1],
+                    "attention_mask": x[2]
+                }
+                label_batch = label
+                task_batch_list.append((input_batch, label_batch))
+            return task_batch_list
         
         return collate_fn
 
@@ -313,4 +327,7 @@ def split_batch(inputs, targets):
 
     support_targets, query_targets = targets.chunk(2, dim=0)
     return support_inputs, query_inputs, support_targets, query_targets
+
+
+
 
