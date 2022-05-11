@@ -163,8 +163,7 @@ class FewShotBatchSampler(object):
         # print(self.indices_per_class)
 #            print("Batches for task {}: {}".format(t, self.batches_per_task[t]))
         self.unique_task_classes = [(t,c) for t in self.tasks for c in self.classes[t]]
-        print('test!')
-        print(self.classes)
+
 
     # print(self.unique_task_classes)
 
@@ -227,7 +226,7 @@ class FewShotBatchSampler(object):
             # task_iter[t] += 1
 
             t = random.choice(self.tasks)
-            print('SAMPLED TASK:', t)
+
 
 
             # class_batch = self.class_list[t][idx:idx+self.N_way]
@@ -276,8 +275,7 @@ class TaskBatchSampler(object):
         # Aggregate multiple batches before returning the indices
         batch_list = []
         for batch_idx, batch in enumerate(self.batch_sampler):
-            print(batch)
-            batch_list.extend(batch)
+            batch_list.append(batch)
             if (batch_idx+1) % self.task_batch_size == 0:
                 yield batch_list
                 batch_list = []
@@ -288,20 +286,20 @@ class TaskBatchSampler(object):
    
     def get_collate_fn(self):
         # Returns a collate function that converts a list of items into format for transformer model
-        
         def collate_fn(item_list):
 
-            task_batch_list = []
-            for task, x, label in item_list:
-                input_batch = {
-                    "input_ids": x[0],
-                    "token_type_ids": x[1],
-                    "attention_mask": x[2]
-                }
-                label_batch = label
-                task_batch_list.append((input_batch, label_batch))
-            return task_batch_list
-        
+            collated = [(x, label) for _, x, label in item_list]
+
+            return collated
+
+
+            # input_batch = {
+            #     "input_ids": torch.stack([x[0] for task, x, label in item_list], dim=0),
+            #     "token_type_ids": torch.stack([x[1] for task, x, label in item_list], dim=0),
+            #     "attention_mask": torch.stack([x[2] for task, x, label in item_list], dim=0)
+            # }
+            # label_batch = torch.stack([label for task, x, label in item_list], dim=0)
+
         return collate_fn
 
 
@@ -310,10 +308,10 @@ def split_batch(inputs, targets):
     Split inputs and targets in two batches.
     Format needs to match with requirements of adaptorfusion model
     """
-    
-    support_input_ids, query_input_ids = inputs["input_ids"].chunk(2, dim=0)
-    support_token_type_ids, query_token_type_ids = inputs["token_type_ids"].chunk(2, dim=0)
-    support_attention_mask, query_attention_mask = inputs["attention_mask"].chunk(2, dim=0)
+
+    support_input_ids, query_input_ids = inputs[0].chunk(2, dim=0)
+    support_token_type_ids, query_token_type_ids = inputs[1].chunk(2, dim=0)
+    support_attention_mask, query_attention_mask = inputs[2].chunk(2, dim=0)
     support_inputs = {
         "input_ids": support_input_ids,
         "token_type_ids": support_token_type_ids,
