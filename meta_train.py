@@ -378,8 +378,8 @@ train_protomaml_sampler = TaskBatchSampler(
     train_set.labels,
     include_query=True,
     N_way=N_WAY,
-    batch_size=1,
     K_shot=K_SHOT,
+    batch_size=16,
     shuffle=True,  # Set to False, otherwise you risk getting same class twice in dataset
 )
 train_protomaml_loader = data.DataLoader(
@@ -388,8 +388,8 @@ train_protomaml_loader = data.DataLoader(
     collate_fn=train_protomaml_sampler.get_collate_fn(),
     num_workers=0,
 )
-# x = next(iter(train_protomaml_loader))
-# x, y = x
+x = next(iter(train_protomaml_loader))
+print(x)
 # s, q, st, qt = split_batch(x, y)
 # print(s)
 # print(q)
