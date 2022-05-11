@@ -82,7 +82,7 @@ def load_dataset_by_name(name):
     elif name == "imdb":
         return load_specific_dataset("imdb", "plain_text", ["text"], "label")
     elif name == "hswag":
-        
+
         dataset = load_dataset("hellaswag")
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
@@ -90,14 +90,13 @@ def load_dataset_by_name(name):
             """Encodes a batch of input data using the model tokenizer."""
 
             all_encoded = {"input_ids": [], "attention_mask": [], "labels": []}
-            
-            # Iterate through all examples in this batch
-            for context, answers, label in zip(batch["ctx"], batch["endings"], batch["label"]):
 
+            # Iterate through all examples in this batch
+            for context, answers, label in zip(batch["ctx"], batch["endings"], batch["labels"]):
                 # answers is an array or sentences, which is the format needed for the multiple-choice prediction head, hence we pass it as the second argument to tokenizer
 
                 encoded = tokenizer(
-                    context,
+                    [context for _ in range(4)],
                     answers,
                     max_length=180,
                     truncation=True,
@@ -106,7 +105,7 @@ def load_dataset_by_name(name):
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
-                all_encoded["labels"].append(int(label))
+                all_encoded["labels"].append(0 if label is "" else int(label))
 
             return all_encoded
 

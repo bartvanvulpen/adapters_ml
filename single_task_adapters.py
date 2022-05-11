@@ -35,16 +35,16 @@ def setup_adapter(model, id2label, task):
         model.load_adapter("sentiment/sst-2@ukp", load_as="sst")
     elif task == "wgrande":
         model.load_adapter("comsense/winogrande@ukp", load_as="wgrande")
-        model.add_classification_head("wgrande", num_choices=len(id2label))
+        model.add_classification_head("wgrande", num_labels=len(id2label))
     elif task == "imdb":
         model.load_adapter("sentiment/imdb@ukp", load_as="imdb")
         model.add_classification_head("imdb", num_labels=len(id2label))
     elif task == "hswag":
         model.load_adapter("comsense/hellaswag@ukp", load_as="hswag")
-        model.add_classification_head("hswag", num_labels=len(id2label))
+        model.add_multiple_choice_head("hswag", num_choices=len(id2label))
     elif task == "siqa":
         model.load_adapter("comsense/siqa@ukp", load_as="siqa")
-        model.add_multiple_choice_head("siqa", num_labels=len(id2label))
+        model.add_multiple_choice_head("siqa", num_choices=len(id2label))
     elif task == "cqa":
         model.load_adapter("comsense/cosmosqa@ukp", load_as="cqa")
         model.add_classification_head("cqa", num_labels=len(id2label))
@@ -106,9 +106,7 @@ training_args = TrainingArguments(
 )
 
 if __name__ == '__main__':
-    #tasks = ["mrpc", "scitail", "qqp", "wgrande", "hswag", "imdb", "siqa", "cqa", "argument", "csgq", "boolq", "rte", "cb"]
-
-    tasks = ["siqa"]
+    tasks = ["mrpc", "scitail", "qqp", "wgrande", "hswag", "imdb", "siqa", "cqa", "argument", "csgq", "boolq", "rte", "cb"]
 
     for task in tasks:
         with open('results.txt', 'a') as outfile:
