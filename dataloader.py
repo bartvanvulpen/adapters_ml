@@ -17,7 +17,7 @@ def load_and_process_dataset(dataset, encode_batch, label_name, label2id=None, l
     dataset = dataset.map(encode_batch, batched=True)
 
     # Transform to pytorch tensors and only output the required columns
-    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
+    dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "token_type_ids", "labels"])
 
     if labels is None:
         id2label = {id: label for (id, label) in enumerate(dataset["train"].features["labels"].names)}
@@ -68,7 +68,7 @@ def load_dataset_by_name(name):
         label2id = {"1": 0, "2": 1, "": 0}
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
-            all_encoded = {"input_ids": [], "attention_mask": []}
+            all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
             # Iterate through all examples in this batch
             for sentence, option1, option2 in zip(examples["sentence"], examples["option1"], examples["option2"]):
                 sentence_a = sentence.replace('_', option1)
@@ -83,6 +83,7 @@ def load_dataset_by_name(name):
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
+                all_encoded["token_type_ids"].append(encoded["token_type_ids"])
             all_encoded["labels"] = [label2id[label] if label in label2id else 0 for label in examples["labels"]]
             return all_encoded
         return load_and_process_dataset(dataset, encode_batch, "answer", labels=["1", "2"])
@@ -96,7 +97,7 @@ def load_dataset_by_name(name):
         def encode_batch(batch):
             """Encodes a batch of input data using the model tokenizer."""
 
-            all_encoded = {"input_ids": [], "attention_mask": [], "labels": []}
+            all_encoded = {"input_ids": [], "attention_mask": [], "labels": [], "token_type_ids": []}
 
             # Iterate through all examples in this batch
             for context, answers, label in zip(batch["ctx"], batch["endings"], batch["labels"]):
@@ -112,6 +113,7 @@ def load_dataset_by_name(name):
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
+                all_encoded["token_type_ids"].append(encoded["token_type_ids"])
                 all_encoded["labels"].append(0 if label == "" else int(label))
 
             return all_encoded
@@ -123,7 +125,7 @@ def load_dataset_by_name(name):
         label2id = {"1": 0, "2": 1, "3": 2, "": 0}
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
-            all_encoded = {"input_ids": [], "attention_mask": []}
+            all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
             # Iterate through all examples in this batch
             for context, question, answerA, answerB, answerC in zip(examples["context"], examples["question"], examples["answerA"], examples["answerB"], examples["answerC"]):
                 sentences_a = [context + " " + question for _ in range(3)]
@@ -138,6 +140,7 @@ def load_dataset_by_name(name):
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
+                all_encoded["token_type_ids"].append(encoded["token_type_ids"])
             all_encoded["labels"] = [label2id[label] if label in label2id else 0 for label in examples["labels"]]
             return all_encoded
         return load_and_process_dataset(dataset, encode_batch, "label", labels=["1", "2", "3"])
@@ -172,6 +175,7 @@ def load_dataset_by_name(name):
                 encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
                 encoded_item['input_ids'] = torch.tensor(tokenized['input_ids'])
                 encoded_item['attention_mask'] = torch.tensor(tokenized['attention_mask'])
+                encoded_item['token_type_ids'] = torch.tensor(tokenized['token_type_ids'])
 
                 self.data.append(encoded_item)
 
