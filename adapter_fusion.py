@@ -1,12 +1,17 @@
 """Replicating table 1 from the AdapterFusion paper"""
 
-from datasets import load_dataset
-
-import transformers
-from transformers import BertTokenizer, EarlyStoppingCallback
-from transformers import BertConfig, BertModelWithHeads
-from transformers import TrainingArguments, AdapterTrainer, EvalPrediction
+from transformers import (
+    BertTokenizer, 
+    EarlyStoppingCallback, 
+    BertConfig, 
+    BertModelWithHeads, 
+    TrainingArguments, 
+    AdapterTrainer, 
+    EvalPrediction, 
+    DataCollatorWithPadding
+)
 from transformers.adapters.composition import Fuse
+import transformers
 transformers.logging.set_verbosity_error()
 
 import numpy as np
@@ -16,6 +21,30 @@ import argparse
 from time import gmtime, strftime
 
 import dataloader as dataloader
+
+
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+classification_collator = DataCollatorWithPadding(tokenizer=tokenizer)
+
+
+def multiple_choice_collator(features):
+    labels = [feature.pop('labels') for feature in features]
+    batch_size = len(features)
+    num_choices = len(features[0]["input_ids"])
+    flattened_features = [
+        [{k: v[i] for k, v in feature.items()} for i in range(num_choices)] for feature in features
+    ]
+    flattened_features = sum(flattened_features, [])
+
+    batch = tokenizer.pad(
+        flattened_features,
+        return_tensors="pt",
+    )
+
+    batch = {k: v.view(batch_size, num_choices, -1) for k, v in batch.items()}
+    batch["labels"] = torch.tensor(labels, dtype=torch.int64)
+    return batch
+
 
 def load_bert_model(id2label):
     config = BertConfig.from_pretrained(
@@ -67,7 +96,7 @@ def compute_accuracy(p: EvalPrediction):
     preds = np.argmax(p.predictions, axis=1)
     return {"acc": (preds == p.label_ids).mean()}
 
-def train_model(model, training_args, dataset, args):
+def train_model(model, training_args, dataset, collator_fn, args):
     """Train the model with training_args, with EarlyStopping enabled."""
     trainer = AdapterTrainer(
         model=model,
@@ -75,6 +104,7 @@ def train_model(model, training_args, dataset, args):
         train_dataset=dataset["train"],
         eval_dataset=dataset["validation"],
         compute_metrics=compute_accuracy,
+        data_collator=collator_fn
     )
     callback = EarlyStoppingCallback(early_stopping_patience=2)
     trainer.add_callback(callback)
@@ -125,4 +155,11 @@ if __name__ == '__main__':
 
         model = load_bert_model(id2label)
         model = setup_adapter_fusion(model, id2label, task)
-        train_model(model, training_args, dataset, args)
+
+        # the multiple-choice tasks have a different data collator function
+        if task in ["hswag", "siqa", "cqa", "csqa"]:
+            collator_fn = multiple_choice_collator
+        else:
+            collator_fn = classification_collator
+
+        train_model(model, training_args, dataset, collator_fn, args)

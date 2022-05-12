@@ -40,7 +40,6 @@ def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=No
         tokens = tokenizer(
             *batch_inputs,
             truncation=True,
-            padding="max_length",
             add_special_tokens=True
         )
         if not labels is None:
@@ -76,7 +75,6 @@ def load_dataset_by_name(name):
                     sentence_a,
                     sentence_b,
                     truncation=True,
-                    padding="max_length",
                     add_special_tokens=True
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
@@ -98,13 +96,12 @@ def load_dataset_by_name(name):
 
             # Iterate through all examples in this batch
             for context, answers, label in zip(batch["ctx"], batch["endings"], batch["labels"]):
-                # answers is an array or sentences, which is the format needed for the multiple-choice prediction head, hence we pass it as the second argument to tokenizer
+                # answers is an array of sentences, which is the format needed for the multiple-choice prediction head, hence we pass it as the second argument to tokenizer
 
                 encoded = tokenizer(
                     [context for _ in range(4)],
                     answers,
-                    truncation=True,
-                    padding="max_length",
+                    truncation=True
                 )
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
@@ -130,7 +127,6 @@ def load_dataset_by_name(name):
                     sentences_a,
                     sentences_b,
                     truncation=True,
-                    padding="max_length",
                     add_special_tokens=True
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
@@ -153,7 +149,6 @@ def load_dataset_by_name(name):
                     sentences_a,
                     sentences_b,
                     truncation=True,
-                    padding="max_length",
                     add_special_tokens=True
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
@@ -181,8 +176,7 @@ def load_dataset_by_name(name):
                 tokenized = self.tokenizer(
                     topic,
                     sentence,
-                    truncation=True,
-                    padding='max_length'
+                    truncation=True
                 )
 
                 encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
@@ -243,8 +237,7 @@ def load_dataset_by_name(name):
                 encoded = tokenizer(
                     [question for _ in range(5)],
                     choices["text"],
-                    truncation=True,
-                    padding="max_length",
+                    truncation=True
                 )
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
