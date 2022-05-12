@@ -24,9 +24,6 @@ def load_and_process_dataset(dataset, encode_batch, label_name, label2id=None, l
     else:
         id2label = {id: label for (id, label) in enumerate(labels)}
 
-    print('num batches and size of batch of input_ids:', len(dataset["train"]["input_ids"]), len(dataset["train"]["input_ids"][0]))
-    print('num batches and size of batch of attention_mask:', len(dataset["train"]["attention_mask"]), len(dataset["train"]["attention_mask"][0]))
-    print('num batches and size of batch of labels:', len(dataset["train"]["labels"]))
     return dataset, id2label
 
 def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=None):
@@ -144,7 +141,7 @@ def load_dataset_by_name(name):
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
-            all_encoded = {"input_ids": [], "attention_mask": []}
+            all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
             # Iterate through all examples in this batch
             for context, question, answer0, answer1, answer2, answer3 in zip(examples["context"], examples["question"], examples["answer0"], examples["answer1"], examples["answer2"], examples["answer3"]):
                 sentences_a = [context + " " + question for _ in range(4)]
@@ -158,6 +155,7 @@ def load_dataset_by_name(name):
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
+                all_encoded["token_type_ids"].append(encoded["token_type_ids"])
             return all_encoded
         return load_and_process_dataset(dataset, encode_batch, "label", labels=[0,1,2,3])
     elif name == "scitail":
@@ -234,7 +232,7 @@ def load_dataset_by_name(name):
 
         def encode_batch(batch):
             """Encodes a batch of input data using the model tokenizer."""
-            all_encoded = {"input_ids": [], "attention_mask": [], "labels": []}
+            all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": [], "labels": []}
             # Iterate through all examples in this batch
             for question, choices, label in zip(batch["question"], batch["choices"], batch["labels"]):
                 #choices is a json object containing labels and text.
@@ -248,6 +246,7 @@ def load_dataset_by_name(name):
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
+                all_encoded["token_type_ids"].append(encoded["token_type_ids"])
                 all_encoded["labels"].append(0 if label == "" else label2id[label])
 
             return all_encoded

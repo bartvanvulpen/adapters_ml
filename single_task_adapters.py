@@ -53,6 +53,7 @@ def setup_adapter(model, id2label, task):
         model.add_classification_head("scitail", num_labels=len(id2label))
     elif task == "argument":
         model.load_adapter("argument/ukpsent@ukp", load_as="argument")
+        model.add_classification_head("argument", num_labels=len(id2label))
     elif task == "csqa":
         model.load_adapter("comsense/csqa@ukp", load_as="csqa")
         model.add_multiple_choice_head("csqa", num_choices=len(id2label))
@@ -96,8 +97,8 @@ def evaluate_model(model, dataset):
 training_args = TrainingArguments(
     learning_rate=1e-4,
     num_train_epochs=1,
-    per_device_train_batch_size=2,
-    per_device_eval_batch_size=2,
+    per_device_train_batch_size=8,
+    per_device_eval_batch_size=8,
     logging_steps=100,
     output_dir="training_output",
     overwrite_output_dir=True,
@@ -106,7 +107,7 @@ training_args = TrainingArguments(
 )
 
 if __name__ == '__main__':
-    tasks = ["csqa"]
+    tasks = ["mnli", "qqp", "sst", "wgrande", "imdb", "hswag", "siqa", "cqa", "scitail", "argument", "csqa", "boolq", "mrpc", "sick", "rte", "cb"]
 
     for task in tasks:
         with open('results.txt', 'a') as outfile:

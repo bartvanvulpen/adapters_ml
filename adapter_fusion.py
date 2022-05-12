@@ -116,7 +116,7 @@ if __name__ == '__main__':
                         help='file to write results to')
     args = parser.parse_args()
 
-    tasks = ["cb", "mrpc", "scitail", "qqp", "sst", "wgrande", "imdb", "hswag", "siqa", "cqa", "boolq", "rte"]
+    tasks = ["mnli", "qqp", "sst", "wgrande", "imdb", "hswag", "siqa", "cqa", "scitail", "argument", "csqa", "boolq", "mrpc", "sick", "rte", "cb"]
     for task in tasks:
         with open(args.outfile, 'a') as outfile:
             outfile.write(f"[Training fusion ST-A for task {task}]\n")
