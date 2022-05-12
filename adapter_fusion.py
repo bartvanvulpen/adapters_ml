@@ -11,7 +11,9 @@ transformers.logging.set_verbosity_error()
 
 import numpy as np
 import torch
+
 import argparse
+from time import gmtime, strftime
 
 import dataloader as dataloader
 
@@ -26,7 +28,7 @@ def load_bert_model(id2label):
     )
     return model
 
-def setup_adapter_fusion(model, id2label):
+def setup_adapter_fusion(model, id2label, task):
     # Load the pre-trained adapters we want to fuse
     model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False)
     model.load_adapter("sts/qqp@ukp", load_as="qqp", with_head=False)
@@ -53,7 +55,11 @@ def setup_adapter_fusion(model, id2label):
     model.set_active_adapters(adapter_setup)
 
     # Add a classification head for our target task
-    model.add_classification_head("cb", num_labels=len(id2label))
+    # Certain tasks requires multiple choice head instead of classification
+    if task in ["hswag", "siqa", "cqa", "csqa"]:
+        model.add_multiple_choice_head(task, num_choices=len(id2label))
+    else:
+        model.add_classification_head(task, num_labels=len(id2label))
     model.train_adapter_fusion(adapter_setup)
     return model
 
@@ -62,6 +68,7 @@ def compute_accuracy(p: EvalPrediction):
     return {"acc": (preds == p.label_ids).mean()}
 
 def train_model(model, training_args, dataset, args):
+    """Train the model with training_args, with EarlyStopping enabled."""
     trainer = AdapterTrainer(
         model=model,
         args=training_args,
@@ -69,59 +76,53 @@ def train_model(model, training_args, dataset, args):
         eval_dataset=dataset["validation"],
         compute_metrics=compute_accuracy,
     )
+    callback = EarlyStoppingCallback(early_stopping_patience=2)
+    trainer.add_callback(callback)
+
+    with open(args.outfile, 'a') as outfile:
+        outfile.write(f"Start training\t{strftime('%Y-%m-%d %H:%M:%S', gmtime())}\n")
+
     trainer.train()
-    trainer.evaluate()
 
-    print('=================DONE TRAINING============')
-    total = 0
-    total_correct = 0
-    for batch in dataset["test"]:
-        print(batch)
-        labels = batch["labels"]
-        input_ids = batch["input_ids"].to("cuda")
-        attention_mask = batch["attention_mask"].to("cuda")
-        output = model(input_ids=input_ids, attention_mask=attention_mask)
-        print(output.logits.cpu())
-        print(torch.argmax(output.logits.cpu()), labels)
-        print(torch.argmax(output.logits.cpu()) == labels, torch.sum(torch.argmax(output.logits.cpu()) == labels))
-        total_correct += torch.sum(torch.argmax(output.logits.cpu()) == labels)
-        total += 1
-        print(total, total_correct, total_correct / total)
+    #When loading the model, it is put back on the CPU, so manually put it back
+    #on the GPU for evaluation
+    if torch.cuda.is_available():
+        model = model.to('cuda')
+    accuracy = trainer.evaluate()["eval_acc"]
 
-    #predictions = trainer.predict(test_dataset=dataset["test"]).predictions
-    #test_results = compute_accuracy(predictions)
-    #output_test_file = os.path.join(training_args.output_dir, f"test_results.txt")
+    with open(args.outfile, 'a') as outfile:
+        outfile.write(f"End training\t{strftime('%Y-%m-%d %H:%M:%S', gmtime())}\n")
 
-    #with open(output_test_file, "w") as writer:
-    #    writer.write(f"accuracy for {args.task} task: {test_results['acc']}")
+    with open(args.outfile, 'a') as outfile:
+        outfile.write(f"Evaluation accuracy: {accuracy}\n")
 
 training_args = TrainingArguments(
     learning_rate=5e-5,
-    num_train_epochs=1,
-    per_device_train_batch_size=8, #higher has memory problems on lisa
-    per_device_eval_batch_size=8,
-    logging_steps=50,
+    num_train_epochs=10, #Most of the time only 1 or 2 epochs are done, so EarlyStopping is a must
+    per_device_train_batch_size=2, #higher has memory problems on lisa, but definitely possible. Work for the future
+    per_device_eval_batch_size=2,
+    logging_steps=500,
     evaluation_strategy="epoch",
     save_strategy="epoch",
-    lr_scheduler_type="constant",
     output_dir="training_output",
     overwrite_output_dir=True,
-    do_predict=True,
-    #load_best_model_at_end=True, <- this does not work currently, probably a bug from AdapterHub
-    # The next line is important to ensure the dataset labels are properly passed to the model
-    remove_unused_columns=False,
+    load_best_model_at_end=True, # Must be used for EarlyStopping
+    remove_unused_columns=False, # Important to ensure the dataset labels are properly passed to the model
 )
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-
-    parser.add_argument('--task', type=str, default='cb',
-                        help='task to train the ST-A fusion for')
-
+    parser.add_argument('--outfile', type=str,
+                        help='file to write results to')
     args = parser.parse_args()
 
-    dataset, id2label = dataloader.load_dataset_by_name(args.task)
+    tasks = ["mnli", "qqp", "sst", "wgrande", "imdb", "hswag", "siqa", "cqa", "scitail", "argument", "csqa", "boolq", "mrpc", "sick", "rte", "cb"]
+    for task in tasks:
+        with open(args.outfile, 'a') as outfile:
+            outfile.write(f"[Training fusion ST-A for task {task}]\n")
 
-    model = load_bert_model(id2label)
-    model = setup_adapter_fusion(model, id2label)
-    train_model(model, training_args, dataset, args)
+        dataset, id2label = dataloader.load_dataset_by_name(task)
+
+        model = load_bert_model(id2label)
+        model = setup_adapter_fusion(model, id2label, task)
+        train_model(model, training_args, dataset, args)

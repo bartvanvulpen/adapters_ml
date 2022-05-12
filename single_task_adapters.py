@@ -47,15 +47,16 @@ def setup_adapter(model, id2label, task):
         model.add_multiple_choice_head("siqa", num_choices=len(id2label))
     elif task == "cqa":
         model.load_adapter("comsense/cosmosqa@ukp", load_as="cqa")
-        model.add_classification_head("cqa", num_labels=len(id2label))
+        model.add_multiple_choice_head("cqa", num_choices=len(id2label))
     elif task == "scitail":
         model.load_adapter("nli/scitail@ukp", load_as="scitail")
         model.add_classification_head("scitail", num_labels=len(id2label))
     elif task == "argument":
         model.load_adapter("argument/ukpsent@ukp", load_as="argument")
+        model.add_classification_head("argument", num_labels=len(id2label))
     elif task == "csqa":
         model.load_adapter("comsense/csqa@ukp", load_as="csqa")
-        model.add_classification_head("csqa", num_labels=len(id2label))
+        model.add_multiple_choice_head("csqa", num_choices=len(id2label))
     elif task == "boolq":
         model.load_adapter("qa/boolq@ukp", load_as="boolq")
     elif task == "mrpc":
@@ -72,7 +73,7 @@ def setup_adapter(model, id2label, task):
 
     # Set active adapter
     model.set_active_adapters(task)
-    model.train_adapter(task)
+    model.train_adapter([task])
     return model
 
 def compute_accuracy(p: EvalPrediction):
@@ -106,25 +107,14 @@ training_args = TrainingArguments(
 )
 
 if __name__ == '__main__':
-    tasks = ["mrpc", "scitail", "qqp", "wgrande", "hswag", "imdb", "siqa", "cqa", "argument", "csgq", "boolq", "rte", "cb"]
+    tasks = ["mnli", "qqp", "sst", "wgrande", "imdb", "hswag", "siqa", "cqa", "scitail", "argument", "csqa", "boolq", "mrpc", "sick", "rte", "cb"]
 
     for task in tasks:
         with open('results.txt', 'a') as outfile:
             outfile.write(f"[Evaluating the adapters for task {task}]\n")
-        #try
-        dataset, id2label = dataloader.load_dataset_by_name(task)
-        #except Exception as e:
-        #    with open('results.txt', 'a') as outfile:
-        #        outfile.write(f"Couldn't load dataset because of exception: \n")
-        #        outfile.write(str(e) + '\n')
-        #    continue
 
-        try:
-            model = load_bert_model(id2label)
-            model = setup_adapter(model, id2label, task)
-        except Exception as e:
-            with open('results.txt', 'a') as outfile:
-                outfile.write(f"Couldn't load adapter because of exception: \n")
-                outfile.write(str(e) + '\n')
-            continue
+        dataset, id2label = dataloader.load_dataset_by_name(task)
+
+        model = load_bert_model(id2label)
+        model = setup_adapter(model, id2label, task)
         evaluate_model(model, dataset)
