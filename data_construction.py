@@ -14,6 +14,8 @@ def combine_train_valid(name, LOADED_DATASETS):
 
     (ds, id2label) = LOADED_DATASETS[name]
 
+    # TODO: fix validation key handling
+
     key = 'validation'
     print(type(ds['train']['input_ids']))
 
