@@ -12,7 +12,7 @@ transformers.logging.set_verbosity_error()
 import numpy as np
 import argparse
 
-import dataloader as dataloader
+import dataset_loader as dataloader
 
 def load_bert_model(id2label):
     config = BertConfig.from_pretrained(

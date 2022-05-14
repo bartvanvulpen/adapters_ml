@@ -1,6 +1,6 @@
 from transformers import AutoTokenizer, AutoAdapterModel
 from transformers import list_adapters
-import dataloader
+import dataset_loader
 from adapter_fusion import load_bert_model
 from transformers import BertTokenizer, EarlyStoppingCallback
 from transformers import BertConfig, BertModelWithHeads

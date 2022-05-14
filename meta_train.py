@@ -3,8 +3,11 @@ import os
 from copy import deepcopy
 from statistics import mean, stdev
 import json
+import argparse
 import sys
 ## PyTorch
+from adapter_fusion import load_bert_model
+from transformers.adapters.composition import Fuse
 import torch
 import torch.nn.functional as F
 import torch.utils.data as data
@@ -15,15 +18,8 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 
 ## Dataset and sampler
-from sampler import (
-    TaskBatchSampler,
-    dataset_from_tasks,
-    DATASETS,
-    TASK_IDS,
-    FewShotBatchSampler,
-    split_batch,
-    DATALOADERS,
-)
+from data_construction import get_train_val_loaders
+from sampler import split_batch
 
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "checkpoints_meta_learning/"
@@ -107,10 +103,6 @@ class ProtoMAML(pl.LightningModule):
 
         self.save_hyperparameters()
         self.model = get_adapter_fusion_model(output_size=768)
-        # (ds, id2label), key = DATALOADERS['sst']
-        #
-        # model = load_bert_model(id2label)
-        # self.model = setup_ada_fusion(model)
 
     def configure_optimizers(self):
         optimizer = optim.AdamW(self.parameters(), lr=self.hparams.lr)
@@ -347,111 +339,35 @@ def test_protomaml(model, dataset, k_shot=4):
     return mean(accuracies), stdev(accuracies)
 
 
-# Training constant
-N_WAY = 3  # All tasks have 2 or 3 classes, so set to 3 to ensure all classes are covered in an episode
-K_SHOT = 4
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
 
-"""
-CONSTRUCT DATASETS
-"""
+    parser.add_argument('--train_tasks', nargs="+", default=['sst', 'boolq'],
+                        help='task to use for meta_training for')
 
-combined_dataset = {
-    "tasks": torch.hstack(
-        [
-            torch.tensor([TASK_IDS[ds_name]] * len(ds["labels"]))
-            for ds_name, ds in DATASETS.items()
-        ]
-    ),
-    "input_ids": torch.vstack([ds["input_ids"] for ds in DATASETS.values()]),
-    "token_type_ids": torch.vstack([ds["token_type_ids"] for ds in DATASETS.values()]),
-    "attention_mask": torch.vstack([ds["attention_mask"] for ds in DATASETS.values()]),
-    "labels": torch.hstack([ds["labels"] for ds in DATASETS.values()]),
-}
+    parser.add_argument('--val_tasks', nargs="+", default=['mnli', 'qqp'],
+                        help='task to use for meta_training for')
 
-train_datasets = ["boolq", 'mnli', 'sst']
-val_datasets = ["boolq"]
-test_datasets = ["cb"]
+    args = parser.parse_args()
 
-print('Creating datasets...')
-train_set = dataset_from_tasks(
-    combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets])
-)
-print('TRAIN SET SIZE:', len(train_set))
-val_set = dataset_from_tasks(
-    combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets])
-)
-# test_set = dataset_from_tasks(
-#     combined_dataset, torch.tensor([TASK_IDS[ds] for ds in test_datasets])
-# )
-# Training set
-train_protomaml_sampler = TaskBatchSampler(
-    train_set.tasks,
-    train_set.labels,
-    include_query=True,
-    N_way=N_WAY,
-    K_shot=K_SHOT,
-    batch_size=16,
-    shuffle=True,  # Set to False, otherwise you risk getting same class twice in dataset
-)
+    train_loader, val_loader = get_train_val_loaders(args.train_tasks, args.val_tasks, num_workers=0)
 
-print('Creating train dataloader...')
-train_protomaml_loader = data.DataLoader(
-    train_set,
-    batch_sampler=train_protomaml_sampler,
-    collate_fn=train_protomaml_sampler.get_collate_fn(),
-    num_workers=4,
-)
-# print('train example')
-# x = next(iter(train_protomaml_loader))
-# print(x)
+    print("Starting training...")
+    protomaml_model = train_model(
+        ProtoMAML,
+        proto_dim=64,
+        lr=1e-3,
+        lr_inner=0.1,
+        lr_output=0.1,
+        num_inner_steps=1,  # Often values between 1 and 10
+        train_loader=train_loader,
+        val_loader=val_loader,
+    )
 
-
-
-# Validation set
-val_protomaml_sampler = TaskBatchSampler(
-    val_set.tasks,
-    val_set.labels,
-    include_query=True,
-    N_way=N_WAY,
-    K_shot=K_SHOT,
-    batch_size=1,  # We do not update the parameters, hence the batch size is irrelevant here
-    shuffle=False,
-)
-print('Creating val dataloader...')
-val_protomaml_loader = data.DataLoader(
-    val_set,
-    batch_sampler=val_protomaml_sampler,
-    collate_fn=val_protomaml_sampler.get_collate_fn(),
-    num_workers=0,
-)
-
-# print('val example')
-# x = next(iter(val_protomaml_loader))
-# print(x)
-#
-
-"""
-TRAIN THE MODEL !
-"""
-from adapter_fusion import load_bert_model
-from transformers.adapters.composition import Fuse
-
-
-print("Starting training...")
-protomaml_model = train_model(
-    ProtoMAML,
-    proto_dim=64,
-    lr=1e-3,
-    lr_inner=0.1,
-    lr_output=0.1,
-    num_inner_steps=1,  # Often values between 1 and 10
-    train_loader=train_protomaml_loader,
-    val_loader=val_protomaml_loader,
-)
-
-"""
-TEST THE MODEL
-"""
+# """
+# TEST THE MODEL
+# """
+## TODO monday
 # protomaml_result_file = os.path.join(CHECKPOINT_PATH, "protomaml_fewshot.json")
 #
 # if os.path.isfile(protomaml_result_file):
