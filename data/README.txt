@@ -1,0 +1,1 @@
+The contents of this folder are gitignored. Put in this folder the contents of the zip file with the datasets that has been shared on Slack.

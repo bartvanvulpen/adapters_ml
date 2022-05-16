@@ -8,6 +8,43 @@ import os
 import transformers
 transformers.logging.set_verbosity_error()
 import torch
+import datasets
+import pickle
+
+def preprocess_and_save_all_datasets():
+
+    for ds_name in ["mnli","qqp","sst","wgrande","imdb","hswag","siqa","cqa","scitail","argument","csqa","boolq","mrpc","sick","rte","cb"]:
+
+        dataset, id2label = load_dataset_by_name(ds_name)
+
+        if ds_name == 'argument':
+            with open('./data/' + ds_name + '_dataset.pickle', 'wb') as f:
+                pickle.dump(dataset, f)
+
+            with open('./data/' + ds_name + '_id2label.pickle', 'wb') as f:
+                pickle.dump(id2label, f)
+        else:
+            dataset.save_to_disk('./data/' + ds_name + '_dataset')
+            with open('./data/' + ds_name + '_id2label.pickle', 'wb') as f:
+                pickle.dump(id2label, f)
+
+
+
+def load_dataset_from_file(ds_name):
+
+    if ds_name == 'argument':
+
+        with open('./data/' + ds_name + '_dataset.pickle', 'rb') as f:
+            dataset = pickle.load(f)
+
+        with open('./data/' + ds_name + '_id2label.pickle', 'rb') as f:
+            id2label = pickle.load(f)
+    else:
+        dataset = datasets.load_from_disk('./data/' + ds_name + '_dataset')
+        with open('./data/' + ds_name + '_id2label.pickle', 'rb') as f:
+            id2label = pickle.load(f)
+
+    return dataset, id2label
 
 
 def load_and_process_dataset(dataset, encode_batch, label_name, label2id=None, labels=None):
@@ -47,8 +84,6 @@ def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=No
         return tokens
     return load_and_process_dataset(dataset, encode_batch, label_name, labels=labels)
 
-def load_specific_dataset_with_encoder(dataset_name, task_name, encode_batch, label_name, labels=None):
-    """Load datasets with multiple options as inputs, e.g. quess the correct ending"""
 
 def load_dataset_by_name(name):
     if name == "mnli":
@@ -160,51 +195,17 @@ def load_dataset_by_name(name):
         return load_specific_dataset("scitail", "tsv_format", ["premise", "hypothesis"], "label", labels=["neutral", "entails"])
     elif name == "argument":
 
-        class ArgumentDatasetSplit(Dataset):
-            def __init__(self):
-                super().__init__()
-
-                self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-                self.label2id = {'NoArgument': 0, 'Argument_against': 1, 'Argument_for': 2}
-                self.data = []
-
-            def add_item(self, topic, sentence, annotation):
-                """
-                adds an entry to the dataset
-                """
-
-                tokenized = self.tokenizer(
-                    topic,
-                    sentence,
-                    truncation=True
-                )
-
-                encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
-                encoded_item['input_ids'] = torch.tensor(tokenized['input_ids'])
-                encoded_item['attention_mask'] = torch.tensor(tokenized['attention_mask'])
-                encoded_item['token_type_ids'] = torch.tensor(tokenized['token_type_ids'])
-
-                self.data.append(encoded_item)
-
-
-            def __getitem__(self, index):
-                return self.data[index]
-
-            def __len__(self):
-                return len(self.data)
-
-
         dataset_dict = {
-            'train': ArgumentDatasetSplit(),
-            'validation': ArgumentDatasetSplit(),
-            'test': ArgumentDatasetSplit()
+            'train': ArgumentDataset(),
+            'validation': ArgumentDataset(),
+            'test': ArgumentDataset()
         }
 
         # loop over all files in the directory 'argument_dataset', containing the dataset files
-        for filename in os.listdir('argument_dataset'):
+        for filename in os.listdir('./data/argument_raw_data'):
             # get all .tsv files
             if filename.endswith('.tsv'):
-                with open('argument_dataset/' + filename, newline='') as f:
+                with open('./data/argument_raw_data/' + filename, newline='') as f:
                     # read each line from the tab-separated file
                     reader = csv.DictReader(f, delimiter='\t', quotechar='|')
                     for entry in reader:
@@ -260,3 +261,37 @@ def load_dataset_by_name(name):
         return load_specific_dataset("super_glue", "cb", ["premise", "hypothesis"], "label")
     else:
         raise NotImplementedError()
+
+
+class ArgumentDataset(Dataset):
+    def __init__(self):
+        super().__init__()
+
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        self.label2id = {'NoArgument': 0, 'Argument_against': 1, 'Argument_for': 2}
+        self.data = []
+
+    def add_item(self, topic, sentence, annotation):
+        """
+        adds an entry to the dataset
+        """
+
+        tokenized = self.tokenizer(
+            topic,
+            sentence,
+            truncation=True
+        )
+
+        encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
+        encoded_item['input_ids'] = torch.tensor(tokenized['input_ids'])
+        encoded_item['attention_mask'] = torch.tensor(tokenized['attention_mask'])
+        encoded_item['token_type_ids'] = torch.tensor(tokenized['token_type_ids'])
+
+        self.data.append(encoded_item)
+
+
+    def __getitem__(self, index):
+        return self.data[index]
+
+    def __len__(self):
+        return len(self.data)
