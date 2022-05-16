@@ -19,8 +19,16 @@ class IntBert(BertAdapterModel):
                 a, load_as=self.adas[a], with_head=False, config="pfeiffer"
             )
         adapter_setup = Fuse(*self.adas.values())
+        try:
+            self.delete_adapter_fusion(",".join(self.adas.values()))
+        except:
+            pass
         if adapterfusion_path:
-            self.load_adapter_fusion(adapterfusion_path, set_active=True)
+            self.load_adapter_fusion(
+                adapterfusion_path,
+                load_as=",".join(self.adas.values()),
+                set_active=True,
+            )
         else:
             self.add_adapter_fusion(adapter_setup)
             self.set_active_adapters(adapter_setup)
@@ -92,29 +100,36 @@ class IntBert(BertAdapterModel):
         )
 
 
-def create_softmax_visual(layer, datasets, dataset_names, adapters, adapterfusion_path):
+def create_softmax_visual(
+    layer, datasets, dataset_names, adapters, adapterfusion_paths
+):
     # layer is 1, ..., 12
     # example use: create_softmax_visual(2, [dataset1[0][val_key1],
-    #                      dataset2[0][val_key2],
-    #                      dataset3[0][val_key3],
-    #                      dataset4[0][val_key4]], ["multinli","qqp", "sst","boolq"], {
-    #                      "nli/multinli@ukp": "multinli",
-    #                      "sts/qqp@ukp": "qqp",
-    #                      "sentiment/sst-2@ukp": "sst",
-    #                      "comsense/winogrande@ukp": "wgrande",
-    #                      "qa/boolq@ukp": "boolq",
-    #                    }, None)
+    #                       dataset2[0][val_key2],
+    #                       dataset3[0][val_key3],
+    #                       dataset4[0][val_key4]], ["multinli","qqp", "sst","boolq"], {
+    #                       "nli/multinli@ukp": "multinli",
+    #                       "sts/qqp@ukp": "qqp",
+    #                       "sentiment/sst-2@ukp": "sst",
+    #                       "comsense/winogrande@ukp": "wgrande",
+    #                       "qa/boolq@ukp": "boolq",
+    #                     }, ["fusion_weights/mnli", "fusion_weights/qqp", "fusion_weights/sst", "fusion_weights/boolq"])
     device = (
         torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
     )
     model = IntBert.from_pretrained("bert-base-uncased")
-    model.get_adapters(adapters, adapterfusion_path)
-    model = model.to(device)
     model.eval()
-    embedding, first_layers, rest_layers, adapts, q, k = model.fix_layers(layer - 1)
     vis = []
     with torch.no_grad():
-        for dataset in datasets:
+        for i, dataset in enumerate(datasets):
+            try:
+                model.get_adapters(adapters, adapterfusion_paths[i])
+            except:
+                model.get_adapters(adapters, None)
+            model = model.to(device)
+            embedding, first_layers, rest_layers, adapts, q, k = model.fix_layers(
+                layer - 1
+            )
             dataloader = torch.utils.data.DataLoader(dataset, batch_size=128)
             vis.append(
                 torch.vstack(
