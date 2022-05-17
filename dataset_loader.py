@@ -254,7 +254,7 @@ def load_dataset_by_name(name):
     elif name == "mrpc":
         return load_specific_dataset("glue", "mrpc", ["sentence1", "sentence2"], "label")
     elif name == "sick":
-        return load_specific_dataset("sick", "default", ["sentence_A", "sentence_B", "en"], "label")
+        return load_specific_dataset("sick", "default", ["sentence_A", "sentence_B"], "label")
     elif name == "rte":
         return load_specific_dataset("glue", "rte", ["sentence1", "sentence2"], "label")
     elif name == "cb":
