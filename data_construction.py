@@ -4,7 +4,7 @@ from sampler import (
     split_batch,
 )
 import torch.utils.data as data
-from dataset_loader import load_dataset_by_name
+from dataset_loader import load_dataset_by_name, load_dataset_from_file
 
 
 def combine_train_valid(name, LOADED_DATASETS):
@@ -17,8 +17,6 @@ def combine_train_valid(name, LOADED_DATASETS):
     # TODO: fix validation key handling
 
     key = 'validation'
-    print(type(ds['train']['input_ids']))
-
     # combine input data from train and validation set
     all_inputs = torch.cat((ds["train"]["input_ids"], ds[key]["input_ids"]), dim=0)
     all_token_types = torch.cat((ds["train"]["token_type_ids"], ds[key]["token_type_ids"]), dim=0)
@@ -84,9 +82,11 @@ def get_train_val_loaders(train_datasets, val_datasets, test_datasets=[], num_wo
 
     dataset_names = train_datasets + val_datasets
 
-    LOADED_DATASETS = {name: load_dataset_by_name(name) for name in dataset_names}
+    LOADED_DATASETS = {name: load_dataset_by_name('boolq') for name in dataset_names}
 
     print('Done loading all datasets')
+
+    print('Com')
     DATASETS = {ds: combine_train_valid(ds, LOADED_DATASETS) for ds in LOADED_DATASETS.keys()}
     TASK_IDS = {name: id for id, name in enumerate(DATASETS.keys())}
 

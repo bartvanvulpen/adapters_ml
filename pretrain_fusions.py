@@ -99,7 +99,7 @@ if __name__ == '__main__':
         os.makedirs(f'saved/sep_adapters/{target_task}')
 
     train(model, training_args, dataset, validation_key=val_key)
-    model.save_adapter_fusion(f"saved/fusion/{target_task}", "multinli,qqp,sst,wgrande,boolq")
+    model.save_adapter_fusion(f"saved/fusion/{target_task}", "boolq")
     model.save_all_adapters(f"saved/sep_adapters/{target_task}")
 
 

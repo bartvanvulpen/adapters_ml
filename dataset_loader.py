@@ -11,6 +11,41 @@ import torch
 import datasets
 import pickle
 
+
+class ArgumentDatasetSplit(Dataset):
+    def __init__(self):
+        super().__init__()
+
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        self.label2id = {'NoArgument': 0, 'Argument_against': 1, 'Argument_for': 2}
+        self.data = []
+
+    def add_item(self, topic, sentence, annotation):
+        """
+        adds an entry to the dataset
+        """
+
+        tokenized = self.tokenizer(
+            topic,
+            sentence,
+            truncation=True,
+            max_length=180,
+            padding="max_length"
+        )
+
+        encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
+        encoded_item['input_ids'] = torch.tensor(tokenized['input_ids'])
+        encoded_item['attention_mask'] = torch.tensor(tokenized['attention_mask'])
+        encoded_item['token_type_ids'] = torch.tensor(tokenized['token_type_ids'])
+
+        self.data.append(encoded_item)
+
+    def __getitem__(self, index):
+        return self.data[index]
+
+    def __len__(self):
+        return len(self.data)
+
 def preprocess_and_save_all_datasets():
 
     for ds_name in ["mnli","qqp","sst","wgrande","imdb","hswag","siqa","cqa","scitail","argument","csqa","boolq","mrpc","sick","rte","cb"]:
@@ -63,6 +98,7 @@ def load_and_process_dataset(dataset, encode_batch, label_name, label2id=None, l
 
     return dataset, id2label
 
+
 def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=None):
     dataset = load_dataset(dataset_name, task_name)
     tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
@@ -77,12 +113,19 @@ def load_specific_dataset(dataset_name, task_name, inputs, label_name, labels=No
         tokens = tokenizer(
             *batch_inputs,
             truncation=True,
-            add_special_tokens=True
+            add_special_tokens=True,
+            max_length=180,
+            padding="max_length"
         )
         if not labels is None:
             tokens["labels"] = [label2id[label] if label in label2id else 0 for label in batch["labels"]]
         return tokens
+
     return load_and_process_dataset(dataset, encode_batch, label_name, labels=labels)
+
+
+def load_specific_dataset_with_encoder(dataset_name, task_name, encode_batch, label_name, labels=None):
+    """Load datasets with multiple options as inputs, e.g. quess the correct ending"""
 
 
 def load_dataset_by_name(name):
@@ -99,6 +142,7 @@ def load_dataset_by_name(name):
         dataset = load_dataset("winogrande", "winogrande_xl")
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         label2id = {"1": 0, "2": 1, "": 0}
+
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
             all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
@@ -110,13 +154,16 @@ def load_dataset_by_name(name):
                     sentence_a,
                     sentence_b,
                     truncation=True,
-                    add_special_tokens=True
+                    add_special_tokens=True,
+                    max_length=180,
+                    padding="max_length"
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
                 all_encoded["token_type_ids"].append(encoded["token_type_ids"])
             all_encoded["labels"] = [label2id[label] if label in label2id else 0 for label in examples["labels"]]
             return all_encoded
+
         return load_and_process_dataset(dataset, encode_batch, "answer", labels=["1", "2"])
     elif name == "imdb":
         return load_specific_dataset("imdb", "plain_text", ["text"], "label")
@@ -136,7 +183,9 @@ def load_dataset_by_name(name):
                 encoded = tokenizer(
                     [context for _ in range(4)],
                     answers,
-                    truncation=True
+                    truncation=True,
+                    max_length=180,
+                    padding="max_length"
                 )
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
@@ -151,61 +200,76 @@ def load_dataset_by_name(name):
         dataset = load_dataset("social_i_qa", "default")
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         label2id = {"1": 0, "2": 1, "3": 2, "": 0}
+
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
             all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
             # Iterate through all examples in this batch
-            for context, question, answerA, answerB, answerC in zip(examples["context"], examples["question"], examples["answerA"], examples["answerB"], examples["answerC"]):
+            for context, question, answerA, answerB, answerC in zip(examples["context"], examples["question"],
+                                                                    examples["answerA"], examples["answerB"],
+                                                                    examples["answerC"]):
                 sentences_a = [context + " " + question for _ in range(3)]
                 sentences_b = [answerA, answerB, answerC]
                 encoded = tokenizer(
                     sentences_a,
                     sentences_b,
                     truncation=True,
-                    add_special_tokens=True
+                    add_special_tokens=True,
+                    max_length=180,
+                    padding="max_length"
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
                 all_encoded["token_type_ids"].append(encoded["token_type_ids"])
             all_encoded["labels"] = [label2id[label] if label in label2id else 0 for label in examples["labels"]]
             return all_encoded
+
         return load_and_process_dataset(dataset, encode_batch, "label", labels=["1", "2", "3"])
     elif name == "cqa":
         dataset = load_dataset("cosmos_qa", "default")
         tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
         def encode_batch(examples):
             """Encodes a batch of input data using the model tokenizer."""
             all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": []}
             # Iterate through all examples in this batch
-            for context, question, answer0, answer1, answer2, answer3 in zip(examples["context"], examples["question"], examples["answer0"], examples["answer1"], examples["answer2"], examples["answer3"]):
+            for context, question, answer0, answer1, answer2, answer3 in zip(examples["context"], examples["question"],
+                                                                             examples["answer0"], examples["answer1"],
+                                                                             examples["answer2"], examples["answer3"]):
                 sentences_a = [context + " " + question for _ in range(4)]
                 sentences_b = [answer0, answer1, answer2, answer3]
                 encoded = tokenizer(
                     sentences_a,
                     sentences_b,
                     truncation=True,
-                    add_special_tokens=True
+                    add_special_tokens=True,
+                    max_length=180,
+                    padding="max_length"
                 )
                 all_encoded["input_ids"].append(encoded["input_ids"])
                 all_encoded["attention_mask"].append(encoded["attention_mask"])
                 all_encoded["token_type_ids"].append(encoded["token_type_ids"])
             return all_encoded
-        return load_and_process_dataset(dataset, encode_batch, "label", labels=[0,1,2,3])
+
+        return load_and_process_dataset(dataset, encode_batch, "label", labels=[0, 1, 2, 3])
     elif name == "scitail":
-        return load_specific_dataset("scitail", "tsv_format", ["premise", "hypothesis"], "label", labels=["neutral", "entails"])
+        return load_specific_dataset("scitail", "tsv_format", ["premise", "hypothesis"], "label",
+                                     labels=["neutral", "entails"])
     elif name == "argument":
 
+
+
         dataset_dict = {
-            'train': ArgumentDataset(),
-            'validation': ArgumentDataset(),
-            'test': ArgumentDataset()
+            'train': ArgumentDatasetSplit(),
+            'validation': ArgumentDatasetSplit(),
+            'test': ArgumentDatasetSplit()
         }
 
         # loop over all files in the directory 'argument_dataset', containing the dataset files
-        for filename in os.listdir('./data/argument_raw_data'):
+        for filename in os.listdir('argument_dataset'):
             # get all .tsv files
             if filename.endswith('.tsv'):
-                with open('./data/argument_raw_data/' + filename, newline='') as f:
+                with open('argument_dataset/' + filename, newline='') as f:
                     # read each line from the tab-separated file
                     reader = csv.DictReader(f, delimiter='\t', quotechar='|')
                     for entry in reader:
@@ -220,6 +284,8 @@ def load_dataset_by_name(name):
 
         id2label = {0: 'NoArgument', 1: 'Argument_against', 2: 'Argument_for'}
 
+        print(dataset_dict)
+
         return dataset_dict, id2label
 
 
@@ -233,12 +299,14 @@ def load_dataset_by_name(name):
             all_encoded = {"input_ids": [], "attention_mask": [], "token_type_ids": [], "labels": []}
             # Iterate through all examples in this batch
             for question, choices, label in zip(batch["question"], batch["choices"], batch["labels"]):
-                #choices is a json object containing labels and text.
-                #The labels are always the same, so we can just take the text.
+                # choices is a json object containing labels and text.
+                # The labels are always the same, so we can just take the text.
                 encoded = tokenizer(
                     [question for _ in range(5)],
                     choices["text"],
-                    truncation=True
+                    truncation=True,
+                    max_length=180,
+                    padding="max_length"
                 )
 
                 all_encoded["input_ids"].append(encoded["input_ids"])
@@ -263,35 +331,5 @@ def load_dataset_by_name(name):
         raise NotImplementedError()
 
 
-class ArgumentDataset(Dataset):
-    def __init__(self):
-        super().__init__()
-
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-        self.label2id = {'NoArgument': 0, 'Argument_against': 1, 'Argument_for': 2}
-        self.data = []
-
-    def add_item(self, topic, sentence, annotation):
-        """
-        adds an entry to the dataset
-        """
-
-        tokenized = self.tokenizer(
-            topic,
-            sentence,
-            truncation=True
-        )
-
-        encoded_item = {'labels': torch.tensor(self.label2id[annotation])}
-        encoded_item['input_ids'] = torch.tensor(tokenized['input_ids'])
-        encoded_item['attention_mask'] = torch.tensor(tokenized['attention_mask'])
-        encoded_item['token_type_ids'] = torch.tensor(tokenized['token_type_ids'])
-
-        self.data.append(encoded_item)
-
-
-    def __getitem__(self, index):
-        return self.data[index]
-
-    def __len__(self):
-        return len(self.data)
+# if __name__ == '__main__':
+    # preprocess_and_save_all_datasets()
