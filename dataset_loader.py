@@ -131,7 +131,7 @@ def load_specific_dataset_with_encoder(dataset_name, task_name, encode_batch, la
 def load_dataset_by_name(name):
     if name == "mnli":
         dataset, id2label = load_specific_dataset("glue", "mnli", ["premise", "hypothesis"], "label")
-        dataset['validation'] = dataset['validation_mismatched']
+        dataset['validation'] = dataset['validation_matched']
         return dataset, id2label
 
     elif name == "qqp":
