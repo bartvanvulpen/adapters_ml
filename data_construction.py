@@ -14,14 +14,20 @@ def combine_train_valid(name, LOADED_DATASETS):
 
     (ds, id2label) = LOADED_DATASETS[name]
 
-    # TODO: fix validation key handling
+    # TODO: fix this
+    print(name)
 
     key = 'validation'
+
+    if name == 'imdb':
+        key = 'test'
+
+
     # combine input data from train and validation set
-    all_inputs = torch.cat((ds["train"]["input_ids"], ds[key]["input_ids"]), dim=0)
-    all_token_types = torch.cat((ds["train"]["token_type_ids"], ds[key]["token_type_ids"]), dim=0)
-    all_masks = torch.cat((ds["train"]["attention_mask"], ds[key]["attention_mask"]), dim=0)
-    all_labels = torch.cat((ds["train"]["labels"], ds[key]["labels"]), dim=0)
+    all_inputs = torch.cat((torch.tensor(ds["train"]["input_ids"]), torch.tensor(ds[key]["input_ids"])), dim=0)
+    all_token_types = torch.cat((torch.tensor(ds["train"]["token_type_ids"]), torch.tensor(ds[key]["token_type_ids"])), dim=0)
+    all_masks = torch.cat((torch.tensor(ds["train"]["attention_mask"]), torch.tensor(ds[key]["attention_mask"])), dim=0)
+    all_labels = torch.cat((torch.tensor(ds["train"]["labels"]), torch.tensor(ds[key]["labels"])), dim=0)
 
     return {
         "input_ids": all_inputs,
@@ -76,17 +82,17 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
 
 
 
-def get_train_val_loaders(train_datasets, val_datasets, test_datasets=[], num_workers=0, N_WAY = 3, K_SHOT = 4, ):
+def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3, K_SHOT = 4):
 
     print('Loading all datasets...')
 
     dataset_names = train_datasets + val_datasets
 
-    LOADED_DATASETS = {name: load_dataset_by_name('boolq') for name in dataset_names}
+    LOADED_DATASETS = {name: load_dataset_from_file(name) for name in dataset_names}
 
     print('Done loading all datasets')
 
-    print('Com')
+    print('Combining...')
     DATASETS = {ds: combine_train_valid(ds, LOADED_DATASETS) for ds in LOADED_DATASETS.keys()}
     TASK_IDS = {name: id for id, name in enumerate(DATASETS.keys())}
 
@@ -114,10 +120,11 @@ def get_train_val_loaders(train_datasets, val_datasets, test_datasets=[], num_wo
 
     print('VAL SET SIZE:', len(val_set))
 
-    # TODO: test set
-    # test_set = dataset_from_tasks(
-    #     combined_dataset, torch.tensor([TASK_IDS[ds] for ds in test_datasets])
-    # )
+    # imdb
+    # hswag
+    # mrpc
+    # argument
+    # scitail
 
     # Training set
     train_protomaml_sampler = TaskBatchSampler(
@@ -127,7 +134,7 @@ def get_train_val_loaders(train_datasets, val_datasets, test_datasets=[], num_wo
         N_way=N_WAY,
         K_shot=K_SHOT,
         batch_size=16,
-        shuffle=True,  # Set to False, otherwise you risk getting same class twice in dataset
+        shuffle=True,
     )
 
     print('Creating train dataloader...')

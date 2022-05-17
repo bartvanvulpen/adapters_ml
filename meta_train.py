@@ -16,23 +16,19 @@ from transformers.adapters import BertAdapterModel
 ## PyTorch Lightning
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
+from dataset_loader import ArgumentDatasetSplit
 
 ## Dataset and sampler
 from data_construction import get_train_val_loaders
 from sampler import split_batch
 from ProtoMAML import ProtoMAML
 
-
-"""
-TRAINING AND TESTING FUNCTIONS
-"""
-
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "checkpoints_meta_learning/"
 
 def train_model(model_class, train_loader, val_loader, **kwargs):
 
-    debug = False
+    debug = True
     trainer = pl.Trainer(fast_dev_run=debug,
         default_root_dir=os.path.join(CHECKPOINT_PATH, model_class.__name__),
         gpus=1 if torch.cuda.is_available() else 0,
@@ -64,69 +60,6 @@ def train_model(model_class, train_loader, val_loader, **kwargs):
 
     return model
 
-
-def test_protomaml(model, dataset, k_shot=4):
-
-    pl.seed_everything(42)
-    model = model.to(device)
-    num_classes = dataset.targets.unique().shape[0]
-    exmps_per_class = dataset.targets.shape[0] // num_classes
-
-    # Data loader for full test set as query set
-    full_dataloader = data.DataLoader(
-        dataset, batch_size=128, num_workers=4, shuffle=False, drop_last=False
-    )
-    # Data loader for sampling support sets
-    sampler = FewShotBatchSampler(
-        dataset.targets,
-        include_query=False,
-        N_way=num_classes,
-        K_shot=k_shot,
-        shuffle=False,
-        shuffle_once=False,
-    )
-    sample_dataloader = data.DataLoader(dataset, batch_sampler=sampler, num_workers=2)
-
-    # We iterate through the full dataset in two manners. First, to select the k-shot batch.
-    # Second, the evaluate the model on all other examples
-    accuracies = []
-    for (support_imgs, support_targets), support_indices in tqdm(
-        zip(sample_dataloader, sampler), "Performing few-shot finetuning"
-    ):
-        support_imgs = support_imgs.to(device)
-        support_targets = support_targets.to(device)
-
-        # Finetune new model on support set
-        local_model, output_weight, output_bias, classes = model.adapt_few_shot(
-            support_imgs, support_targets
-        )
-        with torch.no_grad():  # No gradients for query set needed
-            local_model.eval()
-            batch_acc = torch.zeros((0,), dtype=torch.float32, device=device)
-
-            # Evaluate all examples in test dataset
-            for query_imgs, query_targets in full_dataloader:
-                query_imgs = query_imgs.to(device)
-                query_targets = query_targets.to(device)
-                query_labels = (
-                    (classes[None, :] == query_targets[:, None]).long().argmax(dim=-1)
-                )
-                _, _, acc = model.run_model(
-                    local_model, output_weight, output_bias, query_imgs, query_labels
-                )
-                batch_acc = torch.cat([batch_acc, acc.detach()], dim=0)
-
-            # Exclude support set elements
-            for s_idx in support_indices:
-                batch_acc[s_idx] = 0
-            batch_acc = batch_acc.sum().item() / (
-                batch_acc.shape[0] - len(support_indices)
-            )
-            accuracies.append(batch_acc)
-
-    return mean(accuracies), stdev(accuracies)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
@@ -136,43 +69,39 @@ if __name__ == '__main__':
     parser.add_argument('--val_tasks', nargs="+", default=['mnli', 'qqp'],
                         help='task to use for meta_training for')
 
+    parser.add_argument('--inner_steps', type=int, default=1,
+                        help='number of inner steps')
+
+    parser.add_argument('--k_shot', type=int, default=4,
+                        help='number of samples to take per class')
+
+    parser.add_argument('--lr', type=float, default=0.001,
+                        help='learning rate')
+
+    parser.add_argument('--lr_inner', type=float, default=0.1,
+                        help='learning rate')
+
+    parser.add_argument('--lr_outer', type=float, default=0.1,
+                        help='learning rate')
+
+    parser.add_argument('--n_workers', type=int, default=0,
+                        help='learning rate')
+
+
+
     args = parser.parse_args()
 
-    train_loader, val_loader = get_train_val_loaders(args.train_tasks, args.val_tasks, num_workers=0)
+    train_loader, val_loader = get_train_val_loaders(args.train_tasks, args.val_tasks, num_workers=args.n_workers)
 
     print("Starting training...")
     protomaml_model = train_model(
         ProtoMAML,
-        proto_dim=64,
-        lr=1e-3,
-        lr_inner=0.1,
-        lr_output=0.1,
-        num_inner_steps=1,  # Often values between 1 and 10
+        proto_dim=768,
+        lr=args.lr,
+        lr_inner=args.lr_inner,
+        lr_output=args.lr_outer,
+        num_inner_steps=args.inner_steps,  # Often values between 1 and 10
         train_loader=train_loader,
         val_loader=val_loader,
     )
 
-# """
-# TEST THE MODEL
-# """
-## TODO monday
-# protomaml_result_file = os.path.join(CHECKPOINT_PATH, "protomaml_fewshot.json")
-#
-# if os.path.isfile(protomaml_result_file):
-#     # Load pre-computed results
-#     with open(protomaml_result_file, "r") as f:
-#         protomaml_accuracies = json.load(f)
-#     protomaml_accuracies = {int(k): v for k, v in protomaml_accuracies.items()}
-# else:
-#     # Perform experiments
-#     protomaml_accuracies = dict()
-#     for k in [2, 4, 8, 16, 32]:
-#         protomaml_accuracies[k] = test_protomaml(protomaml_model, test_set, k_shot=k)
-#     # Export results
-#     with open(protomaml_result_file, "w") as f:
-#         json.dump(protomaml_accuracies, f, indent=4)
-#
-# for k in protomaml_accuracies:
-#     print(
-#         f"Accuracy for k={k}: {100.0*protomaml_accuracies[k][0]:4.2f}% (+-{100.0*protomaml_accuracies[k][1]:4.2f}%)"
-#     )
