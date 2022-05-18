@@ -21,3 +21,4 @@ dependencies:
   - pip:
     - tensorboard==2.7.0
     - adapter-transformers==3.0.0
+    - ray[tune]==1.12.1
