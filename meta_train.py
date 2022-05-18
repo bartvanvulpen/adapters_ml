@@ -22,10 +22,9 @@ def train_model(model_class, train_loader, val_loader, **kwargs):
     trainer = pl.Trainer(fast_dev_run=debug,
         default_root_dir=os.path.join(CHECKPOINT_PATH, model_class.__name__),
         gpus=1 if torch.cuda.is_available() else 0,
-        max_epochs=200,
+        max_steps=200,
         callbacks=[
             ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc"),
-            LearningRateMonitor("epoch"),
         ],
         progress_bar_refresh_rate=0,
     )
