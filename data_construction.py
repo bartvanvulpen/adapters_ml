@@ -84,12 +84,13 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
         labels=dataset["labels"][task_mask],
         **kwargs
     )
-    return dataset
+
+    return dataset if max_num == None else dataset[:max_num]
 
 
 
 
-def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3, K_SHOT = 4):
+def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, K_SHOT = 4):
 
     print('Loading all datasets...')
 
@@ -138,7 +139,6 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
         train_set.tasks,
         train_set.labels,
         include_query=True,
-        N_way=N_WAY,
         K_shot=K_SHOT,
         batch_size=16,
         shuffle=True,
@@ -158,7 +158,6 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
         val_set.tasks,
         val_set.labels,
         include_query=True,
-        N_way=N_WAY,
         K_shot=K_SHOT,
         batch_size=1,  # We do not update the parameters, hence the batch size is irrelevant here
         shuffle=False
