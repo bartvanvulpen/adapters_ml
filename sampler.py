@@ -40,7 +40,6 @@ class FewShotBatchSampler(object):
         self.include_query = include_query
         if self.include_query:
             self.K_shot *= 2
-        self.batch_size = self.N_way * self.K_shot  # Number of overall samples per batch
 
         # Organize examples by task and class
         self.tasks = torch.unique(self.dataset_tasks).tolist()
