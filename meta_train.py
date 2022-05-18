@@ -1,18 +1,8 @@
 ## Standard libraries
 import os
-from copy import deepcopy
-from statistics import mean, stdev
-import json
 import argparse
-import sys
-## PyTorch
-from adapter_fusion import load_bert_model
-from transformers.adapters.composition import Fuse
 import torch
-import torch.nn.functional as F
-import torch.utils.data as data
-import torch.optim as optim
-from transformers.adapters import BertAdapterModel
+
 ## PyTorch Lightning
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
@@ -69,7 +59,7 @@ if __name__ == '__main__':
     parser.add_argument('--val_tasks', nargs="+", default=['mnli', 'qqp'],
                         help='task to use for meta_training for')
 
-    parser.add_argument('--inner_steps', type=int, default=1,
+    parser.add_argument('--inner_steps', type=int, default=5,
                         help='number of inner steps')
 
     parser.add_argument('--k_shot', type=int, default=4,
@@ -92,6 +82,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     train_loader, val_loader = get_train_val_loaders(args.train_tasks, args.val_tasks, num_workers=args.n_workers)
+
+      # multiple choice:
+    #["hswag", "siqa", "cqa", "csqa"]
+
 
     print("Starting training...")
     protomaml_model = train_model(

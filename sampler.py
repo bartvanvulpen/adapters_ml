@@ -172,8 +172,6 @@ class TaskBatchSampler(object):
     def get_collate_fn(self):
         # Returns a collate function that converts a list of items into format for transformer model
         def collate_fn(item_list):
-            print(len(item_list))
-            print(item_list[0])
             collated = [(x, label) for _, x, label in item_list]
             return collated
 

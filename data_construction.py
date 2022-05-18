@@ -14,19 +14,27 @@ def combine_train_valid(name, LOADED_DATASETS):
 
     (ds, id2label) = LOADED_DATASETS[name]
 
-    # TODO: fix this
-    print(name)
-
+    # handle validation keys
     key = 'validation'
-
     if name == 'imdb':
         key = 'test'
 
-    # combine input data from train and validation set
-    all_inputs = torch.cat((torch.tensor(ds["train"]["input_ids"]), torch.tensor(ds[key]["input_ids"])), dim=0)
-    all_token_types = torch.cat((torch.tensor(ds["train"]["token_type_ids"]), torch.tensor(ds[key]["token_type_ids"])), dim=0)
-    all_masks = torch.cat((torch.tensor(ds["train"]["attention_mask"]), torch.tensor(ds[key]["attention_mask"])), dim=0)
-    all_labels = torch.cat((torch.tensor(ds["train"]["labels"]), torch.tensor(ds[key]["labels"])), dim=0)
+    if name == 'argument':
+        all_inputs = torch.cat((torch.stack([x['input_ids'] for x in ds['train']]),
+                                torch.stack([x['input_ids'] for x in ds['validation']])), dim=0)
+        all_token_types = torch.cat((torch.stack([x['token_type_ids'] for x in ds['train']]),
+                                torch.stack([x['token_type_ids'] for x in ds['validation']])), dim=0)
+        all_masks = torch.cat((torch.stack([x['attention_mask'] for x in ds['train']]),
+                                     torch.stack([x['attention_mask'] for x in ds['validation']])), dim=0)
+        all_labels = torch.cat((torch.stack([x['labels'] for x in ds['train']]),
+                              torch.stack([x['labels'] for x in ds['validation']])), dim=0)
+
+    else:
+        # combine input data from train and validation set
+        all_inputs = torch.cat((torch.tensor(ds["train"]["input_ids"]), torch.tensor(ds[key]["input_ids"])), dim=0)
+        all_token_types = torch.cat((torch.tensor(ds["train"]["token_type_ids"]), torch.tensor(ds[key]["token_type_ids"])), dim=0)
+        all_masks = torch.cat((torch.tensor(ds["train"]["attention_mask"]), torch.tensor(ds[key]["attention_mask"])), dim=0)
+        all_labels = torch.cat((torch.tensor(ds["train"]["labels"]), torch.tensor(ds[key]["labels"])), dim=0)
 
     return {
         "input_ids": all_inputs,
