@@ -118,11 +118,11 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
 
     print('Creating datasets...')
     train_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets], max_num = 1000)
+        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets])
     )
     print('TRAIN SET SIZE:', len(train_set))
     val_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets], max_num = 1000)
+        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets])
     )
 
     print('VAL SET SIZE:', len(val_set))
