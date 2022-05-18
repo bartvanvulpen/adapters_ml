@@ -16,18 +16,18 @@ from ProtoMAML import ProtoMAML
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "checkpoints_meta_learning/"
 
-def train_model(model_class, train_loader, val_loader, **kwargs):
+def train_model(model_class, train_loader, val_loader, n_epochs, **kwargs):
 
-    debug = True
+    debug = False
     trainer = pl.Trainer(fast_dev_run=debug,
         default_root_dir=os.path.join(CHECKPOINT_PATH, model_class.__name__),
         gpus=1 if torch.cuda.is_available() else 0,
         max_epochs=200,
         callbacks=[
             ModelCheckpoint(save_weights_only=True, mode="max", monitor="val_acc"),
-            LearningRateMonitor("epoch"),
+            LearningRateMonitor("epoch")
         ],
-        progress_bar_refresh_rate=0,
+        progress_bar_refresh_rate=0, log_every_n_steps=1,
     )
     trainer.logger._default_hp_metric = None
 
@@ -76,7 +76,6 @@ if __name__ == '__main__':
 
     parser.add_argument('--n_workers', type=int, default=0,
                         help='learning rate')
-
 
 
     args = parser.parse_args()
