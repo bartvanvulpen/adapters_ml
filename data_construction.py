@@ -22,7 +22,6 @@ def combine_train_valid(name, LOADED_DATASETS):
     if name == 'imdb':
         key = 'test'
 
-
     # combine input data from train and validation set
     all_inputs = torch.cat((torch.tensor(ds["train"]["input_ids"]), torch.tensor(ds[key]["input_ids"])), dim=0)
     all_token_types = torch.cat((torch.tensor(ds["train"]["token_type_ids"]), torch.tensor(ds[key]["token_type_ids"])), dim=0)

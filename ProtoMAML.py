@@ -124,7 +124,7 @@ class ProtoMAML(pl.LightningModule):
     def adapt_few_shot(self, support_inputs, support_targets):
 
         # Determine prototype initialization
-
+        print(support_inputs['input_ids'].size())
         support_feats = self.model(input_ids=support_inputs['input_ids'],
                                    attention_mask=support_inputs['attention_mask'],
                                    token_type_ids=support_inputs['token_type_ids']).pooler_output

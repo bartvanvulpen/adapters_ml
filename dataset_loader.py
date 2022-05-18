@@ -12,6 +12,24 @@ import datasets
 import pickle
 
 
+def multiple_choice_collator(features):
+    labels = [feature.pop('labels') for feature in features]
+    batch_size = len(features)
+    num_choices = len(features[0]["input_ids"])
+    flattened_features = [
+        [{k: v[i] for k, v in feature.items()} for i in range(num_choices)] for feature in features
+    ]
+    flattened_features = sum(flattened_features, [])
+
+    # batch = tokenizer.pad(
+    #     flattened_features,
+    #     return_tensors="pt",
+    # )
+
+    batch = {k: v.view(batch_size, num_choices, -1) for k, v in batch.items()}
+    batch["labels"] = torch.tensor(labels, dtype=torch.int64)
+    return batch
+
 
 class ArgumentDatasetSplit(Dataset):
     def __init__(self):
@@ -49,9 +67,10 @@ class ArgumentDatasetSplit(Dataset):
 
 def preprocess_and_save_all_datasets():
 
-    for ds_name in ["mnli","qqp","sst","wgrande","imdb","hswag","siqa","cqa","scitail","argument","csqa","boolq","mrpc","sick","rte","cb"]:
+    for ds_name in ["hswag", "siqa", "cqa", "csqa"]:
 
         dataset, id2label = load_dataset_by_name(ds_name)
+
 
         if ds_name == 'argument':
             with open('./data/' + ds_name + '_dataset.pickle', 'wb') as f:
@@ -332,5 +351,5 @@ def load_dataset_by_name(name):
         raise NotImplementedError()
 
 
-# if __name__ == '__main__':
-    # preprocess_and_save_all_datasets()
+if __name__ == '__main__':
+    preprocess_and_save_all_datasets()
