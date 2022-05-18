@@ -85,7 +85,7 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
         **kwargs
     )
 
-    return dataset if max_num == None else dataset[:max_num]
+    return dataset
 
 
 
