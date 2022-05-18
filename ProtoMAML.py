@@ -147,9 +147,7 @@ class ProtoMAML(pl.LightningModule):
         output_bias = init_bias.detach().requires_grad_()
 
         # Optimize inner loop model on support set
-        print('Going to innersteps')
         for i in range(self.hparams.num_inner_steps):
-            print(f'Innerstep: {i}')
 
             # Determine loss on the support set
             loss, _, _ = self.run_model(

@@ -16,7 +16,7 @@ from ProtoMAML import ProtoMAML
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "checkpoints_meta_learning/"
 
-def train_model(model_class, train_loader, val_loader, n_epochs, **kwargs):
+def train_model(model_class, train_loader, val_loader, **kwargs):
 
     debug = False
     trainer = pl.Trainer(fast_dev_run=debug,
