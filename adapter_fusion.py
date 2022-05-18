@@ -157,7 +157,7 @@ if __name__ == '__main__':
         with open(args.outfile, 'a') as outfile:
             outfile.write(f"[Training fusion ST-A for task {task}]\n")
 
-        dataset, id2label = dataset_loader.load_dataset_by_name(task)
+        dataset, id2label = dataset_loader.load_dataset_from_file(task)
 
         model = load_bert_model(id2label)
         model = setup_adapter_fusion(model, id2label, task)
