@@ -69,7 +69,7 @@ class NLPDataset(data.Dataset):
         return self.labels.shape[0]
 
 
-def dataset_from_tasks(dataset, tasks, max_num=None, **kwargs):
+def dataset_from_tasks(dataset, tasks, **kwargs):
     """
     Create a new dataset based on filtering out specific tasks in the combined dataset
     """
@@ -84,7 +84,7 @@ def dataset_from_tasks(dataset, tasks, max_num=None, **kwargs):
         labels=dataset["labels"][task_mask],
         **kwargs
     )
-    return dataset if max_num != None else dataset[:max_num]
+    return dataset
 
 
 
