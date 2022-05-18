@@ -69,7 +69,7 @@ class NLPDataset(data.Dataset):
         return self.labels.shape[0]
 
 
-def dataset_from_tasks(dataset, tasks, **kwargs):
+def dataset_from_tasks(dataset, tasks, max_num=None, **kwargs):
     """
     Create a new dataset based on filtering out specific tasks in the combined dataset
     """
@@ -84,7 +84,7 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
         labels=dataset["labels"][task_mask],
         **kwargs
     )
-    return dataset
+    return dataset if max_num != None else dataset[:max_num]
 
 
 
@@ -118,11 +118,11 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
 
     print('Creating datasets...')
     train_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets])
+        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets], max_num = 1000)
     )
     print('TRAIN SET SIZE:', len(train_set))
     val_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets])
+        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets], max_num = 1000)
     )
 
     print('VAL SET SIZE:', len(val_set))
