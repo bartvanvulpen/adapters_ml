@@ -1,6 +1,6 @@
 """File to load the datasets for each task"""
 
-from datasets import load_dataset
+from datasets import load_dataset, Value
 from transformers import BertTokenizer
 from torch.utils.data import Dataset
 import csv
@@ -319,7 +319,36 @@ def load_dataset_by_name(name):
 
         return load_and_process_dataset(dataset, encode_batch, "answerKey", labels=["A", "B", "C", "D", "E"])
     elif name == "boolq":
-        return load_specific_dataset("boolq", "default", ["question", "passage"], "answer", labels=["true", "false"])
+        dataset = load_dataset("boolq")
+        tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+        label2id = {False: 0, True: 1}
+
+        inputs = ["question", "passage"]
+        def encode_batch(batch):
+            """Encodes a batch of input data using the model tokenizer.
+            If the labels are not given as ints, change them to ints"""
+            batch_inputs = [batch[name] for name in inputs]
+            tokens = tokenizer(
+                *batch_inputs,
+                truncation=True,
+                add_special_tokens=True,
+                max_length=180,
+                padding="max_length"
+            )
+            return tokens
+
+        # The transformers model expects the target class column to be named "labels"
+        dataset = dataset.rename_column("answer", "labels")
+        # Encode the input data
+        dataset = dataset.map(encode_batch, batched=True)
+        dataset = dataset.cast_column('labels', Value('int32'))
+
+        # Transform to pytorch tensors and only output the required columns
+        dataset.set_format(type="torch", columns=["input_ids", "attention_mask", "token_type_ids", "labels"])
+
+        id2label = {id: label for (id, label) in enumerate(["False", "True"])}
+
+        return dataset, id2label
     elif name == "mrpc":
         return load_specific_dataset("glue", "mrpc", ["sentence1", "sentence2"], "label")
     elif name == "sick":
