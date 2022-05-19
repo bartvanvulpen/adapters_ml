@@ -20,7 +20,7 @@ class FewShotBatchSampler(object):
             dataset_tasks - PyTorch tensor of the id's of the tasks in the dataset.
             dataset_classes - PyTorch tensor of the classes in the dataset
             K_shot - Number of examples to sample per class in the batch.
-            include_query - If True, returns batch of size N_way*K_shot*2, which 
+            include_query - If True, returns batch of size num_classes * K_shot*2, which 
                             can be split into support and query set. Simplifies
                             the implementation of sampling the same classes but 
                             distinct examples for support and query set.
