@@ -119,7 +119,7 @@ class TaskBatchSampler(object):
         super().__init__()
         self.batch_sampler = FewShotBatchSampler(dataset_tasks, dataset_targets, K_shot, include_query, shuffle)
         self.task_batch_size = batch_size
-        self.local_batch_size = self.batch_sampler.batch_size
+        # self.local_batch_size = self.batch_sampler.batch_size
 
     def __iter__(self):
         # Aggregate multiple batches before returning the indices
@@ -131,7 +131,7 @@ class TaskBatchSampler(object):
                 batch_list = []
 
     def __len__(self):
-        return len(self.batch_sampler)//self.task_batch_size
+        return self.batch_sampler.__len__()//self.task_batch_size
 
    
     def get_collate_fn(self):
