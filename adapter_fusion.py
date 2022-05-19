@@ -129,7 +129,7 @@ def train_model(model, training_args, dataset, collator_fn, args):
 training_args = TrainingArguments(
     learning_rate=5e-5,
     num_train_epochs=10, #Most of the time only 1 or 2 epochs are done, so EarlyStopping is a must
-    per_device_train_batch_size=2, #higher has memory problems on lisa, but definitely possible. Work for the future
+    per_device_train_batch_size=2, #higher has memory problems on lisa, but definitely possible. Can be set as argument
     per_device_eval_batch_size=2,
     logging_steps=500,
     evaluation_strategy="epoch",
@@ -153,11 +153,11 @@ if __name__ == '__main__':
     training_args.per_device_train_batch_size = args.batch_size
     training_args.per_device_eval_batch_size = args.batch_size
 
-    for task in tasks:
+    for task in args.tasks:
         with open(args.outfile, 'a') as outfile:
             outfile.write(f"[Training fusion ST-A for task {task}]\n")
 
-        dataset, id2label = dataset_loader.load_dataset_from_file(task)
+        dataset, id2label = dataset_loader.load_dataset_by_name(task)
 
         model = load_bert_model(id2label)
         model = setup_adapter_fusion(model, id2label, task)
