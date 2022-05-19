@@ -69,7 +69,7 @@ class NLPDataset(data.Dataset):
         return self.labels.shape[0]
 
 
-def dataset_from_tasks(dataset, tasks, max_num=None, **kwargs):
+def dataset_from_tasks(dataset, tasks, **kwargs):
     """
     Create a new dataset based on filtering out specific tasks in the combined dataset
     """
@@ -84,12 +84,13 @@ def dataset_from_tasks(dataset, tasks, max_num=None, **kwargs):
         labels=dataset["labels"][task_mask],
         **kwargs
     )
-    return dataset if max_num != None else dataset[:max_num]
+
+    return dataset
 
 
 
 
-def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3, K_SHOT = 4):
+def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, K_SHOT = 4):
 
     print('Loading all datasets...')
 
@@ -118,11 +119,11 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
 
     print('Creating datasets...')
     train_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets], max_num = 1000)
+        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets])
     )
     print('TRAIN SET SIZE:', len(train_set))
     val_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets], max_num = 1000)
+        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets])
     )
 
     print('VAL SET SIZE:', len(val_set))
@@ -138,7 +139,6 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
         train_set.tasks,
         train_set.labels,
         include_query=True,
-        N_way=N_WAY,
         K_shot=K_SHOT,
         batch_size=16,
         shuffle=True,
@@ -158,7 +158,6 @@ def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, N_WAY = 3
         val_set.tasks,
         val_set.labels,
         include_query=True,
-        N_way=N_WAY,
         K_shot=K_SHOT,
         batch_size=1,  # We do not update the parameters, hence the batch size is irrelevant here
         shuffle=False

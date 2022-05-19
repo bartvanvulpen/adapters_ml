@@ -74,7 +74,7 @@ class ProtoNet:
     def calculate_prototypes(features, targets):
         # Given a stack of features vectors and labels, return class prototypes
         # features - shape [N, proto_dim], targets - shape [N]
-        classes, _ = torch.unique(targets).sort()  # Determine which classes we have
+        classes, _ = torch.unique(targets).float().sort()  # Determine which classes we have
         prototypes = []
 
         for c in classes:
@@ -147,7 +147,7 @@ class ProtoMAML(pl.LightningModule):
         output_bias = init_bias.detach().requires_grad_()
 
         # Optimize inner loop model on support set
-        for _ in range(self.hparams.num_inner_steps):
+        for i in range(self.hparams.num_inner_steps):
 
             # Determine loss on the support set
             loss, _, _ = self.run_model(
