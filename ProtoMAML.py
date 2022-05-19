@@ -74,7 +74,7 @@ class ProtoNet:
     def calculate_prototypes(features, targets):
         # Given a stack of features vectors and labels, return class prototypes
         # features - shape [N, proto_dim], targets - shape [N]
-        classes, _ = torch.unique(targets).sort()  # Determine which classes we have
+        classes, _ = torch.unique(targets).float().sort()  # Determine which classes we have
         prototypes = []
 
         for c in classes:
