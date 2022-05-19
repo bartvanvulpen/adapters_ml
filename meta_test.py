@@ -47,7 +47,6 @@ def test_protomaml(model, dataset, k_shot=4):
     sampler = FewShotBatchSampler(
         dataset.targets,
         include_query=False,
-        N_way=num_classes,
         K_shot=k_shot,
         shuffle=False,
         shuffle_once=False,
