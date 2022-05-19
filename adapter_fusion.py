@@ -26,6 +26,7 @@ def load_bert_model(id2label):
     return model
 
 def setup_adapter_fusion(model, id2label):
+
     # Load the pre-trained adapters we want to fuse
     model.load_adapter("nli/multinli@ukp", load_as="multinli", with_head=False)
     model.load_adapter("sts/qqp@ukp", load_as="qqp", with_head=False)

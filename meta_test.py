@@ -99,9 +99,7 @@ if __name__ == '__main__':
     parser.add_argument('--test_tasks', nargs="+", default=['sst', 'boolq'],
                         help='task to use for meta_training for')
 
-
     # TODO: protomaml model
-
     # Load best checkpoint after training
 
     path_to_best_model = "xxx"
