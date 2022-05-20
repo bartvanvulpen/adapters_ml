@@ -116,6 +116,8 @@ class ProtoMAML(pl.LightningModule):
                                    attention_mask=inputs['attention_mask'],
                                    token_type_ids=inputs['token_type_ids']).pooler_output
         preds = F.linear(feats, output_weight, output_bias)
+        if preds.shape[0] > labels.shape[0]:
+            preds = preds.reshape(labels.shape[0], -1)
         loss = F.cross_entropy(preds, labels)
         acc = (preds.argmax(dim=1) == labels).float()
 
@@ -127,6 +129,8 @@ class ProtoMAML(pl.LightningModule):
         support_feats = self.model(input_ids=support_inputs['input_ids'],
                                    attention_mask=support_inputs['attention_mask'],
                                    token_type_ids=support_inputs['token_type_ids']).pooler_output
+        if support_feats.shape[0] > support_targets.shape[0]:
+            support_targets = torch.zeros(support_feats.shape[0]).to(support_targets.device)
         prototypes, classes = ProtoNet.calculate_prototypes(
             support_feats, support_targets
         )
