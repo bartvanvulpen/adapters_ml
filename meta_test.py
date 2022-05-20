@@ -20,7 +20,7 @@ from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 from dataset_loader import ArgumentDatasetSplit
 
 ## Dataset and sampler
-from data_construction import get_train_val_loaders
+from data_construction import get_test_loaders
 from sampler import split_batch
 from tqdm import tqdm
 from ProtoMAML import ProtoMAML
@@ -29,61 +29,50 @@ from sampler import FewShotBatchSampler
 ## Path to the folder where the pretrained models are saved
 CHECKPOINT_PATH = "checkpoints_meta_learning/"
 
-
-def test_protomaml(model, dataset, k_shot=4):
+def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     pl.seed_everything(42)
     model = model.to(device)
-    num_classes = dataset.targets.unique().shape[0]
-    exmps_per_class = dataset.targets.shape[0] // num_classes
 
-    # Data loader for full test set as query set
-    full_dataloader = data.DataLoader(
-        dataset, batch_size=16, num_workers=4, shuffle=False, drop_last=False
-    )
-    # Data loader for sampling support sets
-    sampler = FewShotBatchSampler(
-        dataset.targets,
-        include_query=False,
-        N_way=num_classes,
-        K_shot=k_shot,
-        shuffle=False,
-        shuffle_once=False,
-    )
-    sample_dataloader = data.DataLoader(dataset, batch_sampler=sampler, num_workers=2)
+    # get test dataloaders and sampler
+    full_test_loader, sample_test_loader, sampler = get_test_loaders(task, K_SHOT=k_shot, full_dl_batch_size=full_dl_batch_size, num_workers=0)
 
-    # We iterate through the full dataset in two manners. First, to select the k-shot batch.
-    # Second, the evaluate the model on all other examples
+    # Select the k-shot batch and finetune
     accuracies = []
-    for (support_imgs, support_targets), support_indices in tqdm(
-        zip(sample_dataloader, sampler), "Performing few-shot finetuning"
-    ):
-        support_imgs = support_imgs.to(device)
-        support_targets = support_targets.to(device)
+    i = 0
+    for x, support_indices in tqdm(zip(sample_test_loader, sampler), "Performing few-shot finetuning"):
+        i += 1
+        support_inputs = {'input_ids' : x[1][0].to(device), 'token_type_ids' : x[1][1].to(device),
+                          'attention_mask' : x[1][2].to(device)}
+        support_targets = x[2].to(device)
 
         # Finetune new model on support set
         local_model, output_weight, output_bias, classes = model.adapt_few_shot(
-            support_imgs, support_targets
+            support_inputs, support_targets
         )
-        with torch.no_grad():  # No gradients for query set needed
+
+        # get accuracy of finetuned model on full dataset
+        with torch.no_grad():
             local_model.eval()
             batch_acc = torch.zeros((0,), dtype=torch.float32, device=device)
 
-            # Evaluate all examples in test dataset
-            for query_imgs, query_targets in full_dataloader:
-                query_imgs = query_imgs.to(device)
-                query_targets = query_targets.to(device)
+            for q_data in full_test_loader:
+
+                query_inputs = {'input_ids' : q_data[1][0].to(device), 'token_type_ids' : q_data[1][1].to(device),
+                                'attention_mask' : q_data[1][2].to(device)}
+
+                query_targets = q_data[2].to(device)
                 query_labels = (
                     (classes[None, :] == query_targets[:, None]).long().argmax(dim=-1)
                 )
                 _, _, acc = model.run_model(
-                    local_model, output_weight, output_bias, query_imgs, query_labels
+                    local_model, output_weight, output_bias, query_inputs, query_labels
                 )
                 batch_acc = torch.cat([batch_acc, acc.detach()], dim=0)
 
-            # Exclude support set elements
+            # exclude support set elements
             for s_idx in support_indices:
                 batch_acc[s_idx] = 0
             batch_acc = batch_acc.sum().item() / (
@@ -91,42 +80,47 @@ def test_protomaml(model, dataset, k_shot=4):
             )
             accuracies.append(batch_acc)
 
-    return mean(accuracies), stdev(accuracies)
+        # return mean accuracy over the runs after max iterations
+        if i == max_it:
+            return mean(accuracies), stdev(accuracies)
+
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--test_tasks', nargs="+", default=['sst', 'boolq'],
-                        help='task to use for meta_training for')
+    parser.add_argument('--test_task', type=str,
+                        help='task to use for meta testing', required=True)
 
-    # TODO: protomaml model
-    # Load best checkpoint after training
+    parser.add_argument('--ckpt_path', type=str, default='metatrain_outputs/cb_mnli_sst-boolq_mrpc/lightning_logs/version_3/checkpoints/epoch=0-step=1.ckpt',
+                        help='specifiy checkpoint path of model to use')
 
-    path_to_best_model = "xxx"
-    model_class = ProtoMAML
-    protomaml_model = model_class.load_from_checkpoint(path_to_best_model)
+    parser.add_argument('--max_it', type=int, default=20,
+                        help='max number of few shot samplings in meta testing')
 
+    parser.add_argument('--bs', type=int, default=8,
+                        help='batch size for when iterating throught the whole validation set to obtain accuracy')
 
-    # TODO: test set dataloader
-    test_set = []
+    parser.add_argument('--results_file_path', type=str, default='result_file.json',
+                        help='path + filename to store results file')
 
-    protomaml_result_file = os.path.join(CHECKPOINT_PATH, "protomaml_fewshot.json")
+    parser.add_argument('--k_values', nargs="+", default=[2],
+                        help='which k-values to test on')
 
+    args = parser.parse_args()
 
-    if os.path.isfile(protomaml_result_file):
-        # Load pre-computed results
-        with open(protomaml_result_file, "r") as f:
-            protomaml_accuracies = json.load(f)
-        protomaml_accuracies = {int(k): v for k, v in protomaml_accuracies.items()}
-    else:
-        # Perform experiments
-        protomaml_accuracies = dict()
-        for k in [2, 4, 8, 16, 32]:
-            protomaml_accuracies[k] = test_protomaml(protomaml_model, test_set, k_shot=k)
-        # Export results
-        with open(protomaml_result_file, "w") as f:
-            json.dump(protomaml_accuracies, f, indent=4)
+    protomaml_result_file = args.results_file_path
+
+    # Load specified checkpoint after training
+    protomaml_model = ProtoMAML.load_from_checkpoint(args.ckpt_path)
+
+    # Perform experiments
+    protomaml_accuracies = dict()
+    for k in args.k_values:
+        protomaml_accuracies[k] = test_protomaml(protomaml_model, args.test_task, k_shot=k, max_it=args.max_it, full_dl_batch_size=args.bs)
+    # Export results
+    with open(protomaml_result_file, "w") as f:
+        json.dump(protomaml_accuracies, f, indent=4)
 
     for k in protomaml_accuracies:
         print(

@@ -67,8 +67,7 @@ class ArgumentDatasetSplit(Dataset):
 
 def preprocess_and_save_all_datasets():
 
-    for ds_name in ["hswag", "siqa", "cqa", "csqa"]:
-
+    for ds_name in ['mnli', 'qqp', 'sst', 'wgrande', 'boolq', 'imdb', 'scitail', 'argument', 'mrpc', 'sick', 'rte', 'cb'] + ["hswag", "siqa", "cqa", "csqa"]:
         dataset, id2label = load_dataset_by_name(ds_name)
 
 

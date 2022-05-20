@@ -36,6 +36,7 @@ def get_adapter_fusion_model(adapters_to_use):
                     "scitail": "nli/scitail@ukp", "argument" : "argument/ukpsent@ukp", "mrpc" : "sts/mrpc@ukp",
                     "sick" : "nli/sick@ukp", "rte" : "nli/rte@ukp", "cb" : "nli/cb@ukp"}
 
+
     model = BertAdapterModel.from_pretrained("bert-base-uncased")
     for a in adapters_to_use:
         model.load_adapter(all_adapters[a], load_as=a, with_head=False, config="pfeiffer")

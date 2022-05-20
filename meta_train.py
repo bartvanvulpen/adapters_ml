@@ -21,12 +21,12 @@ if not os.path.exists(CHECKPOINT_PATH):
 
 def train_model(model_class, train_loader, max_n_steps, save_dir_name, debug=False, **kwargs):
 
-    print(debug)
+    print('Debug:', debug)
     trainer = pl.Trainer(fast_dev_run=debug,
         default_root_dir=os.path.join(CHECKPOINT_PATH, save_dir_name),
         gpus=torch.cuda.device_count() if torch.cuda.is_available() else 0,
         max_steps=max_n_steps,
-        callbacks=[ModelCheckpoint(save_weights_only=True, mode="min", monitor="train_loss", verbose=True, every_n_train_steps=1)],
+        callbacks=[ModelCheckpoint(save_weights_only=True, mode="min", monitor="train_loss", verbose=True, every_n_train_steps=5)],
         progress_bar_refresh_rate=0, log_every_n_steps=1,
     )
     trainer.logger._default_hp_metric = None
@@ -75,7 +75,8 @@ if __name__ == '__main__':
     parser.add_argument('--n_workers', type=int, default=0,
                         help='Number of workers')
 
-    parser.add_argument('--debug', action='store_true', help='Use --debug when you want to do a quick dev run')
+    parser.add_argument('--debug', action='store_true',
+                        help='Use --debug when you want to do a quick dev run')
 
     parser.add_argument('--max_steps', type=int, default=200,
                         help='Maximum number of steps to train on')
@@ -103,7 +104,7 @@ if __name__ == '__main__':
     train_loader = get_train_loader(tasks, K_SHOT=args.k_shot, task_batch_size=args.task_batch_size, num_workers=args.n_workers)
 
     print("Starting training...")
-    protomaml_model = train_model(
+    trained_protomaml_model = train_model(
         ProtoMAML,
         lr=args.lr,
         lr_inner=args.lr_inner,

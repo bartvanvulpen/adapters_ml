@@ -99,6 +99,14 @@ class FewShotBatchSampler(object):
         # Infinite sampler
         return 1e100
 
+    def get_collate_fn(self):
+        # Returns a collate function that converts a list of items into format for transformer model
+        def collate_fn(item_list):
+            collated = [(x, label) for _, x, label in item_list]
+            return collated
+
+        return collate_fn
+
 class TaskBatchSampler(object):
 
     def __init__(self, dataset_tasks, dataset_targets, batch_size, K_shot, include_query=False, shuffle=True):
@@ -139,8 +147,6 @@ class TaskBatchSampler(object):
         def collate_fn(item_list):
             collated = [(x, label) for _, x, label in item_list]
             return collated
-
-        # TODO: insert collate_fn for multiple choice from Github
 
         return collate_fn
 
