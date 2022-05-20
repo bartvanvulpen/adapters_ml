@@ -129,15 +129,20 @@ class ProtoMAML(pl.LightningModule):
         support_feats = self.model(input_ids=support_inputs['input_ids'],
                                    attention_mask=support_inputs['attention_mask'],
                                    token_type_ids=support_inputs['token_type_ids']).pooler_output
+        # create fake targets that are all 0's for multiple choice input
         if support_feats.shape[0] > support_targets.shape[0]:
-            support_targets = torch.zeros(support_feats.shape[0]).to(support_targets.device)
+            prot_targets = torch.zeros(support_feats.shape[0]).to(support_targets.device)
+        else:
+            prot_targets = support_targets
         prototypes, classes = ProtoNet.calculate_prototypes(
-            support_feats, support_targets
+            support_feats, prot_targets
         )
-        support_labels = (
-            (classes[None, :] == support_targets[:, None]).long().argmax(dim=-1)
-        )
-
+        if support_feats.shape[0] > support_targets.shape[0]:
+            support_labels = support_targets
+        else:
+            support_labels = (
+                (classes[None, :] == support_targets[:, None]).long().argmax(dim=-1)
+            )
         # Create inner-loop model and optimizer
         local_model = deepcopy(self.model)
         local_model.train()
