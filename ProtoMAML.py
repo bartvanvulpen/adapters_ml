@@ -18,60 +18,61 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
 
 ## Dataset and sampler
-from data_construction import get_train_val_loaders
+from data_construction import get_train_loader
 from sampler import split_batch
 
-
-
 """
-Mock model for testing purposes --> Replace with adaptor fusion model
-"""
-from transformers import BertForSequenceClassification
-
-
-def get_transformer_model(output_size):
-    model = BertForSequenceClassification.from_pretrained(
-        "bert-base-uncased", num_labels=output_size
-    )
-    for param in model.bert.parameters():
-        param.requires_grad = False
-    return model
-
-
-"""
-Bert with adapter fusion
+Load BERT with adapter fusion
 """
 
+def get_adapter_fusion_model(adapters_to_use):
 
-def get_adapter_fusion_model(
-    output_size=768,
-    adapters={
-        "nli/multinli@ukp": "multinli",
-        "sts/qqp@ukp": "qqp",
-        "sentiment/sst-2@ukp": "sst",
-        "comsense/winogrande@ukp": "wgrande",
-        "qa/boolq@ukp": "boolq",
-    },
-):
+    if adapters_to_use == []:
+        raise RuntimeError('You must specifiy the adapters to use!')
+
+
+    all_adapters = {"mnli": "nli/multinli@ukp", "qqp": "sts/qqp@ukp", "sst": "sentiment/sst-2@ukp",
+                    "wgrande": "comsense/winogrande@ukp", "boolq": "qa/boolq@ukp", "imdb": "sentiment/imdb@ukp",
+                    "scitail": "nli/scitail@ukp", "argument" : "argument/ukpsent@ukp", "mrpc" : "sts/mrpc@ukp",
+                    "sick" : "nli/sick@ukp", "rte" : "nli/rte@ukp", "cb" : "nli/cb@ukp"}
+
     model = BertAdapterModel.from_pretrained("bert-base-uncased")
-    for a in adapters:
-        model.load_adapter(a, load_as=adapters[a], with_head=False, config="pfeiffer")
-    adapter_setup = Fuse(*adapters.values())
+    for a in adapters_to_use:
+        model.load_adapter(all_adapters[a], load_as=a, with_head=False, config="pfeiffer")
+    adapter_setup = Fuse(*adapters_to_use)
     model.add_adapter_fusion(adapter_setup)
     model.set_active_adapters(adapter_setup)
     model.train_adapter_fusion(adapter_setup)
-    # linear layer?
-    return model
 
+    return model
 
 """
 PROTOMAML MODEL (incl function to calculate prototypes)
 """
 
+class ProtoMAML(pl.LightningModule):
+    def __init__(self, lr, lr_inner, lr_output, num_inner_steps, k_shot, task_batch_size, tasks, adapters_used):
+        """
+        Inputs
+            proto_dim - Dimensionality of prototype feature space
+            lr - Learning rate of the outer loop Adam optimizer
+            lr_inner - Learning rate of the inner loop SGD optimizer
+            lr_output - Learning rate for the output layer in the inner loop
+            num_inner_steps - Number of inner loop updates to perform
+        """
+        super().__init__()
 
-class ProtoNet:
-    @staticmethod
-    def calculate_prototypes(features, targets):
+        self.save_hyperparameters()
+        self.model = get_adapter_fusion_model(adapters_used)
+
+    def configure_optimizers(self):
+        optimizer = optim.AdamW(self.parameters(), lr=self.hparams.lr)
+        scheduler = optim.lr_scheduler.MultiStepLR(
+            optimizer, milestones=[140, 180], gamma=0.1
+        )
+        return [optimizer], [scheduler]
+
+    def calculate_prototypes(self, features, targets):
         # Given a stack of features vectors and labels, return class prototypes
         # features - shape [N, proto_dim], targets - shape [N]
         classes, _ = torch.unique(targets).float().sort()  # Determine which classes we have
@@ -86,29 +87,6 @@ class ProtoNet:
         # Return the 'classes' tensor to know which prototype belongs to which class
         return prototypes, classes
 
-
-class ProtoMAML(pl.LightningModule):
-    def __init__(self, proto_dim, lr, lr_inner, lr_output, num_inner_steps):
-        """
-        Inputs
-            proto_dim - Dimensionality of prototype feature space
-            lr - Learning rate of the outer loop Adam optimizer
-            lr_inner - Learning rate of the inner loop SGD optimizer
-            lr_output - Learning rate for the output layer in the inner loop
-            num_inner_steps - Number of inner loop updates to perform
-        """
-        super().__init__()
-
-        self.save_hyperparameters()
-        self.model = get_adapter_fusion_model(output_size=768)
-
-    def configure_optimizers(self):
-        optimizer = optim.AdamW(self.parameters(), lr=self.hparams.lr)
-        scheduler = optim.lr_scheduler.MultiStepLR(
-            optimizer, milestones=[140, 180], gamma=0.1
-        )
-        return [optimizer], [scheduler]
-
     def run_model(self, local_model, output_weight, output_bias, inputs, labels):
 
         # Execute a model with given output layer weights and inputs
@@ -116,6 +94,7 @@ class ProtoMAML(pl.LightningModule):
                                    attention_mask=inputs['attention_mask'],
                                    token_type_ids=inputs['token_type_ids']).pooler_output
         preds = F.linear(feats, output_weight, output_bias)
+
         if preds.shape[0] > labels.shape[0]:
             preds = preds.reshape(labels.shape[0], -1)
         loss = F.cross_entropy(preds, labels)
@@ -129,20 +108,23 @@ class ProtoMAML(pl.LightningModule):
         support_feats = self.model(input_ids=support_inputs['input_ids'],
                                    attention_mask=support_inputs['attention_mask'],
                                    token_type_ids=support_inputs['token_type_ids']).pooler_output
+
         # create fake targets that are all 0's for multiple choice input
         if support_feats.shape[0] > support_targets.shape[0]:
+
             prot_targets = torch.zeros(support_feats.shape[0]).to(support_targets.device)
         else:
             prot_targets = support_targets
-        prototypes, classes = ProtoNet.calculate_prototypes(
-            support_feats, prot_targets
-        )
+
+        prototypes, classes = self.calculate_prototypes(support_feats, prot_targets)
+
         if support_feats.shape[0] > support_targets.shape[0]:
             support_labels = support_targets
         else:
             support_labels = (
                 (classes[None, :] == support_targets[:, None]).long().argmax(dim=-1)
             )
+
         # Create inner-loop model and optimizer
         local_model = deepcopy(self.model)
         local_model.train()
@@ -190,7 +172,6 @@ class ProtoMAML(pl.LightningModule):
 
         # Determine gradients for batch of tasks
         for i, task_batch in enumerate(batch):
-            print(f'MODE: {mode}, SAMPLE BATCH: {i}')
             inputs, targets = task_batch
 
             support_inputs, query_inputs, support_targets, query_targets = split_batch(
@@ -233,11 +214,12 @@ class ProtoMAML(pl.LightningModule):
         self.log(f"{mode}_acc", sum(accuracies) / len(accuracies))
 
     def training_step(self, batch, batch_idx):
+        print(f'TRAINING STEP: {batch_idx}')
         self.outer_loop(batch, mode="train")
         return None  # Returning None means we skip the default training optimizer steps by PyTorch Lightning
 
-    def validation_step(self, batch, batch_idx):
-        # Validation requires to finetune a model, hence we need to enable gradients
-        torch.set_grad_enabled(True)
-        self.outer_loop(batch, mode="val")
-        torch.set_grad_enabled(False)
+    # def validation_step(self, batch, batch_idx):
+    #     # Validation requires to finetune a model, hence we need to enable gradients
+    #     torch.set_grad_enabled(True)
+    #     self.outer_loop(batch, mode="val")
+    #     torch.set_grad_enabled(False)

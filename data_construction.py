@@ -44,8 +44,6 @@ def combine_train_valid(name, LOADED_DATASETS):
     }
 
 
-
-
 class NLPDataset(data.Dataset):
     """
     Generic dataset to handle all the NLP datasets in a similar way
@@ -88,86 +86,76 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
     return dataset
 
 
+def get_train_loader(train_datasets=[], K_SHOT=4, task_batch_size=16, num_workers=0):
+
+   if train_datasets == []:
+        raise RuntimeError('Train datasets must be specified!')
+
+   if "hswag" in train_datasets or "siqa" in train_datasets or "cqa" in train_datasets or "csqa" in train_datasets:
+        raise RuntimeError("Multiple choice datasets may not be used!")
+
+   else:
+        print('Loading training data...')
+        LOADED_DATASETS = {name: load_dataset_from_file(name) for name in train_datasets}
+        DATASETS = {ds: combine_train_valid(ds, LOADED_DATASETS) for ds in LOADED_DATASETS.keys()}
+        TASK_IDS = {name: id for id, name in enumerate(DATASETS.keys())}
+
+        combined_dataset = {
+            "tasks": torch.hstack(
+                [
+                    torch.tensor([TASK_IDS[ds_name]] * len(ds["labels"]))
+                    for ds_name, ds in DATASETS.items()
+                ]
+            ),
+            "input_ids": torch.vstack([ds["input_ids"] for ds in DATASETS.values()]),
+            "token_type_ids": torch.vstack([ds["token_type_ids"] for ds in DATASETS.values()]),
+            "attention_mask": torch.vstack([ds["attention_mask"] for ds in DATASETS.values()]),
+            "labels": torch.hstack([ds["labels"] for ds in DATASETS.values()]),
+        }
+
+        train_set = dataset_from_tasks(
+            combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets])
+        )
+
+        # Training set
+        train_protomaml_sampler = TaskBatchSampler(
+            train_set.tasks,
+            train_set.labels,
+            include_query=True,
+            K_shot=K_SHOT,
+            batch_size=task_batch_size,
+            shuffle=True,
+        )
+
+        train_protomaml_loader = data.DataLoader(
+            train_set,
+            batch_sampler=train_protomaml_sampler,
+            collate_fn=train_protomaml_sampler.get_collate_fn(),
+            num_workers=num_workers,
+        )
+
+        print('Done! TRAIN SET SIZE:', len(train_set))
+        return train_protomaml_loader
 
 
-def get_train_val_loaders(train_datasets, val_datasets, num_workers=0, K_SHOT = 4):
-
-    print('Loading all datasets...')
-
-    dataset_names = train_datasets + val_datasets
-
-    LOADED_DATASETS = {name: load_dataset_from_file(name) for name in dataset_names}
-
-    print('Done loading all datasets')
-
-    print('Combining...')
-    DATASETS = {ds: combine_train_valid(ds, LOADED_DATASETS) for ds in LOADED_DATASETS.keys()}
-    TASK_IDS = {name: id for id, name in enumerate(DATASETS.keys())}
-
-    combined_dataset = {
-        "tasks": torch.hstack(
-            [
-                torch.tensor([TASK_IDS[ds_name]] * len(ds["labels"]))
-                for ds_name, ds in DATASETS.items()
-            ]
-        ),
-        "input_ids": torch.vstack([ds["input_ids"] for ds in DATASETS.values()]),
-        "token_type_ids": torch.vstack([ds["token_type_ids"] for ds in DATASETS.values()]),
-        "attention_mask": torch.vstack([ds["attention_mask"] for ds in DATASETS.values()]),
-        "labels": torch.hstack([ds["labels"] for ds in DATASETS.values()]),
-    }
-
-    print('Creating datasets...')
-    train_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in train_datasets])
-    )
-    print('TRAIN SET SIZE:', len(train_set))
-    val_set = dataset_from_tasks(
-        combined_dataset, torch.tensor([TASK_IDS[ds] for ds in val_datasets])
-    )
-
-    print('VAL SET SIZE:', len(val_set))
-
-    # imdb
-    # hswag
-    # mrpc
-    # argument
-    # scitail
-
-    # Training set
-    train_protomaml_sampler = TaskBatchSampler(
-        train_set.tasks,
-        train_set.labels,
-        include_query=True,
-        K_shot=K_SHOT,
-        batch_size=16,
-        shuffle=True,
-    )
-
-    print('Creating train dataloader...')
-    train_protomaml_loader = data.DataLoader(
-        train_set,
-        batch_sampler=train_protomaml_sampler,
-        collate_fn=train_protomaml_sampler.get_collate_fn(),
-        num_workers=num_workers,
-    )
 
 
-    # Validation set
-    val_protomaml_sampler = TaskBatchSampler(
-        val_set.tasks,
-        val_set.labels,
-        include_query=True,
-        K_shot=K_SHOT,
-        batch_size=1,  # We do not update the parameters, hence the batch size is irrelevant here
-        shuffle=False
-    )
-    print('Creating val dataloader...')
-    val_protomaml_loader = data.DataLoader(
-        val_set,
-        batch_sampler=val_protomaml_sampler,
-        collate_fn=val_protomaml_sampler.get_collate_fn(),
-        num_workers=num_workers,
-    )
 
-    return train_protomaml_loader, val_protomaml_loader
+    # # Validation set
+    # val_protomaml_sampler = TaskBatchSampler(
+    #     val_set.tasks,
+    #     val_set.labels,
+    #     include_query=True,
+    #     K_shot=K_SHOT,
+    #     batch_size=1,  # We do not update the parameters, hence the batch size is irrelevant here
+    #     shuffle=False
+    # )
+    # print('Creating val dataloader...')
+    # val_protomaml_loader = data.DataLoader(
+    #     val_set,
+    #     batch_sampler=val_protomaml_sampler,
+    #     collate_fn=val_protomaml_sampler.get_collate_fn(),
+    #     num_workers=num_workers,
+    # )
+
+

@@ -1,6 +1,7 @@
 # exclude contents of data folder, except the readme
 data/*
-!data/README.txt 
+!data/README.txt
+metatrain_outputs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
