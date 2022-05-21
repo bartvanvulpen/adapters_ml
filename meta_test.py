@@ -99,7 +99,7 @@ if __name__ == '__main__':
                         help='max number of few shot samplings in meta testing')
 
     parser.add_argument('--bs', type=int, default=8,
-                        help='batch size for when iterating throught the whole validation set to obtain accuracy')
+                        help='batch size for when iterating through the whole validation set to obtain accuracy')
 
     parser.add_argument('--results_file_path', type=str, default='result_file.json',
                         help='path + filename to store results file')
