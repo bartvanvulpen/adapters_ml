@@ -34,7 +34,8 @@ def get_adapter_fusion_model(adapters_to_use):
     all_adapters = {"mnli": "nli/multinli@ukp", "qqp": "sts/qqp@ukp", "sst": "sentiment/sst-2@ukp",
                     "wgrande": "comsense/winogrande@ukp", "boolq": "qa/boolq@ukp", "imdb": "sentiment/imdb@ukp",
                     "scitail": "nli/scitail@ukp", "argument" : "argument/ukpsent@ukp", "mrpc" : "sts/mrpc@ukp",
-                    "sick" : "nli/sick@ukp", "rte" : "nli/rte@ukp", "cb" : "nli/cb@ukp"}
+                    "sick" : "nli/sick@ukp", "rte" : "nli/rte@ukp", "cb" : "nli/cb@ukp", "siqa": "comsense/siqa@ukp",
+                    "csqa": "comsense/csqa@ukp", "cqa": "comsense/cosmosqa@ukp", "hswag": "comsense/hellaswag@ukp"}
 
 
     model = BertAdapterModel.from_pretrained("bert-base-uncased")
