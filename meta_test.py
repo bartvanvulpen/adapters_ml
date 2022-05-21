@@ -95,6 +95,9 @@ if __name__ == '__main__':
     parser.add_argument('--ckpt_path', type=str, default='metatrain_outputs/cb_mnli_sst-boolq_mrpc/lightning_logs/version_3/checkpoints/epoch=0-step=1.ckpt',
                         help='specifiy checkpoint path of model to use')
 
+    parser.add_argument('--inner_steps', type=int, default=200,
+                        help='number of inner steps')
+
     parser.add_argument('--max_it', type=int, default=20,
                         help='max number of few shot samplings in meta testing')
 
@@ -113,6 +116,9 @@ if __name__ == '__main__':
 
     # Load specified checkpoint after training
     protomaml_model = ProtoMAML.load_from_checkpoint(args.ckpt_path)
+
+    # change number of innersteps
+    protomaml_model.hparams.num_inner_steps = args.inner_steps
 
     # Perform experiments
     protomaml_accuracies = dict()
