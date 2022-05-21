@@ -123,6 +123,7 @@ if __name__ == '__main__':
     # Perform experiments
     protomaml_accuracies = dict()
     for k in args.k_values:
+        k = int(k)
         protomaml_accuracies[k] = test_protomaml(protomaml_model, args.test_task, k_shot=k, max_it=args.max_it, full_dl_batch_size=args.bs)
     # Export results
     with open(protomaml_result_file, "w") as f:
