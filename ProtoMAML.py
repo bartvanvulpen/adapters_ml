@@ -25,7 +25,7 @@ from sampler import split_batch
 Load BERT with adapter fusion
 """
 
-def get_adapter_fusion_model(adapters_to_use):
+def get_adapter_fusion_model(adapters_to_use, adapterfusion_path = None):
 
     if adapters_to_use == []:
         raise RuntimeError('You must specifiy the adapters to use!')
@@ -46,6 +46,14 @@ def get_adapter_fusion_model(adapters_to_use):
     model.set_active_adapters(adapter_setup)
     model.train_adapter_fusion(adapter_setup)
 
+    print(f'Loading adaptefusion from path: {adapterfusion_path}')
+    if adapterfusion_path:
+        model.load_adapter_fusion(
+            adapterfusion_path,
+            load_as=",".join(adapters_to_use),
+            set_active=True,
+        )
+
     return model
 
 """
@@ -53,7 +61,7 @@ PROTOMAML MODEL (incl function to calculate prototypes)
 """
 
 class ProtoMAML(pl.LightningModule):
-    def __init__(self, lr, lr_inner, lr_output, num_inner_steps, k_shot, task_batch_size, tasks, adapters_used):
+    def __init__(self, lr, lr_inner, lr_output, num_inner_steps, k_shot, task_batch_size, tasks, adapters_used, adapterfusion_path):
         """
         Inputs
             proto_dim - Dimensionality of prototype feature space
@@ -65,7 +73,7 @@ class ProtoMAML(pl.LightningModule):
         super().__init__()
 
         self.save_hyperparameters()
-        self.model = get_adapter_fusion_model(adapters_used)
+        self.model = get_adapter_fusion_model(adapters_used, adapterfusion_path)
 
     def configure_optimizers(self):
         optimizer = optim.AdamW(self.parameters(), lr=self.hparams.lr)
