@@ -4,6 +4,7 @@ from copy import deepcopy
 from statistics import mean, stdev
 import json
 import argparse
+import copy
 import os
 import sys
 ## PyTorch
@@ -40,6 +41,8 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
 
     if k_shot == 16:
 
+        model_clean = copy.deepcopy(model)
+
         # get test dataloaders and sampler
         full_test_loader, sample_test_loader, sampler = get_test_loaders(task, K_SHOT=k_shot//4,
                                                                          full_dl_batch_size=full_dl_batch_size,
@@ -55,6 +58,8 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
                               'attention_mask': x[1][2].to(device)}
             support_targets = x[2].to(device)
 
+
+
             # Finetune new model on support set
             local_model, output_weight, output_bias, classes = model.adapt_few_shot(
                 support_inputs, support_targets
@@ -68,7 +73,7 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
                 support_indices = [item for sublist in indices for item in sublist]
                 indices = []
 
-                print(support_indices)
+                model = copy.deepcopy(model_clean)
 
                 # get accuracy of finetuned model on full dataset
                 with torch.no_grad():
