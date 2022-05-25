@@ -72,7 +72,7 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
             model.model = local_model
             indices.append(support_indices)
 
-            if i == 4:
+            if i == 2:
                 print('evaluating on local model...')
                 i = 0
                 support_indices = [item for sublist in indices for item in sublist]
