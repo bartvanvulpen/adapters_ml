@@ -87,6 +87,9 @@ if __name__ == '__main__':
     parser.add_argument('--adapters', nargs="+", default=[],
                         help='Adapter to use for meta learning', required=True)
 
+    parser.add_argument('--adapterfusion_path', type=str,
+                        help='Optional path to pretrained adapterfusion', required=False)
+
 
     args = parser.parse_args()
 
@@ -118,5 +121,5 @@ if __name__ == '__main__':
         max_n_steps=args.max_steps,
         save_dir_name=save_name,
         debug=args.debug,
+        adapterfusion_path=args.adapterfusion_path
     )
-
