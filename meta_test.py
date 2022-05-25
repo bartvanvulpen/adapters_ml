@@ -36,53 +36,122 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
     pl.seed_everything(42)
     model = model.to(device)
 
-    # get test dataloaders and sampler
-    full_test_loader, sample_test_loader, sampler = get_test_loaders(task, K_SHOT=k_shot, full_dl_batch_size=full_dl_batch_size, num_workers=0)
 
-    # Select the k-shot batch and finetune
-    accuracies = []
-    i = 0
-    for x, support_indices in tqdm(zip(sample_test_loader, sampler), "Performing few-shot finetuning"):
-        i += 1
-        support_inputs = {'input_ids' : x[1][0].to(device), 'token_type_ids' : x[1][1].to(device),
-                          'attention_mask' : x[1][2].to(device)}
-        support_targets = x[2].to(device)
 
-        # Finetune new model on support set
-        local_model, output_weight, output_bias, classes = model.adapt_few_shot(
-            support_inputs, support_targets
-        )
+    if k_shot == 16:
 
-        # get accuracy of finetuned model on full dataset
-        with torch.no_grad():
-            local_model.eval()
-            batch_acc = torch.zeros((0,), dtype=torch.float32, device=device)
+        # get test dataloaders and sampler
+        full_test_loader, sample_test_loader, sampler = get_test_loaders(task, K_SHOT=k_shot//4,
+                                                                         full_dl_batch_size=full_dl_batch_size,
+                                                                         num_workers=0)
+        # Select the k-shot batch and finetune
+        accuracies = []
+        indices = []
 
-            for q_data in full_test_loader:
+        i = 0
+        for x, support_indices in tqdm(zip(sample_test_loader, sampler), "Performing few-shot finetuning"):
+            i += 1
+            support_inputs = {'input_ids': x[1][0].to(device), 'token_type_ids': x[1][1].to(device),
+                              'attention_mask': x[1][2].to(device)}
+            support_targets = x[2].to(device)
 
-                query_inputs = {'input_ids' : q_data[1][0].to(device), 'token_type_ids' : q_data[1][1].to(device),
-                                'attention_mask' : q_data[1][2].to(device)}
-
-                query_targets = q_data[2].to(device)
-                query_labels = (
-                    (classes[None, :] == query_targets[:, None]).long().argmax(dim=-1)
-                )
-                _, _, acc = model.run_model(
-                    local_model, output_weight, output_bias, query_inputs, query_labels
-                )
-                batch_acc = torch.cat([batch_acc, acc.detach()], dim=0)
-
-            # exclude support set elements
-            for s_idx in support_indices:
-                batch_acc[s_idx] = 0
-            batch_acc = batch_acc.sum().item() / (
-                batch_acc.shape[0] - len(support_indices)
+            # Finetune new model on support set
+            local_model, output_weight, output_bias, classes = model.adapt_few_shot(
+                support_inputs, support_targets
             )
-            accuracies.append(batch_acc)
 
-        # return mean accuracy over the runs after max iterations
-        if i == max_it:
-            return mean(accuracies), stdev(accuracies)
+            model = local_model
+            indices.append(support_indices)
+
+            if i == 4:
+                i = 0
+                support_indices = [item for sublist in indices for item in sublist]
+                indices = []
+
+                print(support_indices)
+
+                # get accuracy of finetuned model on full dataset
+                with torch.no_grad():
+                    local_model.eval()
+                    batch_acc = torch.zeros((0,), dtype=torch.float32, device=device)
+
+                    for q_data in full_test_loader:
+                        query_inputs = {'input_ids': q_data[1][0].to(device), 'token_type_ids': q_data[1][1].to(device),
+                                        'attention_mask': q_data[1][2].to(device)}
+
+                        query_targets = q_data[2].to(device)
+                        query_labels = (
+                            (classes[None, :] == query_targets[:, None]).long().argmax(dim=-1)
+                        )
+                        _, _, acc = model.run_model(
+                            local_model, output_weight, output_bias, query_inputs, query_labels
+                        )
+                        batch_acc = torch.cat([batch_acc, acc.detach()], dim=0)
+
+                    # exclude support set elements
+                    for s_idx in support_indices:
+                        batch_acc[s_idx] = 0
+                    batch_acc = batch_acc.sum().item() / (
+                            batch_acc.shape[0] - len(support_indices)
+                    )
+                    accuracies.append(batch_acc)
+
+                # return mean accuracy over the runs after max iterations
+                if i == max_it:
+                    return mean(accuracies), stdev(accuracies)
+
+
+
+    else:
+
+        # get test dataloaders and sampler
+        full_test_loader, sample_test_loader, sampler = get_test_loaders(task, K_SHOT=k_shot,
+                                                                         full_dl_batch_size=full_dl_batch_size,
+                                                                         num_workers=0)
+        # Select the k-shot batch and finetune
+        accuracies = []
+        i = 0
+        for x, support_indices in tqdm(zip(sample_test_loader, sampler), "Performing few-shot finetuning"):
+            i += 1
+            support_inputs = {'input_ids' : x[1][0].to(device), 'token_type_ids' : x[1][1].to(device),
+                              'attention_mask' : x[1][2].to(device)}
+            support_targets = x[2].to(device)
+
+            # Finetune new model on support set
+            local_model, output_weight, output_bias, classes = model.adapt_few_shot(
+                support_inputs, support_targets
+            )
+
+            # get accuracy of finetuned model on full dataset
+            with torch.no_grad():
+                local_model.eval()
+                batch_acc = torch.zeros((0,), dtype=torch.float32, device=device)
+
+                for q_data in full_test_loader:
+
+                    query_inputs = {'input_ids' : q_data[1][0].to(device), 'token_type_ids' : q_data[1][1].to(device),
+                                    'attention_mask' : q_data[1][2].to(device)}
+
+                    query_targets = q_data[2].to(device)
+                    query_labels = (
+                        (classes[None, :] == query_targets[:, None]).long().argmax(dim=-1)
+                    )
+                    _, _, acc = model.run_model(
+                        local_model, output_weight, output_bias, query_inputs, query_labels
+                    )
+                    batch_acc = torch.cat([batch_acc, acc.detach()], dim=0)
+
+                # exclude support set elements
+                for s_idx in support_indices:
+                    batch_acc[s_idx] = 0
+                batch_acc = batch_acc.sum().item() / (
+                    batch_acc.shape[0] - len(support_indices)
+                )
+                accuracies.append(batch_acc)
+
+            # return mean accuracy over the runs after max iterations
+            if i == max_it:
+                return mean(accuracies), stdev(accuracies)
 
 
 
