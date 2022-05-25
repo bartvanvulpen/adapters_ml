@@ -127,7 +127,10 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
 
     return dataset
 
-
+def get_num_classes(task_name):
+    x = load_dataset_from_file(task_name)
+    return len(x[1].keys())
+    
 def get_train_loader(train_datasets=[], K_SHOT=4, task_batch_size=16, num_workers=0):
 
    if train_datasets == []:

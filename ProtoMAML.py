@@ -59,7 +59,6 @@ def get_adapter_fusion_model(adapters_to_use, adapterfusion_path = None):
 """
 PROTOMAML MODEL (incl function to calculate prototypes)
 """
-
 class ProtoMAML(pl.LightningModule):
     def __init__(self, lr, lr_inner, lr_output, num_inner_steps, k_shot, task_batch_size, tasks, adapters_used, adapterfusion_path=None):
         """
