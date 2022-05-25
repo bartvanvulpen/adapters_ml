@@ -67,8 +67,6 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
                 support_inputs, support_targets
             )
             
-            print(model)
-            print(local_model)
             model.model = local_model
             indices.append(support_indices)
 
