@@ -24,7 +24,7 @@ def train_model(model_class, train_loader, max_n_steps, save_dir_name, debug=Fal
     print('Debug:', debug)
     trainer = pl.Trainer(fast_dev_run=debug,
         default_root_dir=os.path.join(CHECKPOINT_PATH, save_dir_name),
-        gpus=torch.cuda.device_count() if torch.cuda.is_available() else 0,
+        gpus=1 if torch.cuda.is_available() else 0,
         max_steps=max_n_steps,
         callbacks=[ModelCheckpoint(save_weights_only=True, mode="min", monitor="train_loss", verbose=True, every_n_train_steps=5)],
         progress_bar_refresh_rate=0, log_every_n_steps=1,
