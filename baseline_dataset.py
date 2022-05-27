@@ -1,6 +1,6 @@
 from numpy import iterable
 import torch
-from torch.utils.data import DataLoader, IterableDataset
+from torch.utils.data import DataLoader
 from dataset_loader import load_dataset_from_file
 from dataset_loader import ArgumentDatasetSplit
 
@@ -20,6 +20,15 @@ class InfiniteIterator():
 
         return next_item
 
+
+def collate_fn(batch_list):
+    d = {}
+    for key in ['input_ids', 'token_type_ids', 'attention_mask', 'labels']:
+        d[key] = torch.vstack([torch.tensor(x[key]) for x in batch_list])
+
+    return d
+
+
 class MultiTaskDataset():
     def __init__(self, task_names_list, k):
         """
@@ -34,37 +43,29 @@ class MultiTaskDataset():
         self.datasets = []
 
         for task_name in task_names_list:
-            dataset, id2label = load_dataset_from_file('argument')
+            dataset, id2label = load_dataset_from_file(task_name)
             n_classes = len(id2label)
             dataset = InfiniteIterator(DataLoader(
                 dataset['train'], 
-                batch_size=n_classes, 
-                shuffle=True
+                batch_size=k * n_classes, 
+                shuffle=True,
+                collate_fn=collate_fn
             ))
 
             self.datasets.append({
                 'name': task_name,
-                dataset: dataset
+                'dataset': dataset
             })
 
 
-    def __len__():
-        return 200 * 16 * k / num_tasks
-
-    def __getitem__(self):
-        return {
-            'argument': next(self.ds1),
-            'boolq': next(self.ds2)
-        }
-
-# dl = DataLoader(MultiTaskDataset())
-
-# i=0
-# for x in dl:
-#     print(x)
-#     i+=1
-#     if i == 5:
-#         break
+    def __len__(self):
+        return 200 * 16 // len(self.datasets)
 
 
-# def multi_task_collator(sample_list):
+    def __getitem__(self, idx):
+        item = {}
+        for dataset in self.datasets:
+            item[dataset['name']] = next(dataset['dataset'])
+
+        return item
+
