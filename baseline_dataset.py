@@ -43,7 +43,8 @@ class MultiTaskDataset():
         train_tasks - list containing the names of the tasks.
         all task names: ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb']
         k - the k value used in the meta-training setup for which this model will 
-        be a baseline. This influences the number of training examples retrieved
+        be a baseline. This influences the number of training examples retrieved.
+        k should be 2, 4, or 8
 
         After 1 epoch, this Dataset has returned exactly as many data points as
         the corresponding meta-train setup for which this model is a baseline.
@@ -56,6 +57,8 @@ class MultiTaskDataset():
         # contains iterators over all tasks
         self.datasets = []
 
+        self.k = k
+
         for task_name in train_tasks:
             dataset, id2label = load_dataset_from_file(task_name)
             n_classes = len(id2label)
@@ -63,9 +66,14 @@ class MultiTaskDataset():
             # Every task returns k * n_classes items per call of __getitem__.
             # This is in agreement with the meta-train setup, where the model
             # sees more examples of tasks with more classes. 
+            # However, to avoid memory problems, we always return 2*n_classes
+            # items per batch. We correct for k in the __len__. Larger
+            # k leads to a greater dataset, and hence more training examples
+            # in total. Remember this Dataset is supposed to be used for 
+            # just a single epoch.
             dataset = InfiniteIterator(DataLoader(
                 dataset['train'], 
-                batch_size=k * n_classes, 
+                batch_size=2 * n_classes, 
                 shuffle=True,
                 collate_fn=collate_fn
             ))
@@ -77,7 +85,7 @@ class MultiTaskDataset():
 
 
     def __len__(self):
-        return 200 * 16 // len(self.datasets)
+        return 200 * 16 * (self.k / 2) // len(self.datasets)
 
 
     def __getitem__(self, idx):

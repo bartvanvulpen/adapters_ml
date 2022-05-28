@@ -11,7 +11,7 @@ from dataset_loader import ArgumentDatasetSplit
 
 import pytorch_lightning as pl
 
-k = 2
+k = 4
 # using k=2, batch_size=1 and 4 tasks, the model sees 2*2*4*1=16 examples
 # per update step (assuming 2 classes per task)
 batch_size=1
@@ -36,7 +36,7 @@ for experiment in experiments:
     checkpoint = ModelCheckpoint(
         monitor='train_loss', 
         every_n_train_steps=5,
-        filename='Experiment=' + str(exp_num) + '-{step}'
+        filename='Experiment=' + str(exp_num)
     )
 
     trainer = pl.Trainer(
