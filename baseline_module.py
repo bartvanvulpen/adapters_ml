@@ -13,7 +13,7 @@ logging.set_verbosity_error()
 task_to_n_classes = {'mnli': 3, 'qqp': 2, 'sst': 2, 'wgrande': 2, 'imdb': 2, 'scitail': 2, 'argument': 3, 'boolq': 2, 'mrpc': 2, 'sick': 3, 'rte': 2, 'cb': 3}
 
 # maps task name to the adapter identifier on adapter hub
-task_to_adapter = {'mnli': 'nli/multinli@ukp', 'qqp': 'sts/qqp@ukp', 'sst': 'sentiment/sst-2@ukp', 'wgrande': 'comsense/winogrande@ukp', 'imdb': 'sentiment/imdb@ukp', 'scitail': 'nli/scitail@ukp', 'argument': 'argument/ukpsent@ukp', 'boolq': 'qa/boolq@ukp', 'mrpc': 'sts/mrpc@ukp', 'sick': 'nli/sick@ukp', 'rte': 'nli/rte@ukp', 'cb': 'nli/cb@ukp'}
+task_to_adapter = {'mnli': 'nli/multinli@ukp', 'qqp': 'sts/qqp@ukp', 'sst': 'sentiment/sst-2@ukp', 'wgrande': 'comsense/winogrande@ukp', 'imdb': 'sentiment/imdb@ukp', 'scitail': 'nli/scitail@ukp', 'argument': 'argument/ukpsent@ukp', 'boolq': 'qa/boolq@ukp', 'mrpc': 'sts/mrpc@ukp', 'sick': 'nli/sick@ukp', 'rte': 'nli/rte@ukp', 'cb': 'nli/cb@ukp', 'hswag': 'comsense/hellaswag@ukp', 'siqa': 'comsense/siqa@ukp', 'csqa': 'comsense/csqa@ukp', 'cqa': 'comsense/cosmosqa@ukp'}
 
 
 class BaselineModel(pl.LightningModule):
