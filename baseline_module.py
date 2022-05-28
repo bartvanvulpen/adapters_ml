@@ -4,7 +4,6 @@ import pytorch_lightning as pl
 import torch
 import warnings
 
-from xxhash import xxh128
 warnings.filterwarnings("ignore")
 
 from transformers import logging
@@ -18,20 +17,21 @@ task_to_adapter = {'mnli': 'nli/multinli@ukp', 'qqp': 'sts/qqp@ukp', 'sst': 'sen
 
 
 class BaselineModel(pl.LightningModule):
-    def __init__(self, adapter_tasks, train_tasks, k, lr=5e-5):
+    def __init__(self, adapter_tasks, train_tasks, k, exp_num, lr=5e-5):
         """
         adapter_tasks - list of strings with the names of the tasks whose pre-trained adapters should be injected
         train_tasks - list of strings with the names of the tasks which
         will be used for training. This is needed to load the corresponding
         classification heads.
-        all task names: ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb']
+        all task names: ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb'] + multiple choice tasks ['hswag', 'siqa', 'cqa', 'csqa']
         k - the k values determining the number of training examples per class
+        exp_num - the experiment number this model is a baseline for, corresponding to the experiments sheet
         lr - learning rate
         """
         super().__init__()
 
-        # save provided init arguments. Argument k (which is unused) is only
-        # provided to ensure it is saved as a hyperparameter
+        # save provided init arguments. Arguments k and exp_num (which are unused) 
+        # are only provided to ensure they are saved as a hyperparameter
         self.save_hyperparameters()
 
         self.lr = lr
@@ -83,7 +83,7 @@ class BaselineModel(pl.LightningModule):
         # add the losses of all datasets
         total_loss = sum(losses)
         self.log('train_loss', total_loss)
-        
+
         return total_loss
 
     def configure_optimizers(self):
