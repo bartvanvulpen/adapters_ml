@@ -85,7 +85,7 @@ class MultiTaskDataset():
 
 
     def __len__(self):
-        return 200 * 16 * (self.k / 2) // len(self.datasets)
+        return 200 * 16 * (self.k // 2) // len(self.datasets)
 
 
     def __getitem__(self, idx):
