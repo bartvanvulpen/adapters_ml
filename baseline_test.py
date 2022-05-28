@@ -33,7 +33,6 @@ for n_updates in updates_options:
     print('Test value n_updates=', n_updates)
 
     model = BaselineModel.load_from_checkpoint('models/Experiment=1-step=454.ckpt')
-    model.to(device)
 
     k = model.hparams.k
 
@@ -49,11 +48,13 @@ for n_updates in updates_options:
     # get the first batch to train the model
     train_batch = next(data_iterator)
     dict_to_device(train_batch, device)
-    model.train()
+    
     model.prepare_for_test(test_task)
+    model.to(device)
 
     optimizer = model.configure_optimizers()
 
+    model.train()
     for _ in range(n_updates):
         optimizer.zero_grad()
         loss = model.train_step_single_task(train_batch)
