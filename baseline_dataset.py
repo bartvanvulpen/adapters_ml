@@ -4,12 +4,19 @@ from torch.utils.data import DataLoader
 from dataset_loader import load_dataset_from_file
 from dataset_loader import ArgumentDatasetSplit
 
+
 class InfiniteIterator():
+    """
+    This iterator cycles through an iterable ad infinitum.
+    When the iterable is exhausted, this iterator just restarts
+    iteration at the first item and continues. 
+    """
     def __init__(self, iterable):
         self.iterable = iterable
         self.iter = iter(iterable)
 
     def __next__(self):
+        # None is a default value, returned when the iterable is exhausted
         next_item = next(self.iter, None)
 
         if next_item is None:
@@ -30,21 +37,31 @@ def collate_fn(batch_list):
 
 
 class MultiTaskDataset():
-    def __init__(self, task_names_list, k):
+    def __init__(self, train_tasks, k):
         """
-        task_names_list - list containing the names of the tasks. Should be the name as
-        used in dataset_loader.py
+        train_tasks - list containing the names of the tasks.
+        all task names: ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb']
         k - the k value used in the meta-training setup for which this model will 
         be a baseline. This influences the number of training examples retrieved
+
+        After 1 epoch, this Dataset has returned exactly as many data points as
+        the corresponding meta-train setup for which this model is a baseline.
+        However, in its current implementation, this Dataset will return 
+        new, different items when a second epoch is started. Hence, for now, this
+        Dataset should not be used for more than a single epoch. 
         """
         super().__init__()
 
         # contains iterators over all tasks
         self.datasets = []
 
-        for task_name in task_names_list:
+        for task_name in train_tasks:
             dataset, id2label = load_dataset_from_file(task_name)
             n_classes = len(id2label)
+
+            # Every task returns k * n_classes items per call of __getitem__.
+            # This is in agreement with the meta-train setup, where the model
+            # sees more examples of tasks with more classes. 
             dataset = InfiniteIterator(DataLoader(
                 dataset['train'], 
                 batch_size=k * n_classes, 
@@ -63,6 +80,11 @@ class MultiTaskDataset():
 
 
     def __getitem__(self, idx):
+        # __getitem__ is used differently here to how it's conventionally done.
+        # this method is supposed to return a specific index of a list-type.
+        # however, we just return the next item of each dataset, and ignore
+        # the idx argument. Shuffling still happens, because the datasets
+        # contained in this MultiTaskDataset are all individually shuffled.
         item = {}
         for dataset in self.datasets:
             item[dataset['name']] = next(dataset['dataset'])
