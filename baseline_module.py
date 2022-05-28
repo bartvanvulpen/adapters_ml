@@ -1,30 +1,38 @@
-from responses import target
 from transformers import BertAdapterModel
 from transformers.adapters.composition import Fuse
 import pytorch_lightning as pl
 import torch
 import warnings
+
+from xxhash import xxh128
 warnings.filterwarnings("ignore")
 
 from transformers import logging
 logging.set_verbosity_error()
 
+# maps task name to the number of classes of each task
 task_to_n_classes = {'mnli': 3, 'qqp': 2, 'sst': 2, 'wgrande': 2, 'imdb': 2, 'scitail': 2, 'argument': 3, 'boolq': 2, 'mrpc': 2, 'sick': 3, 'rte': 2, 'cb': 3}
 
+# maps task name to the adapter identifier on adapter hub
 task_to_adapter = {'mnli': 'nli/multinli@ukp', 'qqp': 'sts/qqp@ukp', 'sst': 'sentiment/sst-2@ukp', 'wgrande': 'comsense/winogrande@ukp', 'imdb': 'sentiment/imdb@ukp', 'scitail': 'nli/scitail@ukp', 'argument': 'argument/ukpsent@ukp', 'boolq': 'qa/boolq@ukp', 'mrpc': 'sts/mrpc@ukp', 'sick': 'nli/sick@ukp', 'rte': 'nli/rte@ukp', 'cb': 'nli/cb@ukp'}
 
 
 class BaselineModel(pl.LightningModule):
-    def __init__(self, adapter_tasks, train_tasks, lr=1e-3):
+    def __init__(self, adapter_tasks, train_tasks, k, lr=5e-5):
         """
         adapter_tasks - list of strings with the names of the tasks whose pre-trained adapters should be injected
         train_tasks - list of strings with the names of the tasks which
         will be used for training. This is needed to load the corresponding
         classification heads.
         all task names: ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb']
+        k - the k values determining the number of training examples per class
         lr - learning rate
         """
         super().__init__()
+
+        # save provided init arguments. Argument k (which is unused) is only
+        # provided to ensure it is saved as a hyperparameter
+        self.save_hyperparameters()
 
         self.lr = lr
 
@@ -74,7 +82,46 @@ class BaselineModel(pl.LightningModule):
 
         # add the losses of all datasets
         total_loss = sum(losses)
+        self.log('train_loss', total_loss)
+        
         return total_loss
 
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.lr)
+
+
+    def prepare_for_test(self, task_name):
+        """
+        prepares this model for testing on a single task
+        """
+        self.model.add_classification_head('test', num_labels=task_to_n_classes[task_name])
+
+
+    def train_step_single_task(self, batch):
+        """
+        This method should be used for the few-shot training step during testing.
+        this method is analogous to training_step, with the difference
+        that this method expects batch to contain data for a single task. 
+        I.e. batch should be a dict with values 'input_ids', 'attention_ids', etc.
+        """
+
+        self.model.active_head = 'test'
+        model_output = self.model.forward(**batch)
+        return model_output.loss
+
+
+    def compute_accuracy(self, batch):
+        """
+        Feeds forward the (single task) batch and returns the accuracy.
+        Batch should contain a 'labels' key.
+        """
+        self.model.active_head = 'test'
+        model_output = self.model.forward(**batch)
+
+        predictions = torch.argmax(model_output.logits, dim=1)
+        targets = torch.flatten(batch['labels'])
+
+        accuracy = torch.sum(predictions == targets) / targets.size(0)
+
+        return accuracy.item()
+        

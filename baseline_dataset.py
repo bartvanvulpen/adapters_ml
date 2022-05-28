@@ -1,7 +1,8 @@
-from numpy import iterable
 import torch
 from torch.utils.data import DataLoader
 from dataset_loader import load_dataset_from_file
+
+# import required to enable unpickling Argument dataset
 from dataset_loader import ArgumentDatasetSplit
 
 
