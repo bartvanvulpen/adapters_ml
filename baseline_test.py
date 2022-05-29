@@ -1,9 +1,12 @@
+from unittest import result
 from baseline_dataset import collate_fn
 from torch.utils.data import DataLoader
 from dataset_loader import load_dataset_from_file
 from baseline_module import BaselineModel
 import pytorch_lightning as pl
 import torch
+from experiments import experiments
+import pickle
 
 torch.manual_seed(0)
 
@@ -14,61 +17,83 @@ def dict_to_device(dic, device):
     for key in dic:
         dic[key] = dic[key].to(device)
 
-# we perform the hyperparameter search using experiment 1
-
-# we look for the optimal number of times to perform an update step on 
-# the same few-shot train data
-# this list contains all n_updates that we will test
-updates_options = [2,4,6,10,15,20]
-
-test_task = 'sick'
-dataset, id2label = load_dataset_from_file(test_task)
-n_classes = len(id2label)
 
 device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
-for n_updates in updates_options:
+# we perform 10 update steps on the few-shot train data. This number was found to work
+# well for all k values (tested in a hyperparam search)
+n_updates = 10
 
-    print('------------------')
-    print('Test value n_updates=', n_updates)
+# this list will contain all results
+results = []
 
-    model = BaselineModel.load_from_checkpoint('models/Experiment=1-step=454.ckpt')
+for experiment in experiments:
 
-    k = model.hparams.k
+    exp_num = experiment['exp_number']
+    test_tasks = experiment['test_tasks']
 
-    dl = DataLoader(dataset['test'], 
-            batch_size=k * n_classes, 
-            shuffle=True,
-            collate_fn=collate_fn,
-            drop_last=True
-    )
+    for test_task in test_tasks:
+        for k in [2,4,8]:
 
-    data_iterator = iter(dl)
+            print('------------------')
+            print('Start new evaluation with values:')
+            print('Experiment number =', exp_num)
+            print('Test task =', test_task)
+            print('k =', k)
+            
 
-    # get the first batch to train the model
-    train_batch = next(data_iterator)
-    dict_to_device(train_batch, device)
-    
-    model.prepare_for_test(test_task)
-    model.to(device)
+            dataset, id2label = load_dataset_from_file(test_task)
+            n_classes = len(id2label)
 
-    optimizer = model.configure_optimizers()
+            model = BaselineModel.load_from_checkpoint('models/Experiment=' + str(exp_num)+'.ckpt')
 
-    model.train()
-    for _ in range(n_updates):
-        optimizer.zero_grad()
-        loss = model.train_step_single_task(train_batch)
-        loss.backward()
-        optimizer.step()
+            dl = DataLoader(dataset['test'], 
+                    batch_size=k * n_classes, 
+                    shuffle=True,
+                    collate_fn=collate_fn,
+                    drop_last=True
+            )
+
+            data_iterator = iter(dl)
+
+            # get the first batch to train the model
+            train_batch = next(data_iterator)
+            dict_to_device(train_batch, device)
+            
+            model.prepare_for_test(test_task)
+            model.to(device)
+
+            optimizer = model.configure_optimizers()
+
+            model.train()
+            for _ in range(n_updates):
+                optimizer.zero_grad()
+                loss = model.train_step_single_task(train_batch)
+                loss.backward()
+                optimizer.step()
 
 
-    model.eval()
-    accuracies = []
+            model.eval()
+            accuracies = []
 
-    # loop over the remaining batches to compute accuracy
-    for batch in data_iterator:
-        dict_to_device(batch, device)
-        accuracies.append(model.compute_accuracy(batch))
+            # loop over the remaining batches to compute accuracy
+            for batch in data_iterator:
+                dict_to_device(batch, device)
+                accuracies.append(model.compute_accuracy(batch))
 
-    accuracy = sum(accuracies) / len(accuracies)
-    print('Accuracy', accuracy)
+
+            accuracy = sum(accuracies) / len(accuracies)
+            print('Accuracy =', accuracy)
+
+            results.append({
+                'exp_number': exp_num,
+                'test_task': test_task,
+                'k': k,
+                'accuracy': accuracy
+            })
+
+            # save the results every iteration so we can recover
+            # results if an error occurs
+            with open('test_results.pickle', 'wb') as f:
+                pickle.dump(results, f)
+
