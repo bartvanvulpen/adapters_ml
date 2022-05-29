@@ -46,5 +46,35 @@ experiments = [
         'adapter_tasks': ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb', 'hswag', 'siqa', 'cqa', 'csqa'],
         'train_tasks': ['mnli','qqp','sst','wgrande'],
         'test_tasks': ['sick','rte','argument', 'scitail']
+    },
+    {
+        'exp_number': 10, # exp A
+        'adapter_tasks': ['mnli','scitail'],
+        'train_tasks': ['sick', 'rte'],
+        'test_tasks': ['cb']
+    },
+    {
+        'exp_number': 11, # exp B
+        'adapter_tasks': ['mnli','sick'],
+        'train_tasks': ['rte','cb'],
+        'test_tasks': ['scitail']
+    },
+    {
+        'exp_number': 12, # exp C
+        'adapter_tasks': ['rte','cb'],
+        'train_tasks': ['mnli','scitail'],
+        'test_tasks': ['sick']
+    },
+    {
+        'exp_number': 13, # exp D
+        'adapter_tasks': ['wgrande', 'hswag', 'siqa', 'cqa', 'csqa'],
+        'train_tasks': ['argument','sst','scitail','qqp', 'sick'],
+        'test_tasks': ['boolq','cb','rte', 'mrpc', 'imdb', 'mnli']
+    },
+    {
+        'exp_number': 14, # exp E
+        'adapter_tasks': ['mnli','qqp','sst','wgrande','imdb','scitail','argument','boolq','mrpc','sick','rte','cb', 'hswag', 'siqa', 'cqa', 'csqa'],
+        'train_tasks': ['argument','sst','scitail','qqp', 'sick'],
+        'test_tasks': ['boolq','cb','rte', 'mrpc', 'imdb', 'mnli']
     }
 ]
