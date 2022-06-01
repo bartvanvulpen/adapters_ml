@@ -7,6 +7,13 @@ from sampler import (
 import torch.utils.data as data
 from dataset_loader import load_dataset_by_name, load_dataset_from_file
 
+def get_validation_split_name(task):
+    if task == 'imdb':
+        return 'test'
+    elif task == 'mnli':
+        return 'validation_matched'
+    else:
+        return 'validation'
 
 def combine_train_valid(name, LOADED_DATASETS, meta_test=False):
     """
@@ -17,16 +24,8 @@ def combine_train_valid(name, LOADED_DATASETS, meta_test=False):
 
 
     # combine val and train set when training
+    key = get_validation_split_name(name)
     if meta_test == False:
-
-        key = 'validation'
-        if name == 'imdb':
-            key = 'test'
-
-        if name == 'mnli':
-            key = 'validation_matched'
-
-
         if name == 'argument':
             all_inputs = torch.cat((torch.stack([x['input_ids'] for x in ds['train']]),
                                     torch.stack([x['input_ids'] for x in ds['validation']])), dim=0)
@@ -54,34 +53,25 @@ def combine_train_valid(name, LOADED_DATASETS, meta_test=False):
     # take validation set only when meta testing
     # there is no overlap, because meta testing task is unseen
     if meta_test == True:
+        if name == 'argument':
+            all_inputs = torch.stack([x['input_ids'] for x in ds['validation']])
+            all_token_types = torch.stack([x['token_type_ids'] for x in ds['validation']])
+            all_masks = torch.stack([x['attention_mask'] for x in ds['validation']])
+            all_labels = torch.stack([x['labels'] for x in ds['validation']])
 
-            # take validation set only when testing
-            key = 'validation'
-            if name == 'imdb':
-                key = 'test'
+        else:
+            # combine input data from train and validation set
+            all_inputs = torch.tensor(ds[key]["input_ids"])
+            all_token_types = torch.tensor(ds[key]["token_type_ids"])
+            all_masks = torch.tensor(ds[key]["attention_mask"])
+            all_labels = torch.tensor(ds[key]["labels"])
 
-            if name == 'mnli':
-                key = 'validation_matched'
-
-            if name == 'argument':
-                all_inputs = torch.stack([x['input_ids'] for x in ds['validation']])
-                all_token_types = torch.stack([x['token_type_ids'] for x in ds['validation']])
-                all_masks = torch.stack([x['attention_mask'] for x in ds['validation']])
-                all_labels = torch.stack([x['labels'] for x in ds['validation']])
-
-            else:
-                # combine input data from train and validation set
-                all_inputs = torch.tensor(ds[key]["input_ids"])
-                all_token_types = torch.tensor(ds[key]["token_type_ids"])
-                all_masks = torch.tensor(ds[key]["attention_mask"])
-                all_labels = torch.tensor(ds[key]["labels"])
-
-            return {
-                "input_ids": all_inputs,
-                "token_type_ids": all_token_types,
-                "attention_mask": all_masks,
-                "labels": all_labels
-            }
+        return {
+            "input_ids": all_inputs,
+            "token_type_ids": all_token_types,
+            "attention_mask": all_masks,
+            "labels": all_labels
+        }
 
 
 
@@ -130,7 +120,7 @@ def dataset_from_tasks(dataset, tasks, **kwargs):
 def get_num_classes(task_name):
     x = load_dataset_from_file(task_name)
     return len(x[1].keys())
-    
+
 def get_train_loader(train_datasets=[], K_SHOT=4, task_batch_size=16, num_workers=0):
 
    if train_datasets == []:
@@ -264,5 +254,3 @@ def get_test_loaders(test_dataset, K_SHOT=4, full_dl_batch_size=8, num_workers=0
     #     collate_fn=val_protomaml_sampler.get_collate_fn(),
     #     num_workers=num_workers,
     # )
-
-
