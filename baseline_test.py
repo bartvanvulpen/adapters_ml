@@ -1,3 +1,6 @@
+# import required to enable unpickling Argument dataset
+from dataset_loader import ArgumentDatasetSplit
+
 from unittest import result
 from baseline_dataset import collate_fn
 from torch.utils.data import DataLoader
@@ -35,10 +38,6 @@ if __name__ == "__main__":
                         help='Number of update steps', required=False)
     parser.add_argument('--outfile', default='baseline_test_results.json', type=str,
                         help='File to save the results to', required=False)
-
-
-
-
 
     args = parser.parse_args()
 
