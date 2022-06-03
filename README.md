@@ -1,5 +1,7 @@
-# Meta-Learning AdapterFusion
+# Meta-learning AdapterFusion weights for few-shot adaptation to unseen NLP tasks
 
+### General
+This repo contains code to meta-train a BERT model with adapters and AdapterFusion layers. The meta-trained model can be meta-tested on a variety of unseen NLP tasks.
 ### Instructions
 
 #### Meta-Training
