@@ -64,6 +64,11 @@ class ProtoMAML(pl.LightningModule):
             lr_inner - Learning rate of the inner loop SGD optimizer
             lr_output - Learning rate for the output layer in the inner loop
             num_inner_steps - Number of inner loop updates to perform
+            k_shot - Number of items to sample per class
+            task_batch_size - number of tasks to sample per task batch
+            tasks - tasks used during meta-training
+            adatapers_used - adapters used during meta-training
+            adapterfusion_path - path to pretrained adapterfusion weights
         """
         super().__init__()
 
