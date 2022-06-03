@@ -5,10 +5,9 @@
 #### Meta-Training
 You can meta train on tasks with specified adapters using `meta_train.py`. For example:
 ```
-python meta_train.py --adapters mnli qqp sst wgrande boolq --tasks mrpc scitail --k_shot 4 --max_steps 250
+python meta_train.py --adapters mnli qqp sst wgrande boolq --tasks mrpc scitail --k_shot 4 --max_steps 200
 ```
-For the other parameters (like number of inner steps etc) see the argument descriptions of the `ArgumentParser` in `meta_train.py`. 
-TODO: add detailed description of params
+For the other parameters see the argument descriptions of the `ArgumentParser` in `meta_train.py`. 
 
 The models are saved in a folder named based on their adapters+tasks configuration. Each such folder can contain different versions of a model setup (version_1, version_2 etc, each corresponding to a run). For each model, you can see the specific parameters it was trained with in its `hparams.yaml`.  
 
