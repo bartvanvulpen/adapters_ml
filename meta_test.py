@@ -92,7 +92,7 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
 
             print('Iteration:' , i)
 
-            # Finetune new model on support set
+            # few-shot finetune model on support set
             local_model, output_weight, output_bias, classes = model.adapt_few_shot(
                 support_inputs, support_targets
             )
@@ -109,6 +109,7 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
                 print('Support indices:', support_indices)
 
                 ev_i += 1
+
                 # get accuracy of finetuned model on full dataset
                 with torch.no_grad():
                     local_model.eval()
@@ -154,7 +155,6 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
         full_test_loader, sample_test_loader, sampler = get_test_loaders(task, K_SHOT=k_shot,
                                                                          full_dl_batch_size=full_dl_batch_size,
                                                                          num_workers=0)
-        # Select the k-shot batch and finetune
         accuracies = []
         i = 0
         for x, support_indices in tqdm(zip(sample_test_loader, sampler), "Performing few-shot finetuning"):
@@ -163,7 +163,7 @@ def test_protomaml(model, task, k_shot=4, max_it=20, full_dl_batch_size=8):
                               'attention_mask' : x[1][2].to(device)}
             support_targets = x[2].to(device)
 
-            # Finetune new model on support set
+            # few-shot finetune model on support set
             local_model, output_weight, output_bias, classes = model.adapt_few_shot(
                 support_inputs, support_targets
             )

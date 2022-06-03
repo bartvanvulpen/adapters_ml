@@ -31,20 +31,19 @@ def train_model(model_class, train_loader, max_n_steps, save_dir_name, debug=Fal
     )
     trainer.logger._default_hp_metric = None
 
-    # Check whether pretrained model exists. If yes, load it and skip training
+    # if pretrained model exists, use it
     pretrained_filename = os.path.join(CHECKPOINT_PATH, model_class.__name__ + ".ckpt")
     if os.path.isfile(pretrained_filename):
         print(f"Found pretrained model at {pretrained_filename}, loading...")
         # Automatically loads the model with the saved hyperparameters
         model = model_class.load_from_checkpoint(pretrained_filename)
     else:
-        pl.seed_everything(42)  # To be reproducable
+        pl.seed_everything(42)
         model = model_class(**kwargs)
-        # print(model)
+
         trainer.fit(model, train_loader)
 
         if debug == False:
-            # Load best checkpoint after training
             model = model_class.load_from_checkpoint(
                 trainer.checkpoint_callback.best_model_path
             )
@@ -112,7 +111,7 @@ if __name__ == '__main__':
         lr=args.lr,
         lr_inner=args.lr_inner,
         lr_output=args.lr_outer,
-        num_inner_steps=args.inner_steps,  # Often values between 1 and 10
+        num_inner_steps=args.inner_steps,
         adapters_used=adapters,
         k_shot=args.k_shot,
         task_batch_size=args.task_batch_size,

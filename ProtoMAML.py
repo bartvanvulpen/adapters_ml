@@ -1,11 +1,9 @@
-# Standard libraries
 import os
 from copy import deepcopy
 from statistics import mean, stdev
 import json
 import argparse
 import sys
-## PyTorch
 from adapter_fusion import load_bert_model
 from transformers.adapters.composition import Fuse
 import torch
@@ -13,11 +11,8 @@ import torch.nn.functional as F
 import torch.utils.data as data
 import torch.optim as optim
 from transformers.adapters import BertAdapterModel
-## PyTorch Lightning
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import LearningRateMonitor, ModelCheckpoint
-
-## Dataset and sampler
 from data_construction import get_train_loader
 from sampler import split_batch
 
@@ -64,7 +59,7 @@ class ProtoMAML(pl.LightningModule):
     def __init__(self, lr, lr_inner, lr_output, num_inner_steps, k_shot, task_batch_size, tasks, adapters_used, adapterfusion_path=None):
         """
         Inputs
-            proto_dim - Dimensionality of prototype feature space
+            proto_dim - Dimensionality of prototypes
             lr - Learning rate of the outer loop Adam optimizer
             lr_inner - Learning rate of the inner loop SGD optimizer
             lr_output - Learning rate for the output layer in the inner loop
@@ -83,23 +78,22 @@ class ProtoMAML(pl.LightningModule):
         return [optimizer], [scheduler]
 
     def calculate_prototypes(self, features, targets):
-        # Given a stack of features vectors and labels, return class prototypes
-        # features - shape [N, proto_dim], targets - shape [N]
-        classes, _ = torch.unique(targets).float().sort()  # Determine which classes we have
+        # determine the classes
+        classes, _ = torch.unique(targets).float().sort()
         prototypes = []
 
         for c in classes:
             p = features[torch.where(targets == c)[0]].mean(
                 dim=0
-            )  # Average class feature vectors
+            )
             prototypes.append(p)
         prototypes = torch.stack(prototypes, dim=0)
-        # Return the 'classes' tensor to know which prototype belongs to which class
+
         return prototypes, classes
 
     def run_model(self, local_model, output_weight, output_bias, inputs, labels):
 
-        # Execute a model with given output layer weights and inputs
+        # calculate features with BERT + AdapterFusion model pass
         feats = local_model(input_ids=inputs['input_ids'],
                                    attention_mask=inputs['attention_mask'],
                                    token_type_ids=inputs['token_type_ids']).pooler_output
@@ -110,8 +104,6 @@ class ProtoMAML(pl.LightningModule):
         return loss, preds, acc
 
     def adapt_few_shot(self, support_inputs, support_targets):
-
-        # Determine prototype initialization
         support_feats = self.model(input_ids=support_inputs['input_ids'],
                                    attention_mask=support_inputs['attention_mask'],
                                    token_type_ids=support_inputs['token_type_ids']).pooler_output
@@ -122,40 +114,36 @@ class ProtoMAML(pl.LightningModule):
                 (classes[None, :] == support_targets[:, None]).long().argmax(dim=-1)
         )
 
-        # Create inner-loop model and optimizer
+        # copy model for inner loop
         local_model = deepcopy(self.model)
         local_model.train()
         local_optim = optim.SGD(local_model.parameters(), lr=self.hparams.lr_inner)
         local_optim.zero_grad()
 
-        # Create output layer weights with prototype-based initialization
+        # init output layers with prototypes
         init_weight = 2 * prototypes
         init_bias = -torch.norm(prototypes, dim=1) ** 2
         output_weight = init_weight.detach().requires_grad_()
         output_bias = init_bias.detach().requires_grad_()
 
-        # Optimize inner loop model on support set
+        # run inner loop on support set
         for i in range(self.hparams.num_inner_steps):
 
-            # Determine loss on the support set
+            # calculate and backward loss on support set
             loss, _, _ = self.run_model(
                 local_model, output_weight, output_bias, support_inputs, support_labels
             )
-
-            # Calculate gradients and perform inner loop update
             loss.backward()
             local_optim.step()
 
-            # Update output layer via SGD
             output_weight.data -= self.hparams.lr_output * output_weight.grad
             output_bias.data -= self.hparams.lr_output * output_bias.grad
 
-            # Reset gradients
+            # reset the gradients
             local_optim.zero_grad()
             output_weight.grad.fill_(0)
             output_bias.grad.fill_(0)
 
-        # Re-attach computation graph of prototypes
         output_weight = (output_weight - init_weight).detach() + init_weight
         output_bias = (output_bias - init_bias).detach() + init_bias
 
@@ -194,14 +182,11 @@ class ProtoMAML(pl.LightningModule):
                 # only update adapter fusion weights
                 for (name_glob, p_glob), (name_local, p_local) in zip(self.model.named_parameters(), local_model.named_parameters()):
                     if p_glob.requires_grad and p_local.requires_grad:
-
-                        # First-order approx. -> add gradients of finetuned and base model
                         p_glob.grad += p_local.grad
 
             accuracies.append(acc.mean().detach())
             losses.append(loss.detach())
 
-        # Perform update of base model
         if mode == "train":
             opt = self.optimizers()
             opt.step()
@@ -213,10 +198,4 @@ class ProtoMAML(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         print(f'TRAINING STEP: {batch_idx}')
         self.outer_loop(batch, mode="train")
-        return None  # Returning None means we skip the default training optimizer steps by PyTorch Lightning
-
-    # def validation_step(self, batch, batch_idx):
-    #     # Validation requires to finetune a model, hence we need to enable gradients
-    #     torch.set_grad_enabled(True)
-    #     self.outer_loop(batch, mode="val")
-    #     torch.set_grad_enabled(False)
+        return None
